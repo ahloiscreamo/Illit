@@ -27,7 +27,7 @@ export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
   --color=fg:#c8c8e5,fg+:#c8c8e5,bg:#232136,bg+:#393552
   --color=hl:#3e8fb0,hl+:#9ccfd8,info:#f6c177,marker:#f6c177
   --color=prompt:#eb6f92,spinner:#c4a7e7,pointer:#c4a7e7,header:#9ccfd8
-  --color=border:#6e6a86,label:#44415a,query:#6e6a86
+  --color=border:#393552,label:#44415a,query:#6e6a86
   --border="rounded" --border-label="" --preview-window="noborder" --prompt="> "
   --marker=">" --pointer="◆" --separator="─" --scrollbar="│"'
 
@@ -51,6 +51,7 @@ export MANGAL_FORMATS_USE="cbz"
 export MANGAL_DOWNLOADER_CREATE_VOLUME_DIR="true"
 
 #Alias
+alias bat="bat --italic-text always --force-colorization --style full"
 alias magic="magic-tape.sh"
 alias nnn="nnn -r -e -x"
 alias icat="kitty +kitten icat"
