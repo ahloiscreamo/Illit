@@ -496,8 +496,10 @@
 		background-color: var(--main-background) !important;
 		border-color: var(--hover-background) !important;
 	}
-    yt-chip-cloud-chip-renderer[chip-style="STYLE_HOME_FILTER"][selected] #chip-container.yt-chip-cloud-chip-renderer {
-        background-color: var(--second-background) !important;
+    yt-chip-cloud-chip-renderer[chip-style=STYLE_DEFAULT][selected] #chip-container.yt-chip-cloud-chip-renderer,
+    yt-chip-cloud-chip-renderer[chip-style=STYLE_HOME_FILTER][selected] #chip-container.yt-chip-cloud-chip-renderer
+    {
+        background-color: var(--main-color) !important;
         color: var(--hover-background);
     }
 	yt-chip-cloud-renderer
