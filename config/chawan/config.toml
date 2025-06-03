@@ -2,6 +2,8 @@
 #visual-home = "https://www.google.com/"
 
 [buffer]
+styling = true
+scripting = true
 images = true
 autofocus = true
 
@@ -13,7 +15,7 @@ highlight-color = "eb6f92"
 highlight-marks = true
 double-width-ambiguous = false
 set-title = true
-default-background-color = "e0def4"
+default-background-color = "c8c8e5"
 default-foreground-color = "232136"
 
 [page]
@@ -23,8 +25,31 @@ default-foreground-color = "232136"
 [css]
 inline = """plaintext, pre { white-space: pre-wrap }"""
 
+# Allow javascript YouTube
 [[siteconf]]
-#allow javascript YouTube
 host = "https://www.youtube.com/"
 scripting = true
 styling = true
+
+# Use the "vector" skin on Wikipedia. 
+[[siteconf]]
+url = '^https?://[a-z]+\.wikipedia\.org/wiki/(?!.*useskin=.*)'                                                              
+rewrite-url = 'x => x.searchParams.append("useskin", "vector")' 
+
+# Allow javascript + css Github
+#[[siteconf]]
+#host = "https://www.reddit.com/"
+#scripting = true
+#styling = true
+
+# Allow javascript Instagram
+#[[siteconf]]
+#host = "https://www.instagram.com/"
+#scripting = true
+#styling = true
+
+# Allow javascript Google
+#[[siteconf]]
+#host = "https://www.google.com/"
+#scripting = true
+#styling = true

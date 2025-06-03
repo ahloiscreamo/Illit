@@ -15,13 +15,21 @@ Plugin 'tpope/vim-sensible'
 call vundle#end()            " required
 filetype plugin indent on    " required
 
+" Map <leader>mp to open quickmd for the current file
+" (assuming your leader key is '\' - you can check with :echo mapleader)
+nnoremap <leader>mp :silent !quickmd % > /dev/null 2>&1 &<CR>
+
+" Optional: A command to manually start quickmd for the current file
+" You can run this by typing :MarkdownQuickPreview in Vim
+command! MarkdownQuickPreview silent !quickmd % > /dev/null 2>&1 &
+
 " RosePine
 set background=dark
 colorscheme rosepine_moon
 let g:disable_bg = 1
 
 " indentLine
-let g:indentLine_color_term = 0
+let g:indentLine_color_term = 1
 
 " Disable folding (vim-markdown)
 let g:vim_markdown_folding_disabled = 1
@@ -75,16 +83,16 @@ set matchpairs+=<:>
 
 " Show line numbers
 set number
-highlight LineNr ctermfg=black
+highlight LineNr ctermfg=60
 
 " Set status line display
 set laststatus=2
-hi StatusLine ctermfg=cyan ctermbg=black cterm=NONE
-hi StatusLineNC ctermfg=cyan ctermbg=black cterm=NONE
-hi User1 ctermfg=magenta ctermbg=black
+hi StatusLine ctermfg=16 ctermbg=green cterm=NONE
+hi StatusLineNC ctermfg=16 ctermbg=green cterm=NONE
+hi User1 ctermfg=16 ctermbg=magenta
 hi User2 ctermfg=NONE ctermbg=NONE
-hi User3 ctermfg=cyan ctermbg=black
-hi User4 ctermfg=magenta ctermbg=black
+hi User3 ctermfg=16 ctermbg=red
+hi User4 ctermfg=16 ctermbg=red
 set statusline=\                    " Padding
 set statusline+=%f                  " Path to the file
 set statusline+=\ %1*\              " Padding & switch colour
@@ -120,3 +128,5 @@ set smartcase
 " 100kb of data. Useful for copying large amounts of data between files.
 set viminfo='100,<9999,s100
 
+" Set Backup copy
+set backupcopy=yes

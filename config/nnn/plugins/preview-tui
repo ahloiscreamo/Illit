@@ -21,7 +21,7 @@
 #   - man
 #   - optional: bsdtar or atool for additional archive preview
 #   - optional: bat for code syntax highlighting
-#   - optional: ueberzug, kitty terminal, wezterm terminal, img2sixel, viu, catimg or chafa for images
+#   - optional: ueberzug, kitty terminal, wezterm terminal, img2sixel, viu, catimg, timg or chafa for images
 #   - optional: convert(ImageMagick) for playing gif preview (mandatory for kitty image previews)
 #   - optional: mpv for gif and video
 #       Also requires a terminal supporting the sixel (https://www.arewesixelyet.com/)
@@ -112,7 +112,7 @@ ENVVARS=(
   "NNN_PREVIEWWIDTH=${NNN_PREVIEWWIDTH:-1920}"             # width of generated preview images
   "NNN_PREVIEWHEIGHT=${NNN_PREVIEWHEIGHT:-1080}"           # height of generated preview images
   "NNN_PREVIEWDIR=${NNN_PREVIEWDIR:-$TMPDIR/nnn/previews}" # location of generated preview images
-  "NNN_PREVIEWIMGPROG=${NNN_PREVIEWIMGPROG:-}"             # program used to preview images
+  "NNN_PREVIEWIMGPROG=${NNN_PREVIEWIMGPROG:-}"             # command used to preview images
   "NNN_PREVIEWVIDEO=${NNN_PREVIEWVIDEO:-}"                 # mpv backend used to preview video
 )
 # Non-configurable environment variables
@@ -302,7 +302,7 @@ handle_ext() {
         md) if exists glow; then
                 fifo_pager glow -s dark "$1"
             elif exists lowdown; then
-                fifo_pager lowdown -Tterm "$1"
+                fifo_pager lowdown -Tterm --term-width="$cols" --term-column="$cols" "$1"
             else
                 fifo_pager pager "$1"
             fi ;;
@@ -322,6 +322,12 @@ handle_ext() {
                 fifo_pager atool -l "$1"
             elif exists bsdtar; then
                 fifo_pager bsdtar -tvf "$1"
+            fi ;;
+        json)
+            if exists jq; then
+                fifo_pager jq --color-output '.' "$1"
+            else
+                fifo_pager pager "$1"
             fi ;;
         *) if [ "$3" = "bin" ]; then
                fifo_pager print_bin_info "$1"
@@ -452,14 +458,8 @@ image_preview() {
         wezterm imgcat "$3" &
     elif exists ueberzug && [[ "$NNN_PREVIEWIMGPROG" == +(|ueberzug) ]]; then
         ueberzug_layer "$1" "$2" "$3" && return
-    elif exists catimg && [[ "$NNN_PREVIEWIMGPROG" == +(|catimg) ]]; then
-        catimg "$3" &
-    elif exists viu && [[ "$NNN_PREVIEWIMGPROG" == +(|viu) ]]; then
-        viu -t "$3" &
-    elif exists chafa && [[ "$NNN_PREVIEWIMGPROG" == +(|chafa) ]]; then
-        chafa "$3" &
-    elif exists img2sixel && [[ "$NNN_PREVIEWIMGPROG" == +(|img2sixel) ]]; then
-        img2sixel -g "$3" &
+    elif exists "${NNN_PREVIEWIMGPROG%% *}"; then # can include command flags; only check first word
+        $NNN_PREVIEWIMGPROG "$3" &
     else
         fifo_pager print_bin_info "$3" && return
     fi
