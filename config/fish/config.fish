@@ -52,6 +52,7 @@ export MANGAL_DOWNLOADER_CREATE_VOLUME_DIR="true"
 
 #Alias
 alias bat="bat --italic-text always --force-colorization --style full"
+alias clx="clx -n"
 alias magic="magic-tape.sh"
 alias nnn="nnn -r -e -x"
 alias icat="kitty +kitten icat"
