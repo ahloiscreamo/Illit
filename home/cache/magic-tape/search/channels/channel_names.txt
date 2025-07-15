@@ -140,7 +140,6 @@ ano official channel
 Anonymous Official
 Anson & Co.
 ANTA Malaysia
-AnthonyPadilla
 Anti.Prophet Shorts
 Anton somewhere
 Antz
@@ -179,7 +178,6 @@ ASAP Mob
 ASAPROCKYUPTOWN
 Asel Mustafaeva
 Ase阿瑟
-Ash Tailor (ashthought)
 Ashhrapp Channel
 Ashtin Larold
 Asia Orlando
@@ -195,7 +193,6 @@ ASMR EnQi - 恩七的助眠电台
 ASMR Jamonghae
 ASMR Jia
 ASMR Journey 져니
-ASMR Luna77
 ASMR Mei
 ASMR MELODY
 ASMR Mongsilunnie
@@ -212,6 +209,7 @@ ASMR twodae
 asmr wooyeon 우연
 ASMR Zhen
 ASMR 乐趣Pleasure 2nd
+ASMR小女巫露娜
 ASMR爱丽丝梦境
 Asphalt
 Asthmatic Kitty Records
@@ -360,6 +358,7 @@ BoroCG
 Borrow From Tomorrow
 Boston Dynamics
 Bottlehead
+box Cam
 BoyMek
 BPS Customs
 BraappMy
@@ -649,6 +648,7 @@ Dropout
 Drugslab
 Drumeo
 DSbuddy
+DSLR Video Shooter
 DSLRguide
 DuckTravel (🌎World Tourist Channel)
 DUMBFOUNDEAD
@@ -761,6 +761,7 @@ Foresty Forest
 Forgotten
 ForgottenRelics
 FortNine
+Fotodiox Inc
 FoundFlix
 Fractal Design
 Framelines
@@ -1261,7 +1262,6 @@ Life Work & Dreams
 Lifting Linux
 Lights & Motion
 LIGHTSUM 라잇썸 (Official YouTube Channel)
-Lightyear
 Lil Baby Official 
 lil boat
 Lil Durk
@@ -1474,7 +1474,7 @@ Moment
 Mommy Son
 MomoRina 모모리나
 MONOKEI
-mookio 默大
+mookio
 MOONDROP
 More Best Ever Food Review Show
 MorningCoach
@@ -1526,6 +1526,7 @@ Mwave
 MXC Builds
 My Deep Guide
 My Own Devices Audio Channel
+My Photo Journey
 MY VIVA
 MyFabolousLife
 Mystery Recapped
@@ -1649,6 +1650,7 @@ Osashimi Holdings
 OSSC
 OSSIC
 OtaKing Animation
+Otsuka Tadashi │ 写真×映像
 Our Last Night
 Our Painted Lives
 Outbuild
@@ -1976,6 +1978,7 @@ Slipknot
 smashpop
 Smino
 SMK
+SmoshAlike
 sn0ren
 snappiness
 Snazzy Labs
@@ -2056,8 +2059,10 @@ struthless
 STUDIO CHOOM [스튜디오 춤]
 Studio Eclypse
 Studio Gek
+Studio Hearth
 STUDIO LICO
 Studio Mir 
+Stunt McCartney
 #sudo
 sufu
 Suhan Channel
@@ -2211,6 +2216,7 @@ THE FREEZIA
 THE-LOWDOWN.com
 THE9 Official
 The_Lucid_Dolphin 
+TheCameraStoreTV
 TheCunningFox
 TheFatRat
 TheGamingAudiophile
@@ -2251,6 +2257,7 @@ Tom Bolles
 Tom Calton
 Tom MacDonald
 Tommy Craze
+Tommy february6 / Tommy heavenly6
 TOMOO
 Tony
 Too LIT Mafia
@@ -2319,6 +2326,7 @@ Ustaz Dr Ashraff Amirul
 Ustaz Rosdi Hasan TV
 V LIVE
 Vadim in the WILD
+Vahagraphy
 VAIO Official
 Valve
 Vans
@@ -2384,6 +2392,7 @@ weezer
 Wendigoon
 weronoyume
 Wesley Joseph
+West Level Finder
 Westside Boogie
 Wheezy Tech
 WherePostRockDwells
@@ -2518,6 +2527,7 @@ Japanese Noodles Udon Soba Osaka Nara
 うららチャンネル　歌・ゲーム・漫画
 えびまよ【海老原まよい】
 おやすみホログラム
+おんちゃん　H!P CHANNEL
 かでなれおん チャンネル
 しかまちTV-SHIKAMACHI.TV-
 ちゃんねる宮脇咲良
@@ -2525,6 +2535,7 @@ Japanese Noodles Udon Soba Osaka Nara
 ひとりふぉとチャンネル
 Burabura Japan
 みなみの散歩の記録
+みなみの部屋
 MIYATABI
 みゆな Official Channel
 めめんち
@@ -2535,6 +2546,7 @@ UpTown PRANK
 ウルトラマン公式 ULTRAMAN OFFICIAL by TSUBURAYA PROD.
 オセロ切り抜き
 グラビア学園YouTubeチャンネル
+ケンイチ
 コレサワ
 ジェマ・ルイーズ
 SHONEN JUMP CHANNEL OFFICIAL
