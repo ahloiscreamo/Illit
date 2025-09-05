@@ -1,22 +1,13 @@
-/* ~~~~~~~~ Remove navbar bottom 1px border ~~~~~~~~~ */
- #tabbrowser-tabbox {
-	box-shadow: none !important;
-	outline: none !important;
+.urlbarView-row[selected] {
+  background-color: #eb6f92 !important; /* Change this to your desired color */
 }
 
-/*Speaker icon larger and without background */
- .tab-icon-overlay {
-    border: none !important;
-    background-color: transparent !important;
-    transform: scale(1.7) !important;
+.urlbarView-row:hover {
+  background-color: #eb6f92 !important;
 }
 
-/* Speaker symbol white for sound */
- .tab-icon-overlay[soundplaying] {
-    fill: #9ccfd8 !important;
-}
-
-/* Speaker symbol gray when muted */
- .tab-icon-overlay[muted] {
-    fill: #eb6f92 !important;
+:root {
+  &[lwtheme] {
+    --tab-selected-outline-color: transparent !important;
+  }
 }
