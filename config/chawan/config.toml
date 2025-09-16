@@ -11,45 +11,70 @@ autofocus = true
 color-mode = "ansi"
 format-mode = "auto"
 image-mode = "kitty"
-highlight-color = "eb6f92"
+highlight-color = "eb6f92"  # pink highlight
 highlight-marks = true
 double-width-ambiguous = false
 set-title = true
-default-background-color = "c8c8e5"
-default-foreground-color = "232136"
 
 [page]
-' r' = "pager.externFilterSource('rdrview -Hu \"$CHA_URL\"')" 
-' f' = "pager.externFilterSource('fmt')"
+# Open current page in w3m for Google (text-only)
+'g' = "pager.externFilterSource('w3m -dump \"$CHA_URL\"')"
 
-[css]
-inline = """plaintext, pre { white-space: pre-wrap }"""
+# Open current page in rdrview for general text view
+'r' = "pager.externFilterSource('rdrview -Hu \"$CHA_URL\"')"
 
-# Allow javascript YouTube
+# Format page text nicely
+'f' = "pager.externFilterSource('fmt')"
+
+# YouTube: allow scripting
 [[siteconf]]
 host = "https://www.youtube.com/"
 scripting = true
 styling = true
 
-# Use the "vector" skin on Wikipedia. 
+# Wikipedia: use vector skin
 [[siteconf]]
-url = '^https?://[a-z]+\.wikipedia\.org/wiki/(?!.*useskin=.*)'                                                              
-rewrite-url = 'x => x.searchParams.append("useskin", "vector")' 
+url = '^https?://[a-z]+\.wikipedia\.org/wiki/(?!.*useskin=.*)'
+rewrite-url = 'x => x.searchParams.append("useskin", "vector")'
 
-# Allow javascript + css Github
-#[[siteconf]]
-#host = "https://www.reddit.com/"
-#scripting = true
-#styling = true
+# Google: optional site-specific config
+[[siteconf]]
+host = "https://www.google.com/"
+scripting = true
+styling = true
+inline-css = """
+body, html, input, textarea, select, button {
+    background-color: #232136 !important;
+    color: #c8c8e5 !important;
+}
 
-# Allow javascript Instagram
-#[[siteconf]]
-#host = "https://www.instagram.com/"
-#scripting = true
-#styling = true
+a {
+    color: #9ccfd8 !important; /* blue links */
+}
 
-# Allow javascript Google
-#[[siteconf]]
-#host = "https://www.google.com/"
-#scripting = true
-#styling = true
+a:visited {
+    color: #c4a7e7 !important; /* magenta visited links */
+}
+
+input, textarea {
+    background-color: #393552 !important;
+    color: #c8c8e5 !important;
+    border-color: #6e6a86 !important;
+}
+
+div {
+    background-color: transparent !important;
+}
+"""
+# Uncomment if needed:
+# Reddit
+# [[siteconf]]
+# host = "https://www.reddit.com/"
+# scripting = true
+# styling = true
+
+# Instagram
+# [[siteconf]]
+# host = "https://www.instagram.com/"
+# scripting = true
+# styling = true

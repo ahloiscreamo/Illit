@@ -14,7 +14,7 @@ export NNN_VISUAL="vim"
 export NNN_COLORS="5632"
 export NNN_FCOLORS="0B0405020006060009060B01"
 export NNN_BMS='m:/mnt;g:/mnt/Kingston/gallery-dl/instagram;d:~/Downloads;p:~/Pictures;t:~/Documents;f:~/Desktop'
-export NNN_PLUG='a:addtoplaylist;j:autojump;p:preview-tui;i:imgview;l:launch;r:renamer;w:wallpaper;o:organize;x:xdgdefault'
+export NNN_PLUG='j:autojump;p:preview-tui;l:launch;r:renamer;o:fzopen;c:fzcd;x:xdgdefault'
 
 #Ddgr
 export BROWSER="w3m"

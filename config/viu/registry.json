@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "last_updated": "2025-08-31T00:53:48.107873",
+  "media_index": {
+    "anilist_182814": {
+      "media_id": 182814,
+      "media_api": "anilist",
+      "status": "watching",
+      "progress": "3",
+      "last_watch_position": "00:23:50",
+      "last_watched": "2025-08-31T00:53:48.107592",
+      "total_duration": "00:23:50",
+      "total_episodes": 0,
+      "score": 0.0,
+      "repeat": 0,
+      "notes": "",
+      "last_notified_episode": null,
+      "start_date": "2025-08-31T00:53:48.103126",
+      "completed_at": "2025-08-31T00:53:48.103129",
+      "watch_completion_percentage": 100.0
+    }
+  },
+  "status_breakdown": {
+    "watching": 1
+  },
+  "media_count_breakdown": {
+    "anilist": 1
+  },
+  "media_count": 1
+}

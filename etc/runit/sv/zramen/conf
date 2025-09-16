@@ -1,0 +1,5 @@
+export ZRAM_COMP_ALGORITHM='zstd'   # zstd = better compression ratio than lz4, still fast
+export ZRAM_PRIORITY=100            # high, but not "max", so system swap file (if any) is still usable
+export ZRAM_SIZE=50                 # 50% of total RAM, safe for most desktops/laptops
+export ZRAM_STREAMS=$(nproc)        # match CPU cores for parallel compression
+

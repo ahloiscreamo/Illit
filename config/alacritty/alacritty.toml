@@ -1,7 +1,4 @@
-# Theme
-import = ["~/.config/alacritty/rose-pine-moon.toml"]
-
-[shell]
+[terminal.shell]
 program = "/bin/fish"
 args = ["-l"]
 
@@ -15,4 +12,6 @@ bold   = { family = "Maple Mono NF", style = "Bold" }
 italic = { family = "Maple Mono NF", style = "Italic" }
 bold_italic = { family = "Maple Mono NF", style = "Bold Italic" }
 
-
+[general]
+# Theme
+import = ["~/.config/alacritty/rose-pine-moon.toml"]
