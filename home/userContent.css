@@ -1,13 +1,35 @@
+/* === New Tab & Home === */
 @-moz-document url("about:newtab"),
-               url("about:home")
-{
+               url("about:home") {
   :root[lwt-newtab-brighttext] {
     --newtab-background-color: #232136 !important;
   }
+
+  body {
+    --newtab-background-color-secondary: #393552 !important;
+    --newtab-text-primary-color: #c8c8e5 !important;
+    --newtab-primary-action-background-pocket: #c4a7e7 !important;
+  }
 }
 
-body {
-    --newtab-background-color-secondary: #393552 !important;
-    --newtab-text-primary-color: #e0def4 !important;
-    --newtab-primary-action-background-pocket: #c4a7e7 !important;
+/* === Websites without background === */
+@-moz-document regexp(".*") {
+  html, body {
+    background-color: #232136 !important;
+    color: #c8c8e5 !important;
+  }
+}
+
+/* === Transparent images (checkerboard background) === */
+@-moz-document regexp(".*\\.(png|jpg|jpeg|gif|webp|svg)$") {
+  body {
+    background-color: #232136 !important;
+    background-image:
+      linear-gradient(45deg, #393552 25%, transparent 25%),
+      linear-gradient(-45deg, #393552 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #393552 75%),
+      linear-gradient(-45deg, transparent 75%, #393552 75%);
+    background-size: 20px 20px;   /* Checker square size */
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
 }

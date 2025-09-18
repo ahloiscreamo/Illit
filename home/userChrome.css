@@ -1,13 +1,20 @@
-.urlbarView-row[selected] {
-  background-color: #eb6f92 !important; /* Change this to your desired color */
-}
-
+/* === URL bar dropdown highlight === */
+.urlbarView-row[selected],
 .urlbarView-row:hover {
   background-color: #eb6f92 !important;
 }
 
-:root {
-  &[lwtheme] {
-    --tab-selected-outline-color: transparent !important;
-  }
+/* === Tab styling === */
+:root[lwtheme] {
+  --tab-selected-outline-color: transparent !important;
+}
+
+/* === Fix page load background (replace default #2b2a33) === */
+@namespace xul url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+browser,
+#tabbrowser-tabpanels,
+.browserStack,
+.browserContainer {
+  background-color: #232136 !important;  /* Rose Pine Moon */
 }
