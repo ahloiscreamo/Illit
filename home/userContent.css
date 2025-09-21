@@ -12,11 +12,11 @@
   }
 }
 
-/* === Websites without background === */
-@-moz-document regexp(".*") {
+/* === DuckDuckGo background === */
+@-moz-document domain("duckduckgo.com") {
   html, body {
-    background-color: #232136 !important;
-    color: #c8c8e5 !important;
+    background-color: #232136 !important; /* match your theme */
+    color: #e0def4 !important;
   }
 }
 

@@ -2,6 +2,8 @@
 # originally by Kris Occhipinti
 # https://www.youtube.com/watch?v=FsQuGplQvrw
 
-notify-send -t 3000 "Playing Video" "$(xclip -o -sel clip)";
-mpv "$(xclip -o -sel clip)"
+url=$(xclip -o -sel clip)
+title=$(yt-dlp --get-title "$url")
 
+notify-send -t 3000 "Playing Video" "$title";
+mpv "$url"

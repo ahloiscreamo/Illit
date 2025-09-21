@@ -18,3 +18,12 @@ browser,
 .browserContainer {
   background-color: #232136 !important;  /* Rose Pine Moon */
 }
+
+/* === Kill Firefox’s extra vertical tab splitter border === */
+#sidebar-launcher-splitter,
+splitter {
+  border: none !important;
+  background: transparent !important;
+  min-width: 0 !important;
+  width: 0 !important;
+}
