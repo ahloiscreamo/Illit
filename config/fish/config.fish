@@ -14,7 +14,7 @@ export NNN_VISUAL="vim"
 export NNN_COLORS="5632"
 export NNN_FCOLORS="0B0405020006060009060B01"
 export NNN_BMS='m:/mnt;g:/mnt/Kingston/gallery-dl/instagram;d:~/Downloads;p:~/Pictures;t:~/Documents;f:~/Desktop'
-export NNN_PLUG='j:autojump;p:preview-tui;l:launch;r:renamer;o:fzopen;c:fzcd;x:xdgdefault'
+export NNN_PLUG='a:addtoplaylist;j:autojump;p:preview-tui;l:launch;r:renamer;o:fzopen;c:fzcd;x:xdgdefault'
 
 #Ddgr
 export BROWSER="w3m"
@@ -62,7 +62,7 @@ alias ls="eza"
 alias ncdu="ncdu --color dark"
 alias archwiki-offline="archwiki-offline -o w3m -m fzf"
 alias archwiki="archwiki-offline"
-alias muc="muc --file ~/.local/share/fish/fish_history --count 10 --pretty --shell="fish""
+alias muc="muc --file ~/.local/share/fish/fish_history --count 10 --pretty --shell=\"fish\""
 alias tap="tap -db --color fg=c8c8e5,bg=232136,hl=c4a7e7,prompt=3e8fb0,header=ea9a97,header+=eb6f92,progress=f6c177,info=3e8fb0,err=eb6f92"
 
 #Icons_in_terminal
@@ -138,3 +138,12 @@ starship init fish | source
 
 # Created by `pipx` on 2023-12-07 10:26:03
 set PATH $PATH /home/ahloi/.local/bin
+
+# Gemini API
+export GEMINI_API_KEY="AIzaSyBdgtnEh_SI_9Dnkre3zLaPAuq162-Dal0"
+
+# Function to start Gemini CLI in the project directory
+function gemini
+    cd /home/ahloi/gemini_project
+    command gemini
+end

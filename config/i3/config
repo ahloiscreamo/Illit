@@ -1,7 +1,8 @@
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:Maple Mono Bold Italic 12
+font pango:Maple Mono Bold Italic 18
 title_align center
+for_window [class=".*"] title_format "<span font='Maple Mono Bold Italic 18' foreground='#00000000'> </span><span font='Maple Mono Bold Italic 12'>%title</span><span font='Maple Mono Bold Italic 10' foreground='#00000000'> </span>"
 
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
@@ -113,7 +114,7 @@ exec --no-startup-id feh --bg-fill ~/Pictures/Bicycle.jpg
 #exec --no-startup-id unclutter
 
 # xclip mpv
-bindsym Mod1+Shift+p exec /home/ahloi/yt-mpv.sh
+bindsym Mod1+Shift+p exec /home/ahloi/youtube-watch.sh
 
 # wmfocus
 bindsym Mod1+m exec /home/ahloi/wmfocus
@@ -295,13 +296,13 @@ client.focused_inactive #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97
 client.unfocused        #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97 
 client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
 client.placeholder      #232136 #232136 #232136   #232136   #232136
-client.background       #e0def4
+client.background       #c8c8e5
 
 # class                 border  backgr. text    indicator child_border
-#client.focused          #44415a #44415a #c4a7e7   #44415a   #44415a
-#client.focused_inactive #393552 #393552 #ea9a97   #393552   #393552
-#client.unfocused        #393552 #393552 #ea9a97   #393552   #393552 
+#client.focused          #232136 #232136 #c8c8e5   #232136   #232136 
+#client.focused_inactive #232136 #232136 #6e6a86   #232136   #232136 
+#client.unfocused        #232136 #232136 #6e6a86   #232136   #232136 
 #client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
 #client.placeholder      #232136 #232136 #232136   #232136   #232136
-#client.background       #e0def4
+#client.background       #c8c8e5
 

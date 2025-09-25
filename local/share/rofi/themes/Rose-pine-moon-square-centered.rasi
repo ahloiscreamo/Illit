@@ -1,0 +1,104 @@
+/*
+ * ROFI color theme
+ *
+ * Based on RosePine colorscheme
+ *
+ * User: Ahloi
+ * Copyright: *!
+ */
+
+configuration {
+  font: "Maple Mono NF Bold 14";
+
+  drun {
+    display-name: "LAUNCH";
+  }
+
+  run {
+    display-name: "TERM";
+  }
+
+  window {
+  width: 23em;
+  height: 33em;
+  location: center;
+  anchor: center;
+  x-offset: 0;
+  y-offset: 0;
+    display-name: "WINDOW";
+  }
+
+  timeout {
+    delay: 10;
+    action: "kb-cancel";
+  }
+}
+
+* {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  spacing: 0;
+
+  bg: #232136;
+  fg: #e0def4;
+  blue: #3e8fb0;
+  purple: #f6c177;
+  green: #3e8fb0;
+
+  background-color: @bg;
+  text-color: @fg;
+}
+
+window {
+  width: 23em;
+  height: 33em;
+  location: center;
+  anchor: center;
+  x-offset: 0;
+  y-offset: 0;
+  transparency: "real";
+  border: 6;
+  border-color: @green;
+}
+
+mainbox {
+  children: [inputbar, listview];
+}
+
+inputbar {
+  background-color: @blue;
+  children: [prompt, entry];
+}
+
+entry {
+  background-color: inherit;
+  padding: 12px 3px;
+}
+
+prompt {
+  background-color: inherit;
+  padding: 12px;
+}
+
+listview {
+  lines: 8;
+}
+
+element {
+  children: [element-icon, element-text];
+  text-color: @fg;
+}
+
+element-icon {
+  padding: 10px 10px;
+}
+
+element-text {
+  padding: 10px 0;
+  text-color: inherit;
+}
+
+element-text selected {
+  text-color: @purple;
+}
