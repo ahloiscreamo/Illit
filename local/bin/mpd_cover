@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+import os, sys, subprocess, shutil, glob
+import mutagen
+from mutagen.flac import FLAC
+from mutagen.mp3 import MP3
+from mutagen.id3 import ID3
+
+MPD_MUSIC_DIR = "/mnt/Kingston/Music"
+FALLBACK = os.path.expanduser("~/.config/kunst_kitty/fallback.png")
+TMP = "/tmp/kunst_cover.jpg"
+
+def get_current_song():
+    try:
+        rel = subprocess.check_output(
+            ["mpc", "--format", "%file%", "current"],
+            text=True, stderr=subprocess.DEVNULL
+        ).strip()
+        return os.path.join(MPD_MUSIC_DIR, rel) if rel else None
+    except subprocess.CalledProcessError:
+        return None
+
+def extract_cover(song):
+    if not song or not os.path.isfile(song):
+        return FALLBACK
+    try:
+        audio = mutagen.File(song)
+        if isinstance(audio, FLAC) and audio.pictures:
+            with open(TMP, "wb") as f:
+                f.write(audio.pictures[0].data)
+            return TMP
+        if isinstance(audio, MP3):
+            tags = ID3(song)
+            for tag in tags.values():
+                if tag.FrameID == "APIC":
+                    with open(TMP, "wb") as f:
+                        f.write(tag.data)
+                    return TMP
+    except Exception:
+        pass
+
+    # Look for any jpg/png in the same folder
+    folder = os.path.dirname(song)
+    for ext in ("*.jpg", "*.png", "*.jpeg"):
+        matches = glob.glob(os.path.join(folder, ext))
+        if matches:
+            return matches[0]  # pick the first match
+
+    return FALLBACK
+
+def show_cover(path):
+    cols, rows = shutil.get_terminal_size(fallback=(80, 24))
+    place = f"{cols}x{rows}@0x0"
+    subprocess.run(["kitty", "+kitten", "icat", "--clear"], stdout=sys.stdout.buffer)
+    subprocess.run(
+        ["kitty", "+kitten", "icat", "--place", place, path],
+        stdout=sys.stdout.buffer
+    )
+
+def main():
+    print("kunst_kitty idle — Ctrl+C to quit")
+    last = None
+    while True:
+        song = get_current_song()
+        if song and song != last:
+            cover = extract_cover(song)
+            show_cover(cover)
+            last = song
+        try:
+            subprocess.run(["mpc", "idle", "player"], stdout=subprocess.DEVNULL)
+        except KeyboardInterrupt:
+            subprocess.run(["kitty", "+kitten", "icat", "--clear"], stdout=sys.stdout.buffer)
+            break
+
+if __name__ == "__main__":
+    main()

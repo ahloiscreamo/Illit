@@ -4,7 +4,7 @@ if status is-interactive
 end
 
 #NNN
-export NNN_FIFO="/tmp/nnn.fifo nnn"
+export NNN_FIFO="/tmp/nnn.fifo"
 export NNN_PREVIEW="/tmp/nnn-preview-tui-fifopid."
 export NNN_OPENER="xdg-open"
 export NNN_OPENER_DETACH=1

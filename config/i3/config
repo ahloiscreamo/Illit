@@ -1,8 +1,8 @@
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:Maple Mono Bold Italic 18
+font pango:Maple Mono Bold Italic 16
 title_align center
-for_window [class=".*"] title_format "<span font='Maple Mono Bold Italic 18' foreground='#00000000'> </span><span font='Maple Mono Bold Italic 12'>%title</span><span font='Maple Mono Bold Italic 10' foreground='#00000000'> </span>"
+for_window [class=".*"] title_format "<span font='Maple Mono Bold Italic 16' foreground='#00000000'> </span><span font='Maple Mono Bold Italic 12'>%title</span><span font='Maple Mono Bold Italic 10' foreground='#00000000'> </span>"
 
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
@@ -28,10 +28,10 @@ floating_modifier Mod1
 bindsym Mod1+Menu exec /home/ahloi/move_cursor.sh
 
 # start a terminal
-bindsym Mod1+Return exec kitty
+bindsym Mod1+Return exec Alacritty
 
 # use hints
-exec_always for id in $(xinput list | grep "ydotool.*pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id 'libinput Accel Profile Enabled' 0, 1; done
+exec for id in $(xinput list | grep "ydotool.*pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id 'libinput Accel Profile Enabled' 0, 1; done
 bindsym Mod1+i exec hints
 bindsym Mod1+o exec hints --mode scroll
 
@@ -70,6 +70,7 @@ gaps top 40
 #for_window [class=".*"] [floating] move absolute position center
 #for_window [class="kitty"] floating enable, border normal 0
 for_window [class="kitty"] border normal 0
+for_window [class="Alacritty"] border normal 0
 for_window [class="Surf"] border pixel 0, floating enable
 for_window [window_role="About"] floating enable
 #for_window [class="mpv"] floating enable, border pixel 3, move absolute position center
@@ -90,7 +91,6 @@ for_window [class="Zathura"] floating enable, resize set 645 950, move absolute 
 for_window [class="Gpick"] floating enable
 for_window [class="Gcolor3"] floating enable
 for_window [class="gmic_qt"] floating enable
-#for_window [class="fragments"] floating enable, move absolute position center
 for_window [class="Transmission-gtk"] floating enable, move absolute position center
 for_window [title="Farge"] floating enable
 for_window [instance="fontpreview"] floating enable
@@ -102,13 +102,9 @@ for_window [class="org.gnome.FileRoller"] floating enable, move absolute positio
 # exec on startup
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec --no-startup-id ydotoold
-#exec --no-startup-id picom -b
-#exec_always xinput set-prop 15 "Device Enabled" 0
-exec_always xinput --disable "Wacom Intuos Pro S Finger"
-exec_always xinput --disable "Wacom Intuos Pro S Pad"
-exec_always xinput --disable "Wacom Intuos Pro S Pen Eraser (0x3780cc3a)"
-#exec --no-startup-id feh --bg-fill ~/Pictures/NewJeans_noise.png
-#exec --no-startup-id feh --bg-fill ~/Pictures/NewJeans_noise_dark.png
+exec xinput --disable "Wacom Intuos Pro S Finger"
+exec xinput --disable "Wacom Intuos Pro S Pad"
+exec xinput --disable "Wacom Intuos Pro S Pen Eraser (0x3780cc3a)"
 exec --no-startup-id feh --bg-fill ~/Pictures/Bicycle.jpg
 #exec --no-startup-id hsetroot -solid '#e0def4'
 #exec --no-startup-id unclutter
@@ -205,7 +201,6 @@ set $ws10 "10"
 #bind program to workspace
 assign [class="kitty"] $ws1
 assign [class="firefox"] $ws2
-assign [class="alacritty"] $ws2
 assign [class="krita"] $ws3
 assign [class="Inkscape"] $ws3
 assign [class="mpv"] $ws4
@@ -291,18 +286,18 @@ bindsym Mod1+Shift+Up resize shrink width $x_spd px or $x_spd ppt, resize shrink
 bindsym Mod1+Shift+Down resize grow width $x_spd px or $x_spd ppt, resize grow height $x_spd px or $x_spd ppt, move left $hx_spd px, move up $hx_spd px
 
 # class                 border  backgr. text    indicator child_border
-client.focused          #c4a7e7 #c4a7e7 #7550a5   #c4a7e7   #c4a7e7
-client.focused_inactive #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97
-client.unfocused        #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97 
-client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
-client.placeholder      #232136 #232136 #232136   #232136   #232136
-client.background       #c8c8e5
-
-# class                 border  backgr. text    indicator child_border
-#client.focused          #232136 #232136 #c8c8e5   #232136   #232136 
-#client.focused_inactive #232136 #232136 #6e6a86   #232136   #232136 
-#client.unfocused        #232136 #232136 #6e6a86   #232136   #232136 
+#client.focused          #c4a7e7 #c4a7e7 #7550a5   #c4a7e7   #c4a7e7
+#client.focused_inactive #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97
+#client.unfocused        #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97 
 #client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
 #client.placeholder      #232136 #232136 #232136   #232136   #232136
 #client.background       #c8c8e5
+
+# class                 border  backgr. text    indicator child_border
+client.focused          #232136 #232136 #c8c8e5   #232136   #232136 
+client.focused_inactive #232136 #232136 #6e6a86   #232136   #232136 
+client.unfocused        #232136 #232136 #6e6a86   #232136   #232136 
+client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
+client.placeholder      #232136 #232136 #232136   #232136   #232136
+client.background       #c8c8e5
 
