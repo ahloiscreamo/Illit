@@ -28,7 +28,7 @@ floating_modifier Mod1
 bindsym Mod1+Menu exec /home/ahloi/move_cursor.sh
 
 # start a terminal
-bindsym Mod1+Return exec Alacritty
+bindsym Mod1+Return exec alacritty
 
 # use hints
 exec for id in $(xinput list | grep "ydotool.*pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id 'libinput Accel Profile Enabled' 0, 1; done
@@ -71,6 +71,7 @@ gaps top 40
 #for_window [class="kitty"] floating enable, border normal 0
 for_window [class="kitty"] border normal 0
 for_window [class="Alacritty"] border normal 0
+for_window [class="wezterm"] border normal 0
 for_window [class="Surf"] border pixel 0, floating enable
 for_window [window_role="About"] floating enable
 #for_window [class="mpv"] floating enable, border pixel 3, move absolute position center
@@ -286,18 +287,18 @@ bindsym Mod1+Shift+Up resize shrink width $x_spd px or $x_spd ppt, resize shrink
 bindsym Mod1+Shift+Down resize grow width $x_spd px or $x_spd ppt, resize grow height $x_spd px or $x_spd ppt, move left $hx_spd px, move up $hx_spd px
 
 # class                 border  backgr. text    indicator child_border
-#client.focused          #c4a7e7 #c4a7e7 #7550a5   #c4a7e7   #c4a7e7
-#client.focused_inactive #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97
-#client.unfocused        #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97 
-#client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
-#client.placeholder      #232136 #232136 #232136   #232136   #232136
-#client.background       #c8c8e5
-
-# class                 border  backgr. text    indicator child_border
-client.focused          #232136 #232136 #c8c8e5   #232136   #232136 
-client.focused_inactive #232136 #232136 #6e6a86   #232136   #232136 
-client.unfocused        #232136 #232136 #6e6a86   #232136   #232136 
+client.focused          #c4a7e7 #c4a7e7 #7550a5   #c4a7e7   #c4a7e7
+client.focused_inactive #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97
+client.unfocused        #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97 
 client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
 client.placeholder      #232136 #232136 #232136   #232136   #232136
 client.background       #c8c8e5
+
+# class                 border  backgr. text    indicator child_border
+#client.focused          #232136 #232136 #c8c8e5   #232136   #232136 
+#client.focused_inactive #232136 #232136 #6e6a86   #232136   #232136 
+#client.unfocused        #232136 #232136 #6e6a86   #232136   #232136 
+#client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
+#client.placeholder      #232136 #232136 #232136   #232136   #232136
+#client.background       #c8c8e5
 

@@ -1,0 +1,10 @@
+[flavor]
+dark = "rose-pine-moon"
+
+# Sets the border color for the file manager (where files are listed)
+[mgr]
+border = { fg = "black" }
+
+# Sets the border color for the confirmation dialog
+[confirm]
+border = { fg = "black" }

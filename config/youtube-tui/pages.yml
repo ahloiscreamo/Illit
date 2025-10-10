@@ -1,0 +1,88 @@
+main_menu:
+  layout:
+  - type: NonCenteredRow
+    items:
+    - SearchBar
+    - SearchFilters
+  - type: CenteredRow
+    items:
+    - Library
+    - Feed
+    - History
+  - type: NonCenteredRow
+    items:
+    - ItemList
+  - type: NonCenteredRow
+    items:
+    - MessageBar
+  message: Loading main menu...
+  command: key Esc 0 ;; key Down 0 ;; key Down 0 ;; key Enter 0
+feed:
+  layout:
+  - type: NonCenteredRow
+    items:
+    - SearchBar
+    - SearchFilters
+  - type: CenteredRow
+    items:
+    - Library
+    - Feed
+    - History
+  - type: NonCenteredRow
+    items:
+    - ChannelList
+  - type: NonCenteredRow
+    items:
+    - VideoList
+  - type: NonCenteredRow
+    items:
+    - MessageBar
+  message: Loading feed...
+  command: key Esc 0 ;; key Down 0 ;; key Down 0 ;; key Enter 0
+search:
+  layout:
+  - type: NonCenteredRow
+    items:
+    - SearchBar
+    - SearchFilters
+  - type: NonCenteredRow
+    items:
+    - ItemList
+  - type: NonCenteredRow
+    items:
+    - MessageBar
+  message: Loading search results...
+  command: key Esc 0 ;; key Down 0 ;; key Enter 0
+singleitem:
+  layout:
+  - type: NonCenteredRow
+    items:
+    - SearchBar
+    - SearchFilters
+  - type: NonCenteredRow
+    items:
+    - SingleItemInfo
+  - type: NonCenteredRow
+    items:
+    - MessageBar
+  message: Loading item details...
+  command: key Esc 0 ;; key Down 0 ;; key Enter 0
+channeldisplay:
+  layout:
+  - type: NonCenteredRow
+    items:
+    - SearchBar
+    - SearchFilters
+  - type: CenteredRow
+    items:
+    - ChannelMain
+    - ChannelVideos
+    - ChannelPlaylists
+  - type: NonCenteredRow
+    items:
+    - ChannelDisplay
+  - type: NonCenteredRow
+    items:
+    - MessageBar
+  message: Loading channel details...
+  command: key Esc 0 ;; key Down 0 ;; key Enter 0 ;; key Up 0

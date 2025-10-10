@@ -1,0 +1,14 @@
+[mgr]
+ratio          = [ 0, 1, 1 ]
+
+[preview]
+wrap            = "yes"
+tab_size        = 2
+max_width       = 2400
+max_height      = 3500
+cache_dir       = ""
+image_delay     = 0
+image_filter    = "lanczos3"
+image_quality   = 85
+ueberzug_scale  = 1
+ueberzug_offset = [ 0, 0, 0, 0 ]

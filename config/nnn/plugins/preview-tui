@@ -107,7 +107,7 @@ ENVVARS=(
   "NNN_PISTOL=${NNN_PISTOL:-0}"                            # use pistol
   "NNN_ICONLOOKUP=${NNN_ICONLOOKUP:-0}"                    # use .iconlookup
   "NNN_PAGER=${NNN_PAGER:-less -P?n -R -C}"                # pager options
-  "NNN_BATTHEME=${NNN_BATTHEME:-Rose-Pine-Moon}"           # bat theme
+  "NNN_BATTHEME=${NNN_BATTHEME:-Rose-Pine-Moon}"                     # bat theme
   "NNN_BATSTYLE=${NNN_BATSTYLE:-numbers}"                  # bat style
   "NNN_PREVIEWWIDTH=${NNN_PREVIEWWIDTH:-1920}"             # width of generated preview images
   "NNN_PREVIEWHEIGHT=${NNN_PREVIEWHEIGHT:-1080}"           # height of generated preview images
@@ -160,6 +160,8 @@ start_preview() {
         exists mpv && ENVVARS+=("NNN_PREVIEWVIDEO=sixel")
     elif [ -n "$WT_SESSION" ]; then
         NNN_TERMINAL=winterm
+    elif [ "$TERM" = "alacritty" ]; then
+        NNN_TERMINAL=alacritty
     else
         NNN_TERMINAL="${NNN_TERMINAL:-xterm}"
     fi
@@ -188,7 +190,7 @@ start_preview() {
             kitty @ goto-layout splits
             # Trying to use kitty's integrated window management as the split window.
             kitty @ launch --no-response --title "preview-tui" --keep-focus \
-                --cwd "$PWD" "${ENVVARS[@]}" --location "${NNN_SPLIT}split" "$0" "$1" ;;
+                --cwd "$PWD" "${ENVVARS[@]}" --location "${NNN_SPLIT}split" /usr/bin/env bash "$0" "$1" ;;
         wezterm)
             export "${ENVVARS[@]}"
             if [ "$NNN_SPLIT" = "v" ]; then split="--horizontal"; else split="--bottom"; fi

@@ -1,0 +1,72 @@
+global:
+  'c':
+    2: cp ${url}
+  'f':
+    2: run ${browser} '${url}'
+search:
+  'p':
+    2: run mpv '${hover-url}'
+  'a':
+    2: run ${terminal-emulator} mpv '${hover-url}' --no-video
+  'A':
+    1: run ${terminal-emulator} mpv '${hover-url}' --no-video --loop-playlist=inf --shuffle
+popular:
+  'a':
+    2: run ${terminal-emulator} mpv '${hover-url}' --no-video
+  'p':
+    2: run mpv '${hover-url}'
+  'A':
+    1: run ${terminal-emulator} mpv '${hover-url}' --no-video --loop-playlist=inf --shuffle
+trending:
+  'A':
+    1: run ${terminal-emulator} mpv '${hover-url}' --no-video --loop-playlist=inf --shuffle
+  'p':
+    2: run mpv '${hover-url}'
+  'a':
+    2: run ${terminal-emulator} mpv '${hover-url}' --no-video
+video: {}
+playlist:
+  'A':
+    1: run ${terminal-emulator} mpv '${hover-url}' --no-video --loop-playlist=inf --shuffle
+  'a':
+    2: run ${terminal-emulator} mpv '${hover-url}' --no-video
+  'p':
+    2: run mpv '${hover-url}'
+channel_main: {}
+channel_videos:
+  'a':
+    2: run ${terminal-emulator} mpv '${hover-url}' --no-video
+  'p':
+    2: run mpv '${hover-url}'
+  'A':
+    1: run ${terminal-emulator} mpv '${hover-url}' --no-video --loop-playlist=inf --shuffle
+channel_playlists:
+  'p':
+    2: run mpv '${hover-url}'
+  'a':
+    2: run ${terminal-emulator} mpv '${hover-url}' --no-video
+  'A':
+    1: run ${terminal-emulator} mpv '${hover-url}' --no-video --loop-playlist=inf --shuffle
+watchhistory:
+  'p':
+    2: run mpv '${hover-url}'
+  'a':
+    2: run ${terminal-emulator} mpv '${hover-url}' --no-video
+  'A':
+    1: run ${terminal-emulator} mpv '${hover-url}' --no-video --loop-playlist=inf --shuffle
+feed:
+  'p':
+    2: parrun mpv '${hover-video-url}'
+  'P':
+    1: parrun ${terminal-emulator} mpv '${hover-channel-url}/videos' --no-video --loop-playlist=inf --shuffle
+  'A':
+    1: parrun ${terminal-emulator} mpv '${hover-channel-url}/videos' --no-video --loop-playlist=inf --shuffle
+  'a':
+    2: parrun ${terminal-emulator} mpv '${hover-video-url}' --no-video
+library:
+  'a':
+    2: run ${terminal-emulator} mpv '${hover-url}' --no-video
+  'p':
+    2: run mpv '${hover-url}'
+  'A':
+    1: run ${terminal-emulator} mpv '${hover-url}' --no-video --loop-playlist=inf --shuffle

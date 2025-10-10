@@ -1,0 +1,30 @@
+mouse_support: true
+invidious_instance: https://vid.puffyan.us
+write_config: Try
+allow_unicode: true
+message_bar_default: All good :)
+images: Sixels
+refresh_after_modifying_search_filters: true
+syncing:
+  download_images: true
+  sync_channel_info: true
+  sync_channel_cooldown_secs: 86400
+  sync_videos_cooldown_secs: 600
+limits:
+  watch_history: 50
+  search_history: 75
+  commands_history: 75
+textbar_scroll_behaviour: History
+image_index: 4
+provider: YouTube
+search_provider: RustyPipe
+api_key: AIzaSyA3SF-IpbP6gDRmwnDb1ryz9ZnqrM_KBnI
+shell: sh
+legacy_input_handling: false
+env:
+  youtube-downloader: yt-dlp
+  save-path: ~/.local/share/youtube-tui/saved/
+  terminal-emulator: kitty -e
+  browser: firefox
+  download-path: ~/Downloads/%(title)s-%(id)s.%(ext)s
+  video-player: mpv
