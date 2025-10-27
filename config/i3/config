@@ -61,7 +61,7 @@ bindsym Mod1+Ctrl+m exec kunst --music_dir "/mnt/Kingston/Music" --size "280x280
 # gaps default
 gaps inner 20
 #gaps outer 10
-gaps top 40
+gaps top 42
 
 # enable autotiling
 #exec_always --no-startup-id autotiling -w 1 
@@ -72,7 +72,7 @@ gaps top 40
 for_window [class="kitty"] border normal 0
 for_window [class="Alacritty"] border normal 0
 for_window [class="wezterm"] border normal 0
-for_window [class="Surf"] border pixel 0, floating enable
+for_window [class="Surf"] border pixel 0, floating enable, resize set 1200px 900px, move absolute position center
 for_window [window_role="About"] floating enable
 #for_window [class="mpv"] floating enable, border pixel 3, move absolute position center
 for_window [class="mpv"] floating enable, border pixel 3
@@ -200,7 +200,7 @@ set $ws9 "9"
 set $ws10 "10"
 
 #bind program to workspace
-assign [class="kitty"] $ws1
+#assign [class="kitty"] $ws1
 assign [class="firefox"] $ws2
 assign [class="krita"] $ws3
 assign [class="Inkscape"] $ws3
@@ -287,18 +287,18 @@ bindsym Mod1+Shift+Up resize shrink width $x_spd px or $x_spd ppt, resize shrink
 bindsym Mod1+Shift+Down resize grow width $x_spd px or $x_spd ppt, resize grow height $x_spd px or $x_spd ppt, move left $hx_spd px, move up $hx_spd px
 
 # class                 border  backgr. text    indicator child_border
-client.focused          #c4a7e7 #c4a7e7 #7550a5   #c4a7e7   #c4a7e7
-client.focused_inactive #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97
-client.unfocused        #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97 
-client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
-client.placeholder      #232136 #232136 #232136   #232136   #232136
-client.background       #c8c8e5
-
-# class                 border  backgr. text    indicator child_border
-#client.focused          #232136 #232136 #c8c8e5   #232136   #232136 
-#client.focused_inactive #232136 #232136 #6e6a86   #232136   #232136 
-#client.unfocused        #232136 #232136 #6e6a86   #232136   #232136 
+#client.focused          #c4a7e7 #c4a7e7 #7550a5   #c4a7e7   #c4a7e7
+#client.focused_inactive #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97
+#client.unfocused        #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97 
 #client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
 #client.placeholder      #232136 #232136 #232136   #232136   #232136
 #client.background       #c8c8e5
+
+# class                 border  backgr. text    indicator child_border
+client.focused          #232136 #232136 #c8c8e5   #232136   #232136 
+client.focused_inactive #232136 #232136 #6e6a86   #232136   #232136 
+client.unfocused        #232136 #232136 #6e6a86   #232136   #232136 
+client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
+client.placeholder      #232136 #232136 #232136   #232136   #232136
+client.background       #c8c8e5
 

@@ -420,10 +420,16 @@ clean_upp() {
 
 function draw_upp () {
     # args: $1=x $2=y $3=max-width $4=max-height $5=path
-    local x="${1:-0}"
-    local y="${2:-0}"
-    local max_w="${3:-40}"
-    local max_h="${4:-20}"
+    # Fine-tuned for fzf --border=double alignment
+    local offset_x=2    # shifts image slightly right (fixes left overlap)
+    local offset_y=1    # optional, keeps vertical consistent
+    local pad_right=2   # expands width to fill right gap
+
+    local x=$(( ${1:-0} + offset_x ))
+    local y=$(( ${2:-0} + offset_y ))
+    local max_w=$(( ${3:-40} + pad_right ))
+    local max_h=${4:-20}
+
     local img="$5"
 
     ueberzugpp cmd -s "$SOCKET" -i fzfpreview -a add \
@@ -432,6 +438,7 @@ function draw_upp () {
         --max-height "$max_h" \
         -f "$img"
 }
+
 ################# UBERZUG ######################
 declare -r -x UEBERZUG_FIFO_MAGIC_TAPE="$(mktemp --dry-run )"
 function start_ueberzug {

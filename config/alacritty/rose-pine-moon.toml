@@ -2,17 +2,17 @@
 # https://github.com/alacritty/alacritty/blob/master/extra/man/alacritty.5.scd#colors
 
 [colors.primary]
-foreground = "#e0def4"
+foreground = "#c8c8e5"
 background = "#232136"
 dim_foreground = "#908caa"
-bright_foreground = "#e0def4"
+bright_foreground = "#c8c8e5"
 
 [colors.cursor]
-text = "#e0def4"
+text = "#c8c8e5"
 cursor = "#56526e"
 
 [colors.vi_mode_cursor]
-text = "#e0def4"
+text = "#c8c8e5"
 cursor = "#56526e"
 
 [colors.search.matches]
@@ -36,11 +36,11 @@ foreground = "None"
 background = "None"
 
 [colors.footer_bar]
-foreground = "#e0def4"
+foreground = "#c8c8e5"
 background = "#2a273f"
 
 [colors.selection]
-text = "#e0def4"
+text = "#c8c8e5"
 background = "#44415a"
 
 [colors.normal]
@@ -51,7 +51,7 @@ yellow = "#f6c177"
 blue = "#9ccfd8"
 magenta = "#c4a7e7"
 cyan = "#ea9a97"
-white = "#e0def4"
+white = "#c8c8e5"
 
 [colors.bright]
 black = "#6e6a86"
@@ -61,7 +61,7 @@ yellow = "#f6c177"
 blue = "#9ccfd8"
 magenta = "#c4a7e7"
 cyan = "#ea9a97"
-white = "#e0def4"
+white = "#c8c8e5"
 
 [colors.dim]
 black = "#6e6a86"
@@ -71,5 +71,5 @@ yellow = "#f6c177"
 blue = "#9ccfd8"
 magenta = "#c4a7e7"
 cyan = "#ea9a97"
-white = "#e0def4"
+white = "#c8c8e5"
 

@@ -3,14 +3,19 @@ program = "/bin/fish"
 args = ["-l"]
 
 [window]
-padding = { x = 20,y = 20 }
-dynamic_padding = false
+padding = { x = 30,y = 30 }
+dynamic_padding = true
 
 [font]
-normal = { family = "Maple Mono NF", style = "Regular" }
-bold   = { family = "Maple Mono NF", style = "Bold" }
+normal = { family = "Maple Mono NF", style = "Medium" }
+bold   = { family = "Maple Mono NF", style = "ExtraBold" }
 italic = { family = "Maple Mono NF", style = "Italic" }
 bold_italic = { family = "Maple Mono NF", style = "Bold Italic" }
+
+size = 12.0
+
+[cursor]
+style = { blinking = "On" }
 
 [general]
 # Theme

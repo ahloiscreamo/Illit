@@ -32,7 +32,8 @@ set -gx FZF_DEFAULT_OPTS '
   --color=prompt:#eb6f92,spinner:#c4a7e7,pointer:#c4a7e7,header:#9ccfd8
   --color=border:#393552,label:#44415a,query:#6e6a86
   --border="rounded" --border-label="" --preview-window="noborder" --prompt="> "
-  --marker=">" --pointer="◆" --separator="─" --scrollbar="│"'
+  --marker=">" --pointer="◆" --separator="─" --scrollbar="│"
+  --style full'
 
 # yt-x FZF Options (Extends defaults and only overrides specific colours/settings)
 set -gx YT_X_FZF_OPTS $FZF_DEFAULT_OPTS'
@@ -102,6 +103,7 @@ alias ls="eza --icons --group-directories-first -s=type"
 alias ncdu="ncdu --color dark"
 alias archwiki-offline="archwiki-offline -o w3m -m fzf"
 alias archwiki="archwiki-offline"
+alias ffind="find ~ -type f | fzf --preview 'fzf-preview.sh {}' --bind 'enter:execute(vim {})' --bind 'focus:transform-header:file --brief {}'"
 alias muc="muc --file ~/.local/share/fish/fish_history --count 10 --pretty --shell=\"fish\""
 alias tap="tap -db --color fg=c8c8e5,bg=232136,hl=c4a7e7,prompt=3e8fb0,header=ea9a97,header+=eb6f92,progress=f6c177,info=3e8fb0,err=eb6f92"
 
@@ -112,6 +114,14 @@ alias tap="tap -db --color fg=c8c8e5,bg=232136,hl=c4a7e7,prompt=3e8fb0,header=ea
 function ddgr
         env DDGR_EXCLUSIVE_BROWSER=w3m ddgr $argv
 end
+
+# Function to launch reddix and force it to use surf for opening links
+function reddix
+    env BROWSER=launch-nsxiv reddix $argv
+end
+
+# Ensure global BROWSER is unset to favor xdg-open
+set -e BROWSER
 
 # Set up fzf key bindings (must be run *after* FZF_DEFAULT_OPTS is set)
 fzf --fish | source
@@ -127,3 +137,6 @@ starship init fish | source
 set -U fish_color_command 9ccfd8
 set -U fish_color_match --background=blue
 set -U fish_color_user green
+
+# === Zoxide  ===
+zoxide init fish | source

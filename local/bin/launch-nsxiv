@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Open Reddit images or gallery in nsxiv via gallery-dl (OAuth version)
+
+for cmd in gallery-dl nsxiv mktemp find xargs; do
+    command -v $cmd >/dev/null 2>&1 || { echo "Error: $cmd not found" >&2; exit 1; }
+done
+
+if [ $# -eq 0 ]; then
+    echo "Usage: launch-nsxiv <reddit_post_url>"
+    exit 1
+fi
+
+url="$1"
+tmpdir=$(mktemp -d /tmp/reddix.XXXXXX)
+
+gallery-dl -R 3 -d "$tmpdir" --no-mtime "$url" || { echo "Download failed"; exit 1; }
+
+shopt -s nullglob
+images=("$tmpdir"/*)
+if [ ${#images[@]} -eq 0 ]; then
+    echo "No images downloaded from $url"
+    rm -rf "$tmpdir"
+    exit 1
+fi
+
+find "$tmpdir" -type f -print0 | xargs -0 nsxiv -a
+
+rm -rf "$tmpdir"
