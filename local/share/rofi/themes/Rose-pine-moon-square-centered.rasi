@@ -8,7 +8,7 @@
  */
 
 configuration {
-  font: "Maple Mono NF Bold 14";
+  font: "Maple Mono NF CN Medium 14";
 
   drun {
     display-name: "LAUNCH";

@@ -1,17 +1,23 @@
 local wezterm = require 'wezterm'
 local config = wezterm.config_builder()
 
+-- === Fish ===
+config.default_prog = { "/usr/bin/fish", "-l" }
+
 -- === Appearance ===
-config.font = wezterm.font 'Maple Mono NF'
-config.font_size = 11.5
+config.font = wezterm.font 'Maple Mono NF CN'
+config.font_size = 12
+config.freetype_load_target = "Light"
+config.freetype_render_target = "HorizontalLcd"
+config.freetype_load_flags = "FORCE_AUTOHINT"
 config.color_scheme = 'rose-pine-moon'
 
 -- === Padding ===
 config.window_padding = {
-  left = 15,
-  right = 15,
-  top = 15,
-  bottom = 15,
+  left = 30,
+  right = 30,
+  top = 30,
+  bottom = 30,
 }
 
 -- === Tab-bar ===

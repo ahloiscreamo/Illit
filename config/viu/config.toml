@@ -1,0 +1,519 @@
+# ==============================================================================
+#
+# ██╗░░░██╗██╗██╗░░░██╗
+# ██║░░░██║██║██║░░░██║
+# ╚██╗░██╔╝██║██║░░░██║
+# ░╚████╔╝░██║██║░░░██║
+# ░░╚██╔╝░░██║╚██████╔╝
+# ░░░╚═╝░░░╚═╝░╚═════╝░
+#
+# ==============================================================================
+# This is the Viu configuration file. It uses the TOML format.
+# You can modify these values to customize the behavior of Viu.
+# For more information on the available options, please refer to the
+# official documentation on GitHub.
+# ==============================================================================
+
+
+#
+# General
+#
+[general]
+
+# The duration desktop notifications should be displayed before they disappear
+# in minutes
+# Type: integer
+# Default: 5
+desktop_notification_duration = 5
+
+# The preferred watch history tracker (local,remote) in cases of conflicts
+# Possible values: [ "local", "remote" ]
+# Default: "local"
+preferred_tracker = "local"
+
+# The pygment style to use
+# Possible values: [ "abap", "algol", "algol_nu", "arduino", "autumn", "bw",
+# "borland", "coffee", "colorful", "default", "dracula", "emacs",
+# "friendly_grayscale", "friendly", "fruity", "github-dark", "gruvbox-dark",
+# "gruvbox-light", "igor", "inkpot", "lightbulb", "lilypond", "lovelace",
+# "manni", "material", "monokai", "murphy", "native", "nord-darker", "nord",
+# "one-dark", "paraiso-dark", "paraiso-light", "pastie", "perldoc",
+# "rainbow_dash", "rrt", "sas", "solarized-dark", "solarized-light",
+# "staroffice", "stata-dark", "stata-light", "tango", "trac", "vim", "vs",
+# "xcode", "zenburn" ]
+# Default: "github-dark"
+pygment_style = "default"
+
+# The spinner to use
+# Possible values: [ "dots", "dots2", "dots3", "dots4", "dots5", "dots6",
+# "dots7", "dots8", "dots9", "dots10", "dots11", "dots12", "dots8Bit", "line",
+# "line2", "pipe", "simpleDots", "simpleDotsScrolling", "star", "star2",
+# "flip", "hamburger", "growVertical", "growHorizontal", "balloon",
+# "balloon2", "noise", "bounce", "boxBounce", "boxBounce2", "triangle", "arc",
+# "circle", "squareCorners", "circleQuarters", "circleHalves", "squish",
+# "toggle", "toggle2", "toggle3", "toggle4", "toggle5", "toggle6", "toggle7",
+# "toggle8", "toggle9", "toggle10", "toggle11", "toggle12", "toggle13",
+# "arrow", "arrow2", "arrow3", "bouncingBar", "bouncingBall", "smiley",
+# "monkey", "hearts", "clock", "earth", "material", "moon", "runner", "pong",
+# "shark", "dqpb", "weather", "christmas", "grenade", "point", "layer",
+# "betaWave", "aesthetic" ]
+# Default: "smiley"
+preferred_spinner = "smiley"
+
+# The media database API to use (e.g., 'anilist', 'jikan').
+# Possible values: [ "anilist", "jikan" ]
+# Default: "anilist"
+media_api = "anilist"
+
+# The default anime provider to use for scraping.
+# Possible values: [ "allanime", "animepahe", "animeunity" ]
+# Default: "allanime"
+provider = "allanime"
+
+# The interactive selector tool to use for menus.
+# Possible values: [ "default", "fzf", "rofi" ]
+selector = "fzf"
+
+# Automatically select the best-matching search result from a provider.
+# Type: boolean
+# Default: true
+auto_select_anime_result = true
+
+# Display emoji icons in the user interface.
+# Type: boolean
+# Default: true
+icons = true
+
+# Type of preview to display in selectors.
+# Possible values: [ "full", "text", "image", "none" ]
+preview = "full"
+
+# Whether to scale up images rendered with icat to fill the preview area. When
+# using the 'full' preview type in a landscape window, enabling this may
+# reduce the amount of text information displayed.
+# Type: boolean
+# Default: false
+preview_scale_up = false
+
+# The command-line tool to use for rendering images in the terminal.
+# Possible values: [ "icat", "chafa", "imgcat" ]
+image_renderer = "chafa"
+
+# The external application to use for viewing manga pages.
+# Possible values: [ "feh", "icat" ]
+# Default: "feh"
+manga_viewer = "feh"
+
+# Automatically check for new versions of Viu on startup.
+# Type: boolean
+# Default: true
+check_for_updates = true
+
+# The interval in hours to check for updates
+# Type: float
+# Default: 12
+update_check_interval = 12
+
+# Enable caching of network requests to speed up subsequent operations.
+# Type: boolean
+# Default: true
+cache_requests = true
+
+# Maximum lifetime for a cached request in DD:HH:MM format.
+# Type: string
+# Default: "03:00:00"
+max_cache_lifetime = "03:00:00"
+
+# Attempt to normalize provider titles to match AniList titles.
+# Type: boolean
+# Default: true
+normalize_titles = true
+
+# Enable Discord Rich Presence to show your current activity.
+# Type: boolean
+# Default: false
+discord = false
+
+# Number of recently watched anime to keep in history.
+# Type: integer (Range: 0-N/A)
+# Default: 50
+recent = 50
+
+#
+# Stream
+#
+[stream]
+
+# The media player to use for streaming.
+# Possible values: [ "mpv", "vlc" ]
+# Default: "mpv"
+player = "mpv"
+
+# Preferred stream quality.
+# Possible values: [ "360", "480", "720", "1080" ]
+# Default: "1080"
+quality = "1080"
+
+# Preferred audio/subtitle language type.
+# Possible values: [ "sub", "dub" ]
+# Default: "sub"
+translation_type = "sub"
+
+# The default server to use from a provider. 'top' uses the first available.
+# Possible values: [ "TOP", "sharepoint", "dropbox", "gogoanime",
+# "weTransfer", "wixmp", "Yt", "mp4-upload", "kwik", "vixcloud" ]
+# Default: "TOP"
+server = "TOP"
+
+# Automatically play the next episode when the current one finishes.
+# Type: boolean
+# Default: false
+auto_next = false
+
+# Automatically resume playback from the last known episode and position.
+# Type: boolean
+# Default: true
+continue_from_watch_history = true
+
+# Which watch history to prioritize: local file or remote AniList progress.
+# Possible values: [ "local", "remote" ]
+# Default: "local"
+preferred_watch_history = "local"
+
+# Automatically skip openings/endings if skip data is available.
+# Type: boolean
+# Default: false
+auto_skip = false
+
+# Percentage of an episode to watch before it's marked as complete.
+# Type: integer (Range: 0-100)
+# Default: 80
+episode_complete_at = 80
+
+# The format selection string for yt-dlp.
+# Type: string
+# Default: "best[height<=1080]/bestvideo[height<=1080]+bestaudio/best"
+ytdlp_format = "best[height<=1080]/bestvideo[height<=1080]+bestaudio/best"
+
+# Prevent updating AniList progress to a lower episode number.
+# Type: boolean
+# Default: true
+force_forward_tracking = true
+
+# Default behavior for tracking progress on AniList.
+# Possible values: [ "track", "disabled", "prompt" ]
+# Default: "prompt"
+default_media_list_tracking = "prompt"
+
+# Preferred language code for subtitles (e.g., 'en', 'es').
+# Type: string
+# Default: "eng"
+sub_lang = "eng"
+
+# Use IPC communication with the player for advanced features like episode
+# navigation.
+# Type: boolean
+use_ipc = true
+
+#
+# Downloads
+#
+[downloads]
+
+# The downloader to use
+# Possible values: [ "auto", "default", "yt-dlp" ]
+# Default: "auto"
+downloader = "auto"
+
+# The default directory to save downloaded anime.
+# Type: path
+downloads_dir = "/home/ahloi/Videos/viu"
+
+# Enable download tracking and management
+# Type: boolean
+# Default: true
+enable_tracking = true
+
+# Maximum number of concurrent downloads
+# Type: integer (Range: 1-N/A)
+# Default: 3
+max_concurrent_downloads = 3
+
+# Number of retry attempts for failed downloads
+# Type: integer (Range: 0-N/A)
+# Default: 2
+max_retry_attempts = 2
+
+# Delay between retry attempts in seconds
+# Type: integer (Range: 0-N/A)
+# Default: 60
+retry_delay = 60
+
+# Automatically merge subtitles into the video file after download.
+# Type: boolean
+# Default: true
+merge_subtitles = true
+
+# Delete the original video and subtitle files after a successful merge.
+# Type: boolean
+# Default: true
+cleanup_after_merge = true
+
+# The default server to use from a provider. 'top' uses the first available.
+# Possible values: [ "TOP", "sharepoint", "dropbox", "gogoanime",
+# "weTransfer", "wixmp", "Yt", "mp4-upload", "kwik", "vixcloud" ]
+# Default: "TOP"
+server = "TOP"
+
+# The format selection string for yt-dlp.
+# Type: string
+# Default: "best[height<=1080]/bestvideo[height<=1080]+bestaudio/best"
+ytdlp_format = "best[height<=1080]/bestvideo[height<=1080]+bestaudio/best"
+
+# Whether or not to check certificates
+# Type: boolean
+# Default: true
+no_check_certificate = true
+
+#
+# Anilist
+#
+[anilist]
+
+# Number of items to fetch per page from AniList.
+# Type: integer (Range: 1-50)
+# Default: 15
+per_page = 15
+
+# Default sort order for AniList search results.
+# Possible values: [ "ID", "ID_DESC", "TITLE_ROMAJI", "TITLE_ROMAJI_DESC",
+# "TITLE_ENGLISH", "TITLE_ENGLISH_DESC", "TITLE_NATIVE", "TITLE_NATIVE_DESC",
+# "TYPE", "TYPE_DESC", "FORMAT", "FORMAT_DESC", "START_DATE",
+# "START_DATE_DESC", "END_DATE", "END_DATE_DESC", "SCORE", "SCORE_DESC",
+# "POPULARITY", "POPULARITY_DESC", "TRENDING", "TRENDING_DESC", "EPISODES",
+# "EPISODES_DESC", "DURATION", "DURATION_DESC", "STATUS", "STATUS_DESC",
+# "CHAPTERS", "CHAPTERS_DESC", "VOLUMES", "VOLUMES_DESC", "UPDATED_AT",
+# "UPDATED_AT_DESC", "SEARCH_MATCH", "FAVOURITES", "FAVOURITES_DESC" ]
+# Default: "SEARCH_MATCH"
+sort_by = "SEARCH_MATCH"
+
+# Default medai list sort order for AniList search results.
+# Possible values: [ "MEDIA_ID", "MEDIA_ID_DESC", "SCORE", "SCORE_DESC",
+# "STATUS", "STATUS_DESC", "PROGRESS", "PROGRESS_DESC", "PROGRESS_VOLUMES",
+# "PROGRESS_VOLUMES_DESC", "REPEAT", "REPEAT_DESC", "PRIORITY",
+# "PRIORITY_DESC", "STARTED_ON", "STARTED_ON_DESC", "FINISHED_ON",
+# "FINISHED_ON_DESC", "ADDED_TIME", "ADDED_TIME_DESC", "UPDATED_TIME",
+# "UPDATED_TIME_DESC", "MEDIA_TITLE_ROMAJI", "MEDIA_TITLE_ROMAJI_DESC",
+# "MEDIA_TITLE_ENGLISH", "MEDIA_TITLE_ENGLISH_DESC", "MEDIA_TITLE_NATIVE",
+# "MEDIA_TITLE_NATIVE_DESC", "MEDIA_POPULARITY", "MEDIA_POPULARITY_DESC",
+# "MEDIA_SCORE", "MEDIA_SCORE_DESC", "MEDIA_START_DATE",
+# "MEDIA_START_DATE_DESC", "MEDIA_RATING", "MEDIA_RATING_DESC" ]
+# Default: "MEDIA_POPULARITY_DESC"
+media_list_sort_by = "MEDIA_POPULARITY_DESC"
+
+# Preferred language for anime titles from AniList.
+# Possible values: [ "english", "romaji" ]
+# Default: "english"
+preferred_language = "english"
+
+#
+# Jikan
+#
+[jikan]
+
+# Number of items to fetch per page from AniList.
+# Type: integer (Range: 1-50)
+# Default: 15
+per_page = 15
+
+# Default sort order for AniList search results.
+# Possible values: [ "ID", "ID_DESC", "TITLE_ROMAJI", "TITLE_ROMAJI_DESC",
+# "TITLE_ENGLISH", "TITLE_ENGLISH_DESC", "TITLE_NATIVE", "TITLE_NATIVE_DESC",
+# "TYPE", "TYPE_DESC", "FORMAT", "FORMAT_DESC", "START_DATE",
+# "START_DATE_DESC", "END_DATE", "END_DATE_DESC", "SCORE", "SCORE_DESC",
+# "POPULARITY", "POPULARITY_DESC", "TRENDING", "TRENDING_DESC", "EPISODES",
+# "EPISODES_DESC", "DURATION", "DURATION_DESC", "STATUS", "STATUS_DESC",
+# "CHAPTERS", "CHAPTERS_DESC", "VOLUMES", "VOLUMES_DESC", "UPDATED_AT",
+# "UPDATED_AT_DESC", "SEARCH_MATCH", "FAVOURITES", "FAVOURITES_DESC" ]
+# Default: "SEARCH_MATCH"
+sort_by = "SEARCH_MATCH"
+
+# Default medai list sort order for AniList search results.
+# Possible values: [ "MEDIA_ID", "MEDIA_ID_DESC", "SCORE", "SCORE_DESC",
+# "STATUS", "STATUS_DESC", "PROGRESS", "PROGRESS_DESC", "PROGRESS_VOLUMES",
+# "PROGRESS_VOLUMES_DESC", "REPEAT", "REPEAT_DESC", "PRIORITY",
+# "PRIORITY_DESC", "STARTED_ON", "STARTED_ON_DESC", "FINISHED_ON",
+# "FINISHED_ON_DESC", "ADDED_TIME", "ADDED_TIME_DESC", "UPDATED_TIME",
+# "UPDATED_TIME_DESC", "MEDIA_TITLE_ROMAJI", "MEDIA_TITLE_ROMAJI_DESC",
+# "MEDIA_TITLE_ENGLISH", "MEDIA_TITLE_ENGLISH_DESC", "MEDIA_TITLE_NATIVE",
+# "MEDIA_TITLE_NATIVE_DESC", "MEDIA_POPULARITY", "MEDIA_POPULARITY_DESC",
+# "MEDIA_SCORE", "MEDIA_SCORE_DESC", "MEDIA_START_DATE",
+# "MEDIA_START_DATE_DESC", "MEDIA_RATING", "MEDIA_RATING_DESC" ]
+# Default: "MEDIA_POPULARITY_DESC"
+media_list_sort_by = "MEDIA_POPULARITY_DESC"
+
+# Preferred language for anime titles from AniList.
+# Possible values: [ "english", "romaji" ]
+# Default: "english"
+preferred_language = "english"
+
+#
+# Fzf
+#
+[fzf]
+
+# The FZF options, formatted with leading tabs for the config file.
+# Type: string
+opts = """
+--color=fg:#c8c8e5,fg+:#c8c8e5,bg:#232136,bg+:#393c51
+--color=hl:#9ccfd8,hl+:#3e8fb0,info:#f6c177,marker:#9ccfd8
+--color=prompt:#eb6f92,spinner:#c4a7e7,pointer:#c4a7e7,header:#ea9a97
+--color=border:#393c51,label:#393c51,query:#393c51
+--border=rounded
+--border-label=''
+--prompt='>'
+--marker='>'
+--pointer='◆'
+--separator='─'
+--scrollbar='│'
+--layout=reverse
+--cycle
+--info=hidden
+--height=100%
+--bind=right:accept,ctrl-/:toggle-preview,ctrl-space:toggle-wrap+toggle-preview-wrap
+--no-margin
++m
+-i
+--exact
+--tabstop=1
+--preview-window=border-rounded,left,35%,wrap
+--wrap
+"""
+
+# RGB color for the main TUI header.
+# Type: string
+# Default: "95,135,175"
+header_color = "62,143,176"
+
+# The ASCII art to display as a header in the FZF interface.
+# Type: string
+header_ascii_art = """
+██╗░░░██╗██╗██╗░░░██╗
+██║░░░██║██║██║░░░██║
+╚██╗░██╔╝██║██║░░░██║
+░╚████╔╝░██║██║░░░██║
+░░╚██╔╝░░██║╚██████╔╝
+░░░╚═╝░░░╚═╝░╚═════╝░
+"""
+
+# RGB color for preview pane headers.
+# Type: string
+# Default: "215,0,95"
+preview_header_color = "235,111,146"
+
+# RGB color for preview pane separators.
+# Type: string
+# Default: "208,208,208"
+preview_separator_color = "57,60,81"
+
+#
+# Rofi
+#
+[rofi]
+
+# Path to the main Rofi theme file.
+# Type: path
+theme_main = "/usr/lib/python3.13/site-packages/viu_media/assets/defaults/rofi-themes/main.rasi"
+
+# Path to the Rofi theme file for previews.
+# Type: path
+theme_preview = "/usr/lib/python3.13/site-packages/viu_media/assets/defaults/rofi-themes/preview.rasi"
+
+# Path to the Rofi theme file for confirmation prompts.
+# Type: path
+theme_confirm = "/usr/lib/python3.13/site-packages/viu_media/assets/defaults/rofi-themes/confirm.rasi"
+
+# Path to the Rofi theme file for user input prompts.
+# Type: path
+theme_input = "/usr/lib/python3.13/site-packages/viu_media/assets/defaults/rofi-themes/input.rasi"
+
+#
+# Mpv
+#
+[mpv]
+
+# Comma-separated arguments to pass to the MPV player.
+# Type: string
+# Default: ""
+args = ""
+
+# Comma-separated arguments to prepend before the MPV command.
+# Type: string
+# Default: ""
+pre_args = ""
+
+#
+# Media_Registry
+#
+[media_registry]
+
+# The default directory to save media registry
+# Type: path
+# Default: "/home/ahloi/Videos/viu/.registry"
+media_dir = "/home/ahloi/Videos/viu/.registry"
+
+# The default directory to save media registry index
+# Type: path
+# Default: "/home/ahloi/.config/viu"
+index_dir = "/home/ahloi/.config/viu"
+
+#
+# Sessions
+#
+[sessions]
+
+# The default directory to save sessions.
+# Type: path
+dir = "/home/ahloi/.config/viu/.sessions"
+
+#
+# Worker
+#
+[worker]
+
+# Enable the background worker for notifications and queued downloads.
+# Type: boolean
+# Default: true
+enabled = true
+
+# How often to check for new AniList notifications (in minutes).
+# Type: integer (Range: 1-N/A)
+# Default: 15
+notification_check_interval = 15
+
+# How often to process the download queue (in minutes).
+# Type: integer (Range: 1-N/A)
+# Default: 5
+download_check_interval = 5
+
+# How often to process the failed download queue (in minutes).
+# Type: integer (Range: 1-N/A)
+# Default: 60
+download_check_failed_interval = 60
+
+# Whether to automatically download a new episode that has been notified
+# Type: boolean
+# Default: true
+auto_download_new_episode = true
+
+
+# ==============================================================================
+#
+# HOPE YOU ENJOY VIU AND BE SURE TO STAR THE PROJECT ON GITHUB
+# https://github.com/viu-media/Viu
+#
+# Also join the discord server
+# where the anime tech community lives :)
+# https://discord.gg/C4rhMA4mmK
+#
+# ==============================================================================

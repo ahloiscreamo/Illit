@@ -7,10 +7,10 @@ padding = { x = 30,y = 30 }
 dynamic_padding = true
 
 [font]
-normal = { family = "Maple Mono NF", style = "Medium" }
-bold   = { family = "Maple Mono NF", style = "ExtraBold" }
-italic = { family = "Maple Mono NF", style = "Italic" }
-bold_italic = { family = "Maple Mono NF", style = "Bold Italic" }
+normal = { family = "Maple Mono NF CN", style = "Regular" }
+bold   = { family = "Maple Mono NF CN", style = "Bold" }
+italic = { family = "Maple Mono NF CN", style = "Italic" }
+bold_italic = { family = "Maple Mono NF CN", style = "Bold Italic" }
 
 size = 12.0
 
