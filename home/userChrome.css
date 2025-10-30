@@ -5,6 +5,17 @@
    font-weight: 500 !important;
 }
 
+/* === Toolbar button === */
+.toolbarbutton-badge {
+    /* Change 10px to any smaller font size you prefer */
+    font-size: 10px !important; 
+    
+    /* Optional adjustments if the badge box looks too big/tall */
+    line-height: 10px !important;
+    padding-block: 0 !important;
+    min-width: 14px !important;
+}
+
 /* === URL bar dropdown highlight === */
 .urlbarView-row[selected],
 .urlbarView-row:hover {

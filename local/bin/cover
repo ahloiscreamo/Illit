@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+import os, subprocess, shutil, glob, mutagen, json, time, hashlib
+from mutagen.flac import FLAC
+from mutagen.mp3 import MP3
+from mutagen.id3 import ID3
+
+MPD_MUSIC_DIR = "/mnt/Kingston/Music"
+FALLBACK = os.path.expanduser("~/.config/kunst_kitty/fallback.png")
+TMP_DIR = "/tmp"
+TMP_PREFIX = "kunst_cover_"
+
+def mk_temp_for(song):
+    """
+    Create a deterministic but unique temp filename for a given song file.
+    Uses the file path and its mtime to produce a hash so changing embedded art
+    will produce a new filename (avoid ueberzug caching by path).
+    """
+    if not song:
+        return None
+    try:
+        st = os.stat(song)
+        key = f"{song}:{int(st.st_mtime)}"
+    except Exception:
+        key = f"{song}:{time.time()}"
+    h = hashlib.md5(key.encode()).hexdigest()
+    return os.path.join(TMP_DIR, f"{TMP_PREFIX}{h}.jpg")
+
+def get_current_song():
+    try:
+        rel = subprocess.check_output(
+            ["mpc", "--format", "%file%", "current"],
+            text=True, stderr=subprocess.DEVNULL
+        ).strip()
+        return os.path.join(MPD_MUSIC_DIR, rel) if rel else None
+    except subprocess.CalledProcessError:
+        return None
+
+def extract_cover(song):
+    """
+    Return a path to an image file for the song. If embedded artwork exists,
+    write it to a unique temp file and return that path. Otherwise fall back
+    to folder art or the fallback.
+    """
+    if not song or not os.path.isfile(song):
+        return FALLBACK
+
+    temp_path = mk_temp_for(song)
+    try:
+        audio = mutagen.File(song)
+        if isinstance(audio, FLAC) and getattr(audio, "pictures", []):
+            with open(temp_path, "wb") as f:
+                f.write(audio.pictures[0].data)
+            return temp_path
+
+        if song.lower().endswith(".mp3"):
+            tags = ID3(song)
+            for tag in tags.values():
+                if tag.FrameID == "APIC":
+                    with open(temp_path, "wb") as f:
+                        f.write(tag.data)
+                    return temp_path
+    except Exception:
+        pass
+
+    folder = os.path.dirname(song)
+    for ext in ("*.jpg", "*.png", "*.jpeg"):
+        matches = glob.glob(os.path.join(folder, ext))
+        if matches:
+            return matches[0]
+    return FALLBACK
+
+def show_cover(proc, path):
+    cols, rows = shutil.get_terminal_size(fallback=(80, 24))
+    data = {
+        "action": "add",
+        "identifier": "cover",
+        "x": 0,
+        "y": 0,
+        "max_width": cols,
+        "max_height": rows,
+        "path": path,
+        "scaler": "fit_contain"
+    }
+    proc.stdin.write(json.dumps(data) + "\n")
+    proc.stdin.flush()
+
+def clear_cover(proc):
+    data = {"action": "remove", "identifier": "cover"}
+    proc.stdin.write(json.dumps(data) + "\n")
+    proc.stdin.flush()
+
+def cleanup_old_temp(prev_path, keep_path):
+    """Remove previous temp file if it matches our TMP_PREFIX and is different from keep_path."""
+    try:
+        if prev_path and prev_path != keep_path and os.path.basename(prev_path).startswith(TMP_PREFIX):
+            if os.path.exists(prev_path):
+                os.remove(prev_path)
+    except Exception:
+        pass
+
+def main():
+    print("kunst_ueberzug — running (Ctrl+C to quit)")
+    last = None
+    last_temp = None
+
+    proc = subprocess.Popen(
+        ["ueberzug", "layer", "--silent"],
+        stdin=subprocess.PIPE, text=True
+    )
+
+    # draw initial cover immediately if possible
+    current = get_current_song()
+    if current:
+        cover = extract_cover(current)
+        show_cover(proc, cover)
+        last = current
+        last_temp = cover
+
+    try:
+        while True:
+            subprocess.run(["mpc", "idle", "player"], stdout=subprocess.DEVNULL)
+            # small delay so MPD has time to update file/metadata
+            time.sleep(0.12)
+
+            song = get_current_song()
+            if song != last:
+                cover = extract_cover(song)
+                # remove previous layer then add new one
+                clear_cover(proc)
+                # allow remove to take effect (tiny pause helps)
+                time.sleep(0.05)
+                show_cover(proc, cover)
+
+                # cleanup previous tmp file if it was generated
+                cleanup_old_temp(last_temp, cover)
+
+                last = song
+                last_temp = cover
+
+    except KeyboardInterrupt:
+        clear_cover(proc)
+        proc.terminate()
+
+if __name__ == "__main__":
+    main()
