@@ -1,0 +1,49 @@
+! Sxiv
+Sxiv.bar.font  : MapleMonoNFCN:style=bold:size=9 
+Sxiv.foreground: #c4a7e7
+Sxiv.background: #232136
+
+! Nsxiv
+Nsxiv.bar.font         : MapleMonoNF:size=9 
+Nsxiv.bar.background   : #c4a7e7
+Nsxiv.bar.foreground   : #232136
+Nsxiv.window.foreground: #eb6f92
+Nsxiv.window.background: #232136
+Nsxiv.mark.foreground  : #eb6f92
+
+! Font aliasing
+Xft.autohint: 0
+Xft.antialias: 1
+Xft.hinting: true
+Xft.hintstyle: hintslight
+Xft.dpi: 96
+Xft.rgba: rgb
+Xft.lcdfilter: lcddefault
+
+XTerm*eightBitInput: false
+XTerm*modifyCursorKeys: 1
+XTerm*modifyFunctionKeys: 1
+XTerm*termName: xterm-256color
+
+*background:	#232136
+*foreground:	#e0def4
+*cursorColor:	#e0def4
+*color0:	#232136
+*color1:	#eb6f92
+*color2:    #3e8fb0 
+*color3:    #f6c177
+*color4:	#9ccfd8
+*color5:    #c4a7e7
+*color6:	#ea9a97
+*color7:    #e0def4
+*color8:    #e0def4
+*color9:    #eb6f92
+*color10:   #3e8fb0
+*color11:   #f6c177
+*color12:   #9ccfd8
+*color13:   #c4a7e7
+*color14:   #ea9a97
+*color15:   #e0def4
+*color16:   #c4a7e7
+
+
