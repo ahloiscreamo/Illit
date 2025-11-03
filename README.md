@@ -1,7 +1,7 @@
 # 🌸 Illit Dotfiles 
 ### i3wm | Rosé Pine
 
-My personal dotfiles for **Artix Linux** (runit/pacman), configured with **i3wm** and featuring the comfortable **Rosé Pine** color scheme across all applications since December 2022. 
+My personal dotfiles for **Artix Linux**, configured with **i3wm** and featuring the comfortable **Rosé Pine** color scheme across all applications since December 2022. 
 ---
 
 ## 💻 Screenshots
