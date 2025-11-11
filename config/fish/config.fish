@@ -17,6 +17,9 @@ export NNN_PLUG='a:addtoplaylist;j:autojump;p:preview-tui;l:launch;r:renamer;o:f
 
 # === Global Variables (using 'set -gx' for export) ===
 
+# Github-Cli
+set -gx GLAMOUR_STYLE ".config/glamour/rose-pine.json"
+
 # Editor (Kept your original export as well for maximum compatibility, but using set -gx for the others)
 set -gx EDITOR "vim"
 set -gx VISUAL "vim"
@@ -47,10 +50,6 @@ set -gx YT_X_FZF_OPTS $FZF_DEFAULT_OPTS'
   
 # Bat
 set -gx BAT_THEME "Rose-Pine-Moon"
-
-# Mangal
-set -gx MANGAL_FORMATS_USE "cbz"
-set -gx MANGAL_DOWNLOADER_CREATE_VOLUME_DIR "true"
 
 # Firefox
 set -gx MOZ_X11_EGL "1"

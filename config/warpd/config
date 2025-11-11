@@ -1,0 +1,7 @@
+# Color of the hint background (hex code)
+hint_bgcolor: #f6c177
+
+# Color of the hint foreground (hex code)
+hint_fgcolor: #232136
+
+

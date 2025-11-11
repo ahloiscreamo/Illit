@@ -25,7 +25,16 @@
 				<string>#9ccfd8</string>
 			</dict>
 		</dict>
-		<dict>
+        <dict>
+            <key>scope</key>
+            <string>meta.background</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key>
+                <string>#56526e</string>
+            </dict>
+        </dict>
+        <dict>
 			<key>name</key>
 			<string>Comment</string>
 			<key>scope</key>
@@ -33,7 +42,9 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#56526e</string>
+                <string>#56526e</string>
+                <key>fontStyle</key>
+                <string>italic</string>
 			</dict>
 		</dict>
 		<dict>
@@ -288,6 +299,6 @@
 	<key>colorSpaceName</key>
 	<string>sRGB</string>
 	<key>semanticClass</key>
-	<string>theme.dark.monokai</string>
+	<string>theme.dark.Rose-Pine-Moon</string>
 </dict>
 </plist>
