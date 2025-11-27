@@ -63,6 +63,38 @@ gaps inner 20
 #gaps outer 10
 gaps top 42
 
+# mode_gaps
+bindsym Mod1+Shift+g mode "gaps"
+
+mode "gaps" {
+    bindsym o mode "gaps_outer"
+    bindsym i mode "gaps_inner"
+    bindsym Escape mode "default"
+    bindsym Return mode "default"
+}
+
+mode "gaps_inner" {
+    bindsym + gaps inner current plus 5
+    bindsym - gaps inner current minus 5
+    bindsym Shift+plus gaps inner all plus 5
+    bindsym Shift+minus gaps inner all minus 5
+    bindsym 0 gaps inner current set 0
+    bindsym Shift+0 gaps inner all set 0
+    bindsym Escape mode "default"
+    bindsym Return mode "default"
+}
+
+mode "gaps_outer" {
+    bindsym + gaps outer current plus 5
+    bindsym - gaps outer current minus 5
+    bindsym Shift+plus gaps outer all plus 5
+    bindsym Shift+minus gaps outer all minus 5
+    bindsym 0 gaps outer current set 0
+    bindsym Shift+0 gaps outer all set 0
+    bindsym Escape mode "default"
+    bindsym Return mode "default"
+}
+
 # enable autotiling
 #exec_always --no-startup-id autotiling -w 1 
 
@@ -72,6 +104,7 @@ gaps top 42
 for_window [class="kitty"] border normal 0
 for_window [class="Alacritty"] border normal 0
 for_window [class="wezterm"] border normal 0
+for_window [class="Gvim"] floating enable, border pixel 3, move absolute position center
 for_window [class="Surf"] border pixel 0, floating enable, resize set 1200px 900px, move absolute position center
 for_window [window_role="About"] floating enable
 #for_window [class="mpv"] floating enable, border pixel 3, move absolute position center
@@ -102,7 +135,6 @@ for_window [class="org.gnome.FileRoller"] floating enable, move absolute positio
 
 # exec on startup
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-exec --no-startup-id ydotoold
 exec xinput --disable "Wacom Intuos Pro S Finger"
 exec xinput --disable "Wacom Intuos Pro S Pad"
 exec xinput --disable "Wacom Intuos Pro S Pen Eraser (0x3780cc3a)"
@@ -287,18 +319,18 @@ bindsym Mod1+Shift+Up resize shrink width $x_spd px or $x_spd ppt, resize shrink
 bindsym Mod1+Shift+Down resize grow width $x_spd px or $x_spd ppt, resize grow height $x_spd px or $x_spd ppt, move left $hx_spd px, move up $hx_spd px
 
 # class                 border  backgr. text    indicator child_border
-client.focused          #c4a7e7 #c4a7e7 #7550a5   #c4a7e7   #c4a7e7
-client.focused_inactive #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97
-client.unfocused        #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97 
-client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
-client.placeholder      #232136 #232136 #232136   #232136   #232136
-client.background       #c8c8e5
-
-# class                 border  backgr. text    indicator child_border
-#client.focused          #232136 #232136 #c8c8e5   #232136   #232136 
-#client.focused_inactive #232136 #232136 #6e6a86   #232136   #232136 
-#client.unfocused        #232136 #232136 #6e6a86   #232136   #232136 
+#client.focused          #c4a7e7 #c4a7e7 #7550a5   #c4a7e7   #c4a7e7
+#client.focused_inactive #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97
+#client.unfocused        #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97 
 #client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
 #client.placeholder      #232136 #232136 #232136   #232136   #232136
 #client.background       #c8c8e5
 
+# class                 border  backgr. text    indicator child_border
+client.focused          #232136 #232136 #c8c8e5   #232136   #232136 
+client.focused_inactive #232136 #232136 #6e6a86   #232136   #232136 
+client.unfocused        #232136 #232136 #6e6a86   #232136   #232136 
+client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
+client.placeholder      #232136 #232136 #232136   #232136   #232136
+client.background       #c8c8e5
+#

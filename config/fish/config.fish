@@ -27,6 +27,13 @@ set -gx VISUAL "vim"
 # Qt5ct
 set -gx QT_QPA_PLATFORMTHEME "qt5ct"
 
+# fex
+# Source .fex.fish if it's present
+[ -f ~/.fex.fish ] && source ~/.fex.fish
+
+# Bind CTRL-F to invoke fex (key binds can be custom)
+bind \super-f fex-widget
+
 # fzf
 # Define FZF_DEFAULT_OPTS once
 set -gx FZF_DEFAULT_OPTS '
@@ -93,7 +100,9 @@ fish_add_path $HOME/.cargo/bin
 # === Aliases and Functions ===
 
 alias bat="bat --italic-text always --force-colorization --style full"
+alias chawan="env COLORTERM=truecolor chawan"
 alias clx="clx -n"
+alias fex "fex --time-type modified"
 alias magic="magic-tape.sh"
 alias nnn="nnn -r -e -x"
 alias icat="kitty +kitten icat"
@@ -139,3 +148,4 @@ set -U fish_color_user green
 
 # === Zoxide  ===
 zoxide init fish | source
+

@@ -8,23 +8,17 @@ images = true
 autofocus = true
 
 [display]
-color-mode = "ansi"
+color-mode = "auto"
 format-mode = "auto"
 image-mode = "kitty"
-highlight-color = "eb6f92"  # pink highlight
+highlight-color = "#eb6f92"  # pink highlight
 highlight-marks = true
 double-width-ambiguous = false
 set-title = true
 
 [page]
-# Open current page in w3m for Google (text-only)
-'g' = "pager.externFilterSource('w3m -dump \"$CHA_URL\"')"
-
 # Open current page in rdrview for general text view
 'r' = "pager.externFilterSource('rdrview -Hu \"$CHA_URL\"')"
-
-# Format page text nicely
-'f' = "pager.externFilterSource('fmt')"
 
 # YouTube: allow scripting
 [[siteconf]]

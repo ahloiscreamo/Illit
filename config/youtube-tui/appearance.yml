@@ -3,14 +3,14 @@ colors:
   text: Reset
   text_special: Reset
   text_secondary: Reset
-  text_error: LightRed
+  text_error: '#eb6f92'
   outline: '#393552'
-  outline_selected: LightBlue
-  outline_hover: LightRed
-  outline_secondary: LightYellow
+  outline_selected: '#6e6a86'
+  outline_hover: '#c4a7e7'
+  outline_secondary: '#6e6a86'
   message_outline: '#ea9a97'
-  message_error_outline: LightRed
-  message_success_outline: LightGreen
+  message_error_outline: '#eb6f92'
+  message_success_outline: '#3e8fb0'
   command_capture: '#3e8fb0'
   item_info:
     tag: Gray

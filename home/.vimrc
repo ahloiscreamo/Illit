@@ -2,6 +2,9 @@
 set nocompatible
 filetype off                  " required
 
+" Set copy paste to browser.
+set clipboard=unnamedplus
+
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -26,7 +29,9 @@ command! MarkdownQuickPreview silent !quickmd % > /dev/null 2>&1 &
 " RosePine
 set background=dark
 colorscheme rosepine_moon
-let g:disable_bg = 1
+if !has('gui_running')
+  let g:disable_bg = 1
+endif
 
 " indentLine
 let g:indentLine_color_term = 1
