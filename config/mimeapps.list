@@ -1,6 +1,6 @@
 [Added Associations]
 font/ttf=org.gnome.FontViewer.desktop;
-image/jpeg=krita_jpeg.desktop;sxiv.desktop;org.inkscape.Inkscape.desktop;
+image/jpeg=krita_jpeg.desktop;nsxiv.desktop;org.inkscape.Inkscape.desktop;
 image/svg+xml=org.inkscape.Inkscape.desktop;
 image/gif=krita_gif.desktop;
 audio/x-dsf=mpv.desktop;

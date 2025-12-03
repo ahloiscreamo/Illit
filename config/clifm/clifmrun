@@ -1,0 +1,90 @@
+#!/bin/sh
+
+# Based on https://github.com/cirala/vifmimg, licensed under GPL-3.0
+# All changes are licensed under GPL-3.0
+# Authors: cirala, L. Abramovich
+
+###################
+# DESCRIPTION
+###################
+#
+# Prepare the environment to generate image previews via ueberzug and then launch
+# Clifm.
+
+# The values set here are used by Clifm to display images via the 'clifmimg' script.
+# Consult this script itself ('~/.config/clifm/clifmimg') for instructions on how to
+# set up Clifm to generate image previews.
+#
+# Previews for TAB completion (in FZF mode) are enabled by default. In any case,
+# check the FzfPreview option in Clifm's main configuration file (run 'config' or
+# press F10).
+
+###################
+# DEPENDENCIES
+###################
+#
+# Ueberzug
+#
+# NOTE: Ueberzug needs to run on a graphical environment. Wayland is not supported.
+#
+# NOTE 2: Since the original ueberzug is unmaintained, we recommend using this fork
+# instead: https://github.com/ueber-devel/ueberzug
+#
+
+ueberzug_cleanup() {
+    rm -f -- "$CLIFM_FIFO_UEBERZUG" 2>/dev/null
+    pkill -P $$ >/dev/null
+}
+
+# Prior to ueberzug 18.2.0, we need to silence stderr to avoid printing
+# garbage on the screen
+silence_stderr() {
+	str="$(ueberzug version)"
+	major="$(echo "$str" | cut -d'.' -f1)"
+	minor="$(echo "$str" | cut -d'.' -f2)"
+
+	if [ "$major" -lt 18 ]; then
+		true
+	elif [ "$major" -gt 18 ]; then
+		false
+	elif [ "$minor" -ge 2 ]; then
+		false
+	else
+		true
+	fi
+}
+
+init_ueberzug() {
+	CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/clifm"
+	PREVIEW_DIR="$CACHE_DIR/previews"
+	! [ -d "$PREVIEW_DIR" ] && mkdir -p "$PREVIEW_DIR"
+
+	export CLIFM_FIFO_UEBERZUG="$CACHE_DIR/ueberzug-${$}"
+
+	mkfifo "$CLIFM_FIFO_UEBERZUG"
+
+	if silence_stderr; then
+		tail -f "$CLIFM_FIFO_UEBERZUG" | ueberzug layer --silent --parser json > /dev/null 2>&1 &
+	else
+		tail -f "$CLIFM_FIFO_UEBERZUG" | ueberzug layer --silent --parser json &
+	fi
+}
+
+if ! type clifm > /dev/null 2>&1; then
+	printf "clifm: Command not found\n" >&2
+	exit 127
+
+elif ! type ueberzug >/dev/null 2>&1; then
+	printf "ueberzug: Command not found\n" >&2
+	exit 127
+
+elif [ -z "$DISPLAY" ] || [ -n "$WAYLAND_DISPLAY" ]; then
+	printf "clifm: Not running on X\n" >&2
+	exit 1
+
+else
+	trap ueberzug_cleanup EXIT
+	init_ueberzug
+	clifm "$@"
+	printf '{"action": "remove", "identifier": "clifm-preview"}\n' > "$CLIFM_FIFO_UEBERZUG"
+fi

@@ -1,0 +1,11 @@
+### This is the bookmarks file for clifm ###
+
+# Empty and commented lines are ommited
+# The bookmarks syntax is: [shortcut]name:path
+# Example:
+[c]clifm:/home/ahloi/.config/clifm/profiles/default
+gallery:/mnt/Kingston/gallery-dl
+Downloads:/home/ahloi/Downloads
+home:/home/ahloi
+config:/home/ahloi/.config
+mount:/mnt/Kingston/
