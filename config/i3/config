@@ -28,8 +28,7 @@ floating_modifier Mod1
 bindsym Mod1+Menu exec /home/ahloi/move_cursor.sh
 
 # start a terminal
-bindsym Mod1+Return exec alacritty
-
+bindsym Mod1+Return exec alacritty msg create-window || exec alacritty
 # use hints
 exec for id in $(xinput list | grep "ydotool.*pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id 'libinput Accel Profile Enabled' 0, 1; done
 bindsym Mod1+i exec hints
@@ -135,9 +134,11 @@ for_window [class="org.gnome.FileRoller"] floating enable, move absolute positio
 
 # exec on startup
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-exec xinput --disable "Wacom Intuos Pro S Finger"
-exec xinput --disable "Wacom Intuos Pro S Pad"
-exec xinput --disable "Wacom Intuos Pro S Pen Eraser (0x3780cc3a)"
+#exec xinput --disable "Wacom Intuos Pro S Finger"
+#exec xinput --disable "Wacom Intuos Pro S Pad"
+#exec xinput --disable "Wacom Intuos Pro S Pen Eraser (0x3780cc3a)"
+exec xinput set-prop 15 "Device Enabled" 0
+exec xinput set-prop 13 "Device Enabled" 0
 exec --no-startup-id feh --bg-fill ~/Pictures/Bicycle.jpg
 #exec --no-startup-id hsetroot -solid '#e0def4'
 #exec --no-startup-id unclutter
@@ -319,18 +320,18 @@ bindsym Mod1+Shift+Up resize shrink width $x_spd px or $x_spd ppt, resize shrink
 bindsym Mod1+Shift+Down resize grow width $x_spd px or $x_spd ppt, resize grow height $x_spd px or $x_spd ppt, move left $hx_spd px, move up $hx_spd px
 
 # class                 border  backgr. text    indicator child_border
-#client.focused          #c4a7e7 #c4a7e7 #7550a5   #c4a7e7   #c4a7e7
-#client.focused_inactive #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97
-#client.unfocused        #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97 
-#client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
-#client.placeholder      #232136 #232136 #232136   #232136   #232136
-#client.background       #c8c8e5
-
-# class                 border  backgr. text    indicator child_border
-client.focused          #232136 #232136 #c8c8e5   #232136   #232136 
-client.focused_inactive #232136 #232136 #6e6a86   #232136   #232136 
-client.unfocused        #232136 #232136 #6e6a86   #232136   #232136 
+client.focused          #c4a7e7 #c4a7e7 #7550a5   #c4a7e7   #c4a7e7
+client.focused_inactive #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97
+client.unfocused        #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97 
 client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
 client.placeholder      #232136 #232136 #232136   #232136   #232136
 client.background       #c8c8e5
+
+# class                 border  backgr. text    indicator child_border
+#client.focused          #232136 #232136 #c8c8e5   #232136   #232136 
+#client.focused_inactive #232136 #232136 #6e6a86   #232136   #232136 
+#client.unfocused        #232136 #232136 #6e6a86   #232136   #232136 
+#client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
+#client.placeholder      #232136 #232136 #232136   #232136   #232136
+#client.background       #c8c8e5
 #

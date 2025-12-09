@@ -7,10 +7,10 @@ padding = { x = 30,y = 30 }
 dynamic_padding = true
 
 [font]
-normal = { family = "Maple Mono NF CN", style = "Regular" }
-bold   = { family = "Maple Mono NF CN", style = "Bold" }
-italic = { family = "Maple Mono NF CN", style = "Italic" }
-bold_italic = { family = "Maple Mono NF CN", style = "Bold Italic" }
+normal = { family = "Maple Mono NF CN", style = "SemiBold" }
+bold   = { family = "Maple Mono NF CN", style = "ExtraBold" }
+italic = { family = "Maple Mono NF CN", style = "SemiBold Italic" }
+bold_italic = { family = "Maple Mono NF CN", style = "ExtraBold Italic" }
 
 size = 12.0
 
@@ -20,3 +20,4 @@ style = { blinking = "On" }
 [general]
 # Theme
 import = ["~/.config/alacritty/rose-pine-moon.toml"]
+ipc_socket = true
