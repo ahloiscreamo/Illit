@@ -1,50 +1,55 @@
 set aaa_mode=all
 set altformat_current= %F 
-set altformat_playlist= %f%= %d 
+set altformat_playlist= %f%= %d %{?X!=0?%3X ?    }
 set altformat_title=%f
 set altformat_trackwin= %f%= %d
 set auto_expand_albums_follow=true
 set auto_expand_albums_search=true
 set auto_expand_albums_selcur=true
+set auto_hide_playlists_panel=false
 set auto_reshuffle=false
+set block_key_paste=true
 set buffer_seconds=10
 set color_cmdline_attr=default
 set color_cmdline_bg=default
-set color_cmdline_fg=white
-set color_cur_sel_attr=default
+set color_cmdline_fg=blue
+set color_cur_sel_attr=italic
 set color_error=red
 set color_info=green
-set color_separator=black
-set color_statusline_attr=default
+set color_separator=darkgray
+set color_statusline_attr=italic
 set color_statusline_bg=black
-set color_statusline_fg=white
-set color_titleline_attr=bold
-set color_titleline_bg=black
-set color_titleline_fg=red
-set color_trackwin_album_attr=default
-set color_trackwin_album_bg=default
-set color_trackwin_album_fg=white
+set color_statusline_fg=magenta
+set color_statusline_progress_attr=default
+set color_statusline_progress_bg=yellow
+set color_statusline_progress_fg=16
+set color_titleline_attr=default
+set color_titleline_bg=green
+set color_titleline_fg=16
+set color_trackwin_album_attr=italic
+set color_trackwin_album_bg=magenta
+set color_trackwin_album_fg=16
 set color_win_attr=default
 set color_win_bg=default
-set color_win_cur=magenta
-set color_win_cur_attr=bold
-set color_win_cur_sel_attr=default
-set color_win_cur_sel_bg=black
-set color_win_cur_sel_fg=cyan
-set color_win_dir=default
-set color_win_fg=white
-set color_win_inactive_cur_sel_attr=default
+set color_win_cur=cyan
+set color_win_cur_attr=standout
+set color_win_cur_sel_attr=italic
+set color_win_cur_sel_bg=red
+set color_win_cur_sel_fg=16
+set color_win_dir=blue
+set color_win_fg=default
+set color_win_inactive_cur_sel_attr=italic
 set color_win_inactive_cur_sel_bg=black
-set color_win_inactive_cur_sel_fg=magenta
-set color_win_inactive_sel_attr=default
-set color_win_inactive_sel_bg=black
+set color_win_inactive_cur_sel_fg=yellow
+set color_win_inactive_sel_attr=italic
+set color_win_inactive_sel_bg=default
 set color_win_inactive_sel_fg=cyan
 set color_win_sel_attr=default
 set color_win_sel_bg=black
-set color_win_sel_fg=cyan
-set color_win_title_attr=default
+set color_win_sel_fg=yellow
+set color_win_title_attr=italic
 set color_win_title_bg=black
-set color_win_title_fg=white
+set color_win_title_fg=magenta
 set confirm_run=true
 set continue=true
 set continue_album=true
@@ -59,32 +64,35 @@ set dsp.ao.wav_dir=/home/ahloi
 set dsp.jack.resampling_quality=2
 set dsp.jack.server_name=
 set dsp.oss.device=
-set follow=true
+set follow=false
 set format_clipped_text=* 
-set format_current= %a  %l  %=  %04y  
+set format_current= %a  %l  %=  %04y 
+set format_heading_album=%a - %l%= %y %{duration}
+set format_heading_artist=%a%= %{duration}
+set format_heading_playlist=%{?!panel?Playlist - }%{title}%= %{duration}    
 set format_playlist= %-18a  %-18l  %t%=  %04y 
 set format_playlist_va= %-18a %-18l  %t%=  %04y 
-set format_statusline= %{status} %02n %t%= %1{follow}%1{repeat}%1{shuffle} %{?show_playback_position?%{position} %{?duration?/ %{duration} }?%{?duration?%{duration} }} 
+set format_statusline= %{status} %02n %t%= %1{follow}%1{repeat}%1{shuffle} %{?show_playback_position?%{position} %{?duration?/ %{duration} }?%{?duration?%{duration} }}
 set format_title=cmus
 set format_trackwin= %t%=
-set format_trackwin_album= %l
+set format_trackwin_album= %l 
 set format_trackwin_va= %t%= 
 set format_treewin= %l
-set format_treewin_artist=%a
+set format_treewin_artist=%A
 set icecast_default_charset=ISO-8859-1
 set id3_default_charset=ISO-8859-1
-set input.aac.priority=50
+set ignore_duplicates=false
+set input.aac.priority=9
+set input.cdio.priority=9
 set input.cue.priority=50
-set input.ffmpeg.priority=30
-set input.flac.priority=50
+set input.flac.priority=9
 set input.mad.priority=55
 set input.modplug.priority=50
-set input.mp4.priority=50
-set input.mpc.priority=50
-set input.opus.priority=50
-set input.vorbis.priority=50
-set input.wav.priority=50
-set input.wavpack.priority=50
+set input.mpc.priority=9
+set input.opus.priority=9
+set input.vorbis.priority=9
+set input.wav.priority=9
+set input.wavpack.priority=9
 set lib_add_filter=
 set lib_sort=artist album discnumber tracknumber title filename
 set mixer.alsa.channel=Master
@@ -97,9 +105,11 @@ set mpris=true
 set output_plugin=alsa
 set passwd=
 set pause_on_output_change=false
+set pl_env_vars=
 set pl_sort=
 set play_library=true
 set play_sorted=false
+set progress_bar=shuttle
 set repeat=false
 set repeat_current=false
 set replaygain=disabled
@@ -108,23 +118,25 @@ set replaygain_preamp=0.000000
 set resume=true
 set rewind_offset=5
 set scroll_offset=2
+set search_resets_position=true
 set set_term_title=true
 set show_all_tracks=true
 set show_current_bitrate=false
 set show_hidden=false
 set show_playback_position=true
-set show_remaining_time=false
+set show_remaining_time=true
 set shuffle=off
 set skip_track_info=false
 set smart_artist_sort=true
 set softvol=false
 set softvol_state=0 0
+set sort_albums_by_name=false
 set start_view=tree
 set status_display_program=/usr/local/bin/cmus-notify
 set stop_after_queue=false
 set time_show_leading_zero=true
 set tree_width_max=0
-set tree_width_percent=30
+set tree_width_percent=40
 set wrap_search=true
 bind browser backspace browser-up
 bind browser i toggle show_hidden
@@ -150,6 +162,7 @@ bind common C toggle continue
 bind common D win-remove
 bind common E win-add-Q
 bind common F push filter 
+bind common F1 push shell
 bind common G win-bottom
 bind common I echo {}
 bind common L push live-filter 

@@ -9,13 +9,258 @@ IMAGE_VIEWER="nsxiv"
 PDF_VIEWER="zathura"
 VIDEO_DOWNLOADER="yt-dlp"
 
+# --- Icon Config ---
+# Set to "true" to use Nerd Font icons, "false" for standard emojis.
+USE_NERD_ICONS="true"
+
+if [ "$USE_NERD_ICONS" = "true" ]; then
+    # Nerd Font Icons
+    ICON_SEARCH=""
+    ICON_REFRESH=""
+    ICON_NEXT=""
+    ICON_PREV=""
+    ICON_EXIT=""
+    ICON_PLAY=""
+    ICON_OPEN=""
+    ICON_DOWNLOAD=""
+    ICON_PROMPT_COLLECTION=""
+    ICON_PROMPT_TITLE=""
+    ICON_PROMPT_FILE=""
+    ICON_PROMPT_ACTION=""
+    ICON_INFO="" # Info icon for help
+else
+    # Emoji Fallbacks
+    ICON_SEARCH="🔍"
+    ICON_REFRESH="🔄"
+    ICON_NEXT="➡️"
+    ICON_PREV="⬅️"
+    ICON_EXIT="❌"
+    ICON_PLAY="▶️"
+    ICON_OPEN="📂"
+    ICON_DOWNLOAD="⬇️"
+    ICON_PROMPT_COLLECTION="📂"
+    ICON_PROMPT_TITLE="🎥"
+    ICON_PROMPT_FILE="📁"
+    ICON_PROMPT_ACTION="🎬"
+    ICON_INFO="ℹ️" # Info emoji for help
+fi
+
+# --- Color Config ---
+# Set to "true" to enable colors in the output.
+USE_COLORS="true"
+if [ "$USE_COLORS" = "true" ]; then
+    RED=$(tput setaf 1)
+    GREEN=$(tput setaf 2)
+    YELLOW=$(tput setaf 3)
+    BLUE=$(tput setaf 4)
+    MAGENTA=$(tput setaf 5)
+    CYAN=$(tput setaf 6)
+    WHITE=$(tput setaf 7)
+    BOLD=$(tput bold)
+    RESET=$(tput sgr0)
+fi
+
+
+
 # --- API Config ---
 API_URL="https://archive.org/advancedsearch.php"
 
 # --- Cache Config ---
-CACHE_FILE="$HOME/.cache/ia-search-collections.json"
-mkdir -p "$(dirname "$CACHE_FILE")"
-CACHE_EXPIRY=$((60*60*24))  # 24 hours
+export CACHE_BASE_DIR="$HOME/.cache/ia-search"
+export COLLECTIONS_CACHE_DIR="$CACHE_BASE_DIR/collections"
+export SEARCH_CACHE_DIR="$CACHE_BASE_DIR/search"
+export PREVIEW_CACHE_DIR="$CACHE_BASE_DIR/previews"
+export IA_SEARCH_HISTORY_FILE="$CACHE_BASE_DIR/search-history.txt"
+export TOP_COLLECTIONS_CACHE_FILE="$COLLECTIONS_CACHE_DIR/top-500-collections.json"
+mkdir -p "$COLLECTIONS_CACHE_DIR"
+mkdir -p "$SEARCH_CACHE_DIR"
+mkdir -p "$PREVIEW_CACHE_DIR"
+touch "$IA_SEARCH_HISTORY_FILE"
+export CACHE_EXPIRY=$((60*60*24*7)) # 7 days
+
+
+
+
+# --- Dependency Check ---
+check_deps() {
+    local missing=0
+    for cmd in fzf jq curl ia pv mpv nsxiv zathura yt-dlp python3; do
+        if ! command -v "$cmd" &> /dev/null; then
+            echo "❌ Error: Required command '$cmd' is not installed."
+            missing=1
+        fi
+    done
+    [ "$missing" -eq 1 ] && exit 1
+}
+
+# --- FZF Previewer ---
+# Caches and displays `ia list` output for fzf previews
+fzf_previewer() {
+    local item_text="$1"
+
+    # If the line is empty, do nothing
+    if [ -z "$item_text" ]; then
+        return
+    fi
+    
+    local identifier
+    identifier=$(echo "$item_text" | awk -F'\t' '{print $1}')
+
+    # Dont preview for navigation items
+    if [[ "$identifier" == action_* ]]; then
+        echo "Navigate with Enter. No item preview for options."
+        return
+    fi
+
+    if [ -z "$identifier" ]; then
+        return
+    fi
+
+    # Use the identifier as the cache key, removing any problematic characters
+    local cache_key
+    cache_key=$(echo "$identifier" | sed "s/[^a-zA-Z0-9_-]/_/g")
+    local cache_file="$PREVIEW_CACHE_DIR/$cache_key"
+    
+    # Check for and use a non-empty cache file.
+    if [ -s "$cache_file" ]; then
+        cat "$cache_file"
+    else
+        # If cache is missing or empty, fetch the list.
+        local list_output
+        list_output=$(ia list "$identifier" 2>/dev/null | head -n 20)
+        
+        # If we got some output, cache it and display it.
+        if [ -n "$list_output" ]; then
+            echo "$list_output" > "$cache_file"
+            echo "$list_output"
+        else
+            # If we got no output, it's likely an empty item.
+            # Cache a message to prevent re-fetching every time.
+            local empty_msg="-- No listable files found for this item --"
+            echo "$empty_msg" > "$cache_file"
+            echo "$empty_msg"
+        fi
+    fi
+}
+export -f fzf_previewer
+
+# --- Helper: Download and View ---
+download_and_view() {
+    local url="$1"
+    local viewer="$2"
+    local temp_file
+    temp_file=$(mktemp)
+    # Ensure temp file is removed on exit/interrupt
+    trap 'rm -f "$temp_file"' INT TERM EXIT
+
+    echo "⏳ Downloading to view..."
+    curl -sL "$url" | pv > "$temp_file"
+
+    if [ -s "$temp_file" ]; then
+        # Run viewer in the background and clean up afterwards
+        ( "$viewer" "$temp_file" >/dev/null 2>&1; rm -f "$temp_file" ) &
+    else
+        echo "🚫 Failed to download file for viewing."
+        rm -f "$temp_file"
+    fi
+    # Clear the trap so it doesn't fire on successful exit from this function
+    trap - INT TERM EXIT
+}
+
+# --- URL Encode ---
+urlencode() {
+    python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.argv[1], safe='/-_.~'))" "$1"
+}
+
+# --- Help Function ---
+usage() {
+    cat << EOF
+ia-search - Interactive Internet Archive Browser & Downloader
+
+USAGE:
+    ia-search [OPTIONS]
+
+DESCRIPTION:
+    A script to interactively browse, search, and download files from the Internet Archive.
+
+OPTIONS:
+    -h, --help    Show this help message and exit.
+
+SEARCH SYNTAX:
+    The search prompt accepts standard Internet Archive advanced search queries.
+    You can combine terms with AND, OR, and NOT. Queries are in the format:
+
+    field:value
+
+    --- Common Searchable Metadata Fields ---
+    The Internet Archive allows searching against many different metadata fields.
+    The most common and reliable fields to use in your queries include:
+
+    - mediatype:   The primary content type/category of the item.
+                   Example: mediatype:movies
+    - title:       The title of the work.
+                   Example: title:"Floating weeds"
+    - creator:     The person or entity that created the work.
+                   Example: creator:"yasujiro ozu"
+    - subject:     Keywords, topics, or themes describing the content.
+                   Example: subject:"japanese cinema"
+    - collection:  The collection(s) the item belongs to.
+                   Example: collection:vhsmovies
+    - date:        The publication date (often YYYY or YYYY-MM-DD).
+                   Example: date:[1980 TO 1989]
+    - language:    The language of the item's content.
+                   Example: language:jpn
+    - identifier:  The unique ID of the item (the last part of the URL).
+                   Example: identifier:openlibrary
+    - format:      The file format(s) available for the item.
+                   Example: format:pdf or format:epub
+
+    --- Full List of mediatype Values ---
+    The 'mediatype' organizes the site's content into major categories.
+    These are the most relevant and valid values you should use:
+
+    - texts        (Books, documents, magazines, etc.)
+    - audio        (General audio, including music, podcasts, etc.)
+    - movies       (Video files, films, cartoons, public affairs)
+    - software     (Historical software, games, applications)
+    - image        (Photos, artwork, historical images)
+    - data         (Datasets and raw data files)
+    - web          (Web archives, including Wayback Machine captures)
+
+    Note: You may sometimes see 'etree' (specialized audio) or 'collection' or 'account',
+          but the list above covers the main content categories.
+
+    --- language Values (ISO 639-2 Codes) ---
+    The values for the 'language' field use three-character lowercase codes
+    based on the ISO 639-2 standard.
+
+    For example, for Japanese, use: language:jpn
+
+    Some common examples of three-letter language codes:
+    - English:  eng
+    - Japanese: jpn
+    - French:   fre or fra
+    - German:   ger or deu
+    - Chinese:  chi or zho
+    - Spanish:  spa
+    - Russian:  rus
+    - Italian:  ita
+    - Korean:   kor
+
+    For a full list of these codes, search for "ISO 639-2 language codes".
+
+    --- Query Syntax Recap ---
+    Remember you can combine these fields using Boolean operators:
+
+    - AND: Narrows the search (e.g., mediatype:movies AND language:jpn)
+    - OR:  Widens the search (e.g., language:eng OR language:fre)
+    - NOT: Excludes items (e.g., mediatype:texts AND NOT collection:gutenberg)
+
+DEPENDENCIES:
+    fzf, jq, curl, ia, pv, mpv, nsxiv, zathura, yt-dlp, python3
+EOF
+    exit 0
+}
 
 # --- Show Collections ---
 show_collections() {
@@ -23,8 +268,9 @@ show_collections() {
     local page=0
 
     fetch_collections() {
-        echo "📚 Fetching top collections from Internet Archive..."
-        json=$(curl -sG "$API_URL" \
+        echo "${ICON_PROMPT_COLLECTION} Fetching top collections from Internet Archive..."
+        local fetched_json
+        fetched_json=$(curl -sG "$API_URL" \
             --data-urlencode "q=mediatype:collection" \
             --data-urlencode "fl[]=identifier" \
             --data-urlencode "fl[]=title" \
@@ -32,14 +278,30 @@ show_collections() {
             --data-urlencode "sort[]=downloads desc" \
             --data-urlencode "rows=500" \
             --data-urlencode "output=json")
-        echo "$json" > "$CACHE_FILE"
+        
+        if [ $? -ne 0 ] || [ -z "$fetched_json" ]; then
+            echo "❌ Error: Failed to fetch collections from the Internet Archive."
+            return 1
+        fi
+
+        if ! echo "$fetched_json" | jq -e . >/dev/null 2>&1; then
+            echo "❌ Error: Corrupt response received from the API."
+            return 1
+        fi
+        
+        json="$fetched_json" # Update parent scope variable
+        echo "$json" > "$TOP_COLLECTIONS_CACHE_FILE"
+        return 0
     }
 
-    if [ -f "$CACHE_FILE" ] && [ $(( $(date +%s) - $(stat -c %Y "$CACHE_FILE") )) -lt $CACHE_EXPIRY ]; then
-        echo "📚 Loading collections from cache..."
-        json=$(cat "$CACHE_FILE")
+    if [ -f "$TOP_COLLECTIONS_CACHE_FILE" ] && [ $(( $(date +%s) - $(stat -c %Y "$TOP_COLLECTIONS_CACHE_FILE") )) -lt $CACHE_EXPIRY ]; then
+        echo "${ICON_PROMPT_COLLECTION} Loading collections from cache..."
+        json=$(cat "$TOP_COLLECTIONS_CACHE_FILE")
     else
-        fetch_collections
+        if ! fetch_collections; then
+            echo "👋 Exiting due to network error."
+            exit 1
+        fi
     fi
 
     mapfile -t all_entries < <(echo "$json" | jq -r '.response.docs[] | "\(.title) [\(.identifier)]"')
@@ -52,41 +314,45 @@ show_collections() {
 
         local page_entries=("${all_entries[@]:start:end-start+1}")
 
-        choices=("[🔍 Search all collections]" "[🔄 Refresh cache]" "")
+        choices=("[${YELLOW}${ICON_SEARCH}${RESET} Search all collections]" "[${BLUE}${ICON_REFRESH}${RESET} Refresh cache]" "")
         choices+=("${page_entries[@]}")
-        choices+=("" "[➡️ Next page]" "[❌ Exit]")
+        choices+=("" "[${BLUE}${ICON_NEXT}${RESET} Next page]" "[${RED}${ICON_EXIT}${RESET} Exit]")
 
         selection=$(printf '%s\n' "${choices[@]}" | fzf \
-            --prompt="📂 Select collection (Page $((page+1))/$total_pages) > " \
+            --ansi \
+            --prompt="${MAGENTA}${BOLD}${ICON_PROMPT_COLLECTION}${RESET} Select collection (Page $((page+1))/$total_pages) > " \
             --height=100% \
             --reverse \
-            --border)
+            --border \
+            --cycle)
 
-        case "$selection" in
-            "[🔄 Refresh cache]")
+        # Strip ANSI codes for reliable case matching
+        sanitized_selection=$(echo "$selection" | sed 's/\x1b\[[0-9;]*[mG]//g')
+
+        case "$sanitized_selection" in
+            "[${ICON_REFRESH} Refresh cache]")
                 fetch_collections
                 mapfile -t all_entries < <(echo "$json" | jq -r '.response.docs[] | "\(.title) [\(.identifier)]"')
                 total_pages=$(( (${#all_entries[@]} + PAGE_SIZE - 1) / PAGE_SIZE ))
                 page=0
                 echo "✅ Cache refreshed."
                 ;;
-            "[🔍 Search all collections]")
+            "[${ICON_SEARCH} Search all collections]")
                 search_mode
                 continue
                 ;;
-            "[➡️ Next page]")
+            "[${ICON_NEXT} Next page]")
                 ((page++))
                 if [ $page -ge $total_pages ]; then
-                    echo "⚠️  No more pages."
-                    ((page--))
+                    page=$((total_pages - 1))
                 fi
                 ;;
-            "[❌ Exit]"|"")
+            "[${ICON_EXIT} Exit]"|"")
                 echo "👋 Exiting."
                 exit 0
                 ;;
             *)
-                collection=$(echo "$selection" | sed -E 's/.*\[(.*)\]$/\1/')
+                collection=$(echo "$selection" | sed -E 's/.*\[(.*)\].*/\1/')
                 browse_collection "$collection"
                 ;;
         esac
@@ -95,19 +361,204 @@ show_collections() {
 
 # --- Search Mode ---
 search_mode() {
-    local query identifier
+    local query identifier_or_action page rows item_json selected_line
+    local -a choices items
+    local preview_command='bash -c '\''fzf_previewer "$@"'\'' _ {1}'
 
     while true; do
-        query=$(printf '' | fzf --prompt="🔍 Type search query (ESC to return to main) > " --print-query --height=10 --reverse --border | head -n1)
+        # --- Prepare history and examples for fzf ---
+        local full_list=""
+        local history_content=""
+        if [ -s "$IA_SEARCH_HISTORY_FILE" ]; then
+            history_content=$(tac "$IA_SEARCH_HISTORY_FILE" | awk '!a[$0]++' | head -n 20)
+        fi
+
+        local examples="collection:anime_miscellaneous
+subject:japanese cinema
+mediatype:movies AND language:japanese
+mediatype:audio AND subject:album
+mediatype:image AND subject:magazine
+mediatype:texts AND subject:linux"
+
+        full_list=$(printf "%s\n%s" "$history_content" "$examples" | awk '!b[$0]++ {if (NF) print}')
+
+        # --- Get query from fzf ---
+        query=$(printf "%s\n" "$full_list" | fzf --ansi \
+            --prompt="${MAGENTA}${BOLD}${ICON_SEARCH}${RESET} Type search query (ESC to return) > " \
+            --print-query \
+            --height=100% \
+            --reverse \
+            --border \
+            --cycle \
+            --footer="${ICON_INFO} For more 'field' and 'mediatype' details, check ia-search --help")
+        
+        query=$(echo "$query" | tail -n 1)
+
         [ -z "$query" ] && return 0
 
+        # --- Update history file ---
+        if [ -s "$IA_SEARCH_HISTORY_FILE" ]; then
+            grep -Fxv -- "$query" "$IA_SEARCH_HISTORY_FILE" > "${IA_SEARCH_HISTORY_FILE}.tmp" && \
+            mv "${IA_SEARCH_HISTORY_FILE}.tmp" "$IA_SEARCH_HISTORY_FILE"
+        fi
+        echo "$query" >> "$IA_SEARCH_HISTORY_FILE"
+        
+        local final_query
+        if [[ "$query" != *":"* ]]; then
+            final_query="title:\"$query\""
+        else
+            final_query="$query"
+        fi
+        
+        page=1
+        rows=30
+
         while true; do
-            echo "🔎 Searching for \"$query\" ..."
-            identifier=$(ia search "$query" --itemlist | fzf --prompt="🎥 Select an item from '$query' (ESC to new search) > " --height=100% --reverse --border)
-            if [ -z "$identifier" ]; then
+            echo "${ICON_SEARCH} Searching for \"$query\" (Page $page)..."
+            
+            local query_hash
+            query_hash=$(echo -n "$final_query" | md5sum | cut -d' ' -f1)
+            local cache_file="$SEARCH_CACHE_DIR/${query_hash}-page-${page}.json"
+
+            if [ -f "$cache_file" ]; then
+                item_json=$(cat "$cache_file")
+            else
+                if ! item_json=$(ia search "$final_query" --field identifier --field title --sort "downloads desc" -p "page:$page" -p "rows:$rows"); then
+                    echo "❌ Error: 'ia search' command failed for query: $final_query. Check connection or command."
+                    sleep 3
+                    break
+                fi
+                echo "$item_json" > "$cache_file"
+
+            fi
+            if [ -z "$item_json" ]; then
+                echo "🚫 No results found for page $page."
+                if [ "$page" -eq 1 ]; then break; fi
+            fi
+            
+            # Format as: identifier<TAB>title
+            mapfile -t items < <(echo "$item_json" | jq -s -r '.[] | "\(.identifier)\t\(.title)"')
+
+            # Build choices with uniform ID<TAB>TEXT format
+            choices=()
+            
+            if [ "${#items[@]}" -eq "$rows" ]; then
+                choices+=($'action_next_page\t'"[${BLUE}${ICON_NEXT} Next page${RESET}]")
+            fi
+            if [ "$page" -gt 1 ]; then
+                 choices+=($'action_prev_page\t'"[${BLUE}${ICON_PREV} Previous page${RESET}]")
+            fi
+            choices+=($'action_refresh\t'"[${CYAN}${ICON_REFRESH} Refresh page${RESET}]")
+            choices+=($'action_search_all\t'"[${YELLOW}${ICON_SEARCH} Search all results${RESET}]")
+            choices+=($'action_back\t'"[${RED}${ICON_EXIT} Back to main${RESET}]")
+
+            # Use a simple empty string for the gap, like the original script
+            if [ "${#choices[@]}" -gt 0 ]; then
+                choices+=("")
+            fi
+
+            choices+=("${items[@]}")
+
+            selected_line=$(printf '%s\n' "${choices[@]}" | fzf \
+                --ansi \
+                --prompt="${MAGENTA}${BOLD}${ICON_PROMPT_TITLE}${RESET} Select title from '$query' (Page $page) > " \
+                --height=100% \
+                --reverse \
+                --border \
+                --delimiter=$'\t' \
+                --with-nth=2.. \
+                --preview-window=right:40% \
+                --preview "$preview_command" \
+                --cycle)
+            
+            identifier_or_action=$(echo "$selected_line" | awk -F'\t' '{print $1}')
+
+            if [ -z "$identifier_or_action" ]; then
                 break
             fi
-            open_item "$identifier"
+
+            case "$identifier_or_action" in
+                "action_refresh")
+                    if [ -f "$cache_file" ]; then
+                        rm "$cache_file"
+                        echo "✅ Page cache cleared. Refreshing..."
+                    fi
+                    continue
+                    ;;
+                "action_next_page")
+                    ((page++))
+                    ;;
+                "action_prev_page")
+                    if [ "$page" -gt 1 ]; then
+                        ((page--))
+                    fi
+                    ;;
+                "action_search_all")
+                    local sub_query_text
+                    sub_query_text=$(printf '' | fzf --ansi --prompt="${MAGENTA}${BOLD}${ICON_SEARCH}${RESET} Search within results for '$query': " --print-query --height=10 --reverse --border | head -n1)
+                    [ -z "$sub_query_text" ] && continue
+
+                    local sub_query_fragment
+                    if [[ "$sub_query_text" != *":"* ]]; then
+                        sub_query_fragment="title:\"$sub_query_text\""
+                    else
+                        sub_query_fragment="$sub_query_text"
+                    fi
+
+                    echo "🔎 Searching for \"$query AND $sub_query_text\"..."
+                    local combined_query="$final_query AND $sub_query_fragment"
+                    local total_combined_hits
+                    total_combined_hits=$(ia search "$combined_query" --num-found)
+
+                    if [ -z "$total_combined_hits" ] || [ "$total_combined_hits" -eq 0 ]; then
+                        echo "🚫 No results found for \"$combined_query\"."
+                        continue
+                    fi
+
+                    echo "🔎 Loading all $total_combined_hits results for \"$combined_query\"..."
+                    
+                    local temp_combined_file
+                    temp_combined_file=$(mktemp)
+                    
+                    local combined_query_hash
+                    combined_query_hash=$(echo -n "$combined_query" | md5sum | cut -d' ' -f1)
+                    local cache_file="$SEARCH_CACHE_DIR/${combined_query_hash}-all.json"
+
+                    if [ -f "$cache_file" ]; then
+                        pv -N "Loading from cache" "$cache_file" > "$temp_combined_file"
+                    else
+                        (ia search "$combined_query" --field identifier --field title | tee "$cache_file" | pv -l -s "$total_combined_hits" -N "Loading combined" > "$temp_combined_file")
+                    fi
+                    
+                    local selected_sub_item_line
+                    selected_sub_item_line=$(cat "$temp_combined_file" | jq -s -r '.[] | "\(.identifier)\t\(.title)"' | fzf \
+                        --ansi \
+                        --prompt="${MAGENTA}${BOLD}${ICON_PROMPT_TITLE}${RESET} Results for '$combined_query' > " \
+                        --height=100% \
+                        --reverse \
+                        --border \
+                        --delimiter=$'\t' \
+                        --with-nth=2.. \
+                        --preview-window=right:40% \
+                        --preview "$preview_command" \
+                        --cycle)
+                    
+                    rm "$temp_combined_file"
+
+                    if [ -n "$selected_sub_item_line" ]; then
+                        local final_identifier
+                        final_identifier=$(echo "$selected_sub_item_line" | awk 'BEGIN{FS="\t"} {print $1}')
+                        open_item "$final_identifier"
+                    fi
+                    break
+                    ;;
+                "action_back")
+                    return
+                    ;;
+                *)
+                    open_item "$identifier_or_action"
+                    ;;
+            esac
         done
     done
 }
@@ -115,111 +566,368 @@ search_mode() {
 # --- Browse Collection ---
 browse_collection() {
     local coll="$1"
-    echo "📁 Browsing collection: $coll"
-    identifier=$(ia search "collection:$coll" --itemlist | fzf --prompt="🎞️ Select item from $coll > " --height=100% --reverse --border)
-    [ -z "$identifier" ] && echo "🚫 No item selected." && return
-    open_item "$identifier"
+    local identifier_or_action page rows item_json selected_line
+    local -a choices items
+    
+    local preview_command='bash -c '\''fzf_previewer "$@"'\'' _ {1}'
+
+    page=1
+    rows=30
+
+    while true; do
+        echo "${ICON_PROMPT_COLLECTION} Browsing collection: $coll (Page $page)..."
+
+        local cache_file="$COLLECTIONS_CACHE_DIR/${coll}-page-${page}.json"
+        if ! item_json=$(ia search "collection:$coll" --field identifier --field title --sort "downloads desc" -p "page:$page" -p "rows:$rows"); then
+            echo "❌ Error: 'ia search' command failed for collection: $coll. Check connection or command."
+            sleep 3
+            break
+        fi
+        echo "$item_json" > "$cache_file"
+        if [ -z "$item_json" ]; then
+            echo "🚫 No results found for page $page."
+            if [ "$page" -eq 1 ]; then break; fi
+        fi
+
+        mapfile -t items < <(echo "$item_json" | jq -s -r '.[] | "\(.identifier)\t\(.title)"')
+
+        # Build choices with uniform ID<TAB>TEXT format
+        choices=()
+        
+        if [ "${#items[@]}" -eq "$rows" ]; then
+            choices+=($'action_next_page\t'"[${BLUE}${ICON_NEXT} Next page${RESET}]")
+        fi
+        if [ "$page" -gt 1 ]; then
+             choices+=($'action_prev_page\t'"[${BLUE}${ICON_PREV} Previous page${RESET}]")
+        fi
+        choices+=($'action_refresh\t'"[${CYAN}${ICON_REFRESH} Refresh page${RESET}]")
+        choices+=($'action_search_all\t'"[${YELLOW}${ICON_SEARCH} Search all results${RESET}]")
+        choices+=($'action_back\t'"[${RED}${ICON_EXIT} Back to main${RESET}]")
+
+        # Use a simple empty string for the gap, like the original script
+        if [ "${#choices[@]}" -gt 0 ]; then
+            choices+=("")
+        fi
+
+        choices+=("${items[@]}")
+
+        selected_line=$(printf '%s\n' "${choices[@]}" | fzf \
+            --ansi \
+            --prompt="${MAGENTA}${BOLD}${ICON_PROMPT_TITLE}${RESET} Select title from $coll (Page $page) > " \
+            --height=100% \
+            --reverse \
+            --border \
+            --delimiter=$'\t' \
+            --with-nth=2.. \
+            --preview-window=right:40% \
+            --preview "$preview_command" \
+            --cycle)
+
+        identifier_or_action=$(echo "$selected_line" | awk -F'\t' '{print $1}')
+
+        if [ -z "$identifier_or_action" ]; then
+            return
+        fi
+
+        case "$identifier_or_action" in
+            "action_refresh")
+                if [ -f "$cache_file" ]; then
+                    rm "$cache_file"
+                    echo "✅ Page cache cleared. Refreshing..."
+                fi
+                continue
+                ;;
+            "action_next_page")
+                ((page++))
+                ;;
+            "action_prev_page")
+                if [ "$page" -gt 1 ]; then
+                    ((page--))
+                fi
+                ;;
+            "action_search_all")
+                local sub_query_text
+                sub_query_text=$(printf '' | fzf --ansi --prompt="${MAGENTA}${BOLD}${ICON_SEARCH}${RESET} Search within collection '$coll': " --print-query --height=10 --reverse --border | head -n1)
+                [ -z "$sub_query_text" ] && continue
+
+                local sub_query_fragment
+                if [[ "$sub_query_text" != *":"* ]]; then
+                    sub_query_fragment="title:\"$sub_query_text\""
+                else
+                    sub_query_fragment="$sub_query_text"
+                fi
+
+                echo "🔎 Searching for \"collection:$coll AND $sub_query_text\"..."
+                local combined_query="collection:$coll AND $sub_query_fragment"
+                local total_combined_hits
+                total_combined_hits=$(ia search "$combined_query" --num-found)
+
+                if [ -z "$total_combined_hits" ] || [ "$total_combined_hits" -eq 0 ]; then
+                    echo "🚫 No results found for \"$combined_query\"."
+                    continue
+                fi
+
+                echo "🔎 Loading all $total_combined_hits results for \"$combined_query\"..."
+                
+                local temp_combined_file
+                temp_combined_file=$(mktemp)
+
+                local combined_query_hash
+                combined_query_hash=$(echo -n "$combined_query" | md5sum | cut -d' ' -f1)
+                local cache_file="$SEARCH_CACHE_DIR/${combined_query_hash}-all.json"
+
+                if [ -f "$cache_file" ]; then
+                    pv -N "Loading from cache" "$cache_file" > "$temp_combined_file"
+                else
+                    (ia search "$combined_query" --field identifier --field title | tee "$cache_file" | pv -l -s "$total_combined_hits" -N "Loading combined" > "$temp_combined_file")
+                fi
+                
+                local selected_sub_item_line
+                selected_sub_item_line=$(cat "$temp_combined_file" | jq -s -r '.[] | "\(.identifier)\t\(.title)"' | fzf \
+                        --ansi \
+                        --prompt="${MAGENTA}${BOLD}${ICON_PROMPT_TITLE}${RESET} Results for '$combined_query' > " \
+                        --height=100% \
+                        --reverse \
+                        --border \
+                        --delimiter=$'\t' \
+                        --with-nth=2.. \
+                        --preview-window=right:40% \
+                        --preview "$preview_command" \
+                        --cycle)
+                
+                rm "$temp_combined_file"
+
+                if [ -n "$selected_sub_item_line" ]; then
+                    local final_identifier
+                    final_identifier=$(echo "$selected_sub_item_line" | awk 'BEGIN{FS="\t"} {print $1}')
+                    open_item "$final_identifier"
+                fi
+                return
+                ;;
+            "action_back")
+                return
+                ;;
+            " ")
+                # This is the blank line, do nothing.
+                ;;
+            *)
+                open_item "$identifier_or_action"
+                ;;
+        esac
+    done
 }
 
 # --- Open / Play / Download Item ---
 open_item() {
     local identifier="$1"
-    echo "📂 Fetching file list for: $identifier ..."
+    echo "${ICON_OPEN} Fetching file list for: $identifier ..."
+    local file_list
     file_list=$(ia list "$identifier")
-    filename=$(echo "$file_list" | fzf --prompt="📁 Select a file to open > " --height=100% --reverse --border)
-    [ -z "$filename" ] && echo "🚫 No file selected." && return
 
-    case "$filename" in
-        *.mp4|*.mkv|*.avi|*.webm|*.flv|*.ogv|*.mp3|*.ogg|*.flac|*.wav|*.m4a)
-            action_label="▶️ Play" ;;
-        *) action_label="📂 Open" ;;
-    esac
-
-    action=$(echo -e "$action_label\n⬇️ Download" | fzf --prompt="🎬 Choose action for $filename > " --height=100% --reverse --border)
-    [ -z "$action" ] && echo "🚫 No action selected." && return
-
-    filename_encoded=$(echo "$filename" | sed 's/ /%20/g')
-    url="https://archive.org/download/$identifier/$filename_encoded"
-
-    if [ "$action" == "▶️ Play" ] || [ "$action" == "📂 Open" ]; then
-        case "$filename" in
-            *.mp4|*.mkv|*.avi|*.webm|*.flv|*.ogv)
-                echo "🎞️ Playing video..."
-                video_basename=$(echo "$filename" | sed 's/\.[^.]*$//')
-                
-                sub_file=$(echo "$file_list" | grep -Fx -e "${video_basename}.srt" -e "${video_basename}.ass" | head -n1)
-
-                # Create a temporary log file to monitor mpv status
-                mpv_log=$(mktemp)
-
-                if [ -n "$sub_file" ]; then
-                    sub_encoded=$(echo "$sub_file" | sed 's/ /%20/g')
-                    sub_url="https://archive.org/download/$identifier/$sub_encoded"
-                    # Redirect stderr/stdout to log file so we can grep it
-                    $VIDEO_PLAYER "$url" --sub-file="$sub_url" > "$mpv_log" 2>&1 &
-                else
-                    $VIDEO_PLAYER "$url" > "$mpv_log" 2>&1 &
-                fi 
-                
-                pid=$!
-
-                # --- Real-time Launch Monitor ---
-                # This loop waits until mpv prints "VO:" (Video Output) or "AO:" (Audio Output) to the log.
-                # This confirms that buffering is done and the window is actually ready.
-                (
-                    # Timeout after 200 ticks (approx 20 seconds) to prevent hanging on slow networks
-                    for ((i=0; i<200; i++)); do
-                        # If mpv crashes, stop waiting
-                        if ! kill -0 "$pid" 2>/dev/null; then break; fi
-                        
-                        # Check the log for "VO:" or "AO:" (Success signals)
-                        if grep -q -E "^(VO|AO):" "$mpv_log"; then break; fi
-                        
-                        echo -n "."
-                        sleep 0.1
-                    done
-                ) | pv -p -t -e -N "🚀 Launching mpv" -s 200 > /dev/null
-
-                # Clean up
-                rm -f "$mpv_log"
-                ;;
-
-            *.mp3|*.ogg|*.flac|*.wav|*.m4a)
-                echo "🎧 Playing audio..."
-                $AUDIO_PLAYER "$url" >/dev/null 2>&1 & ;;
-            *.png|*.jpg|*.jpeg|*.gif|*.bmp)
-                temp_file=$(mktemp)
-                curl -sL "$url" | pv > "$temp_file"
-                [ -s "$temp_file" ] && ($IMAGE_VIEWER "$temp_file" >/dev/null 2>&1; rm "$temp_file") & ;;
-            *.pdf)
-                temp_file=$(mktemp)
-                curl -sL "$url" | pv > "$temp_file"
-                [ -s "$temp_file" ] && ($PDF_VIEWER "$temp_file" >/dev/null 2>&1; rm "$temp_file") & ;;
-            *.txt|*.md|*.rst|*.csv|*.log|*.tex|*.sh|*.py|*.c|*.cpp|*.h|*.java|*.js|*.ts|*.json|*.xml|*.yaml|*.yml|*.ini|*.conf|*.cfg)
-                temp_file=$(mktemp)
-                curl -sL "$url" -o "$temp_file"
-                if [ -s "$temp_file" ]; then
-                    vim "$temp_file"
-                    rm -f "$temp_file"
-                else
-                    echo "🚫 Failed to fetch $filename"
-                fi ;;
-            *)
-                xdg-open "$url" >/dev/null 2>&1 &
-                ;;
-        esac
-    elif [ "$action" == "⬇️ Download" ]; then
-        case "$filename" in
-            *.mp4|*.mkv|*.avi|*.webm|*.flv|*.ogv)
-                $VIDEO_DOWNLOADER "$url" ;;
-            *)
-                curl -L -o "$filename" "$url" ;;
-        esac
-        echo "✅ Done."
+    if [ -z "$file_list" ]; then
+        echo "🚫 No files found for this item or failed to fetch."
+        sleep 2
+        return
     fi
+
+    # Helper function to extract a 'core' name for fuzzy matching
+    get_core_name() {
+        local input_name="$1"
+        # To lowercase, remove extension, replace all non-alphanumeric chars with a space, squeeze spaces, and trim.
+        echo "$input_name" | \
+        tr '[:upper:]' '[:lower:]' | \
+        sed -E 's/\.[^.]*$//' | \
+        tr -c '[:alnum:]' ' ' | \
+        tr -s ' ' | \
+        sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+    }
+
+    while true; do
+        local file_choices="${file_list}"
+        file_choices+=$'\n\n'"[${RED}${ICON_EXIT} Back to title list${RESET}]"
+
+        local filename
+        filename=$(echo -e "${file_choices}" | fzf \
+            --ansi \
+            --prompt="${MAGENTA}${BOLD}${ICON_PROMPT_FILE}${RESET} Select a file to open (or back) > " \
+            --height=100% \
+            --reverse \
+            --border \
+            --cycle)
+
+        local sanitized_filename
+        sanitized_filename=$(echo "$filename" | sed 's/\x1b\[[0-9;]*[mG]//g')
+
+        if [ -z "$filename" ] || [[ "$sanitized_filename" == "[${ICON_EXIT} Back to title list]" ]]; then
+            return
+        fi
+
+        local action_label
+        case "$filename" in
+            *.mp4|*.mkv|*.avi|*.webm|*.flv|*.ogv|*.mp3|*.ogg|*.flac|*.wav|*.m4a)
+                action_label="${CYAN}${ICON_PLAY} Play${RESET}" ;; 
+            *) action_label="${CYAN}${ICON_OPEN} Open${RESET}" ;; 
+        esac
+
+        local action
+        action=$(echo -e "$action_label\n${CYAN}${ICON_DOWNLOAD} Download${RESET}\n${RED}${ICON_EXIT} Back to file list${RESET}" | fzf \
+            --ansi \
+            --prompt="${MAGENTA}${BOLD}${ICON_PROMPT_ACTION}${RESET} Choose action for $filename > " \
+            --height=100% \
+            --reverse \
+            --border \
+            --cycle)
+
+        # Strip ANSI codes for reliable matching
+        local sanitized_action
+        sanitized_action=$(echo "$action" | sed 's/\x1b\[[0-9;]*[mG]//g')
+        
+        if [ -z "$action" ] || [[ "$sanitized_action" == "[${ICON_EXIT} Back to file list]" ]]; then
+            continue
+        fi
+
+        local filename_encoded
+        filename_encoded=$(urlencode "$filename")
+        local url="https://archive.org/download/$identifier/$filename_encoded"
+
+        if [ "$sanitized_action" == "${ICON_PLAY} Play" ] || [ "$sanitized_action" == "${ICON_OPEN} Open" ]; then
+            case "$filename" in
+                *.mp4|*.mkv|*.avi|*.webm|*.flv|*.ogv)
+                    echo "🎞️ Playing video..."
+                    
+                    # --- Fuzzy Subtitle Matching Logic ---
+                    local sub_file=""
+                    local video_core_name
+                    video_core_name=$(get_core_name "$filename")
+
+                    if [ -n "$video_core_name" ]; then
+                        local best_match=""
+                        local best_score=-1
+                        local min_diff=9999
+                        
+                        local subtitle_candidates
+                        subtitle_candidates=$(echo "$file_list" | grep -E '\.(srt|ass|vtt)$')
+
+                        while IFS= read -r sub_candidate; do
+                            if [ -z "$sub_candidate" ]; then continue; fi
+                            
+                            local sub_core_name
+                            sub_core_name=$(get_core_name "$sub_candidate")
+                            if [ -z "$sub_core_name" ]; then continue; fi
+
+                            # Calculate score based on common words
+                            local video_words=("$video_core_name")
+                            local common_word_count=0
+                            for word in "${video_words[@]}"; do
+                                if [[ " $sub_core_name " =~ " $word " ]]; then
+                                    ((common_word_count++))
+                                fi
+                            done
+
+                            # Tie-breaking: use length difference
+                            local video_len=${#video_core_name}
+                            local sub_len=${#sub_core_name}
+                            local diff=$(( video_len > sub_len ? video_len - sub_len : sub_len - video_len ))
+
+                            if [ "$common_word_count" -gt "$best_score" ]; then
+                                best_score=$common_word_count
+                                min_diff=$diff
+                                best_match="$sub_candidate"
+                            elif [ "$common_word_count" -eq "$best_score" ] && [ "$common_word_count" -gt 0 ]; then
+                                if [ "$diff" -lt "$min_diff" ]; then
+                                    min_diff=$diff
+                                    best_match="$sub_candidate"
+                                fi
+                            fi
+                        done <<< "$subtitle_candidates"
+                        sub_file="$best_match"
+                    fi
+                    # --- End of Fuzzy Matching Logic ---
+
+                    # Create a temporary log file to monitor mpv status
+                    local mpv_log
+                    mpv_log=$(mktemp)
+
+                    if [ -n "$sub_file" ]; then
+                        echo "📖 Found matching subtitle: $sub_file"
+                        local sub_encoded
+                        sub_encoded=$(urlencode "$sub_file")
+                        local sub_url="https://archive.org/download/$identifier/$sub_encoded"
+                        # Redirect stderr/stdout to log file so we can grep it
+                        $VIDEO_PLAYER --ytdl=no "$url" --sub-file="$sub_url" > "$mpv_log" 2>&1 &
+                    else
+                        echo "🚫 No matching subtitle found."
+                        $VIDEO_PLAYER --ytdl=no "$url" > "$mpv_log" 2>&1 &
+                    fi 
+                    
+                    local pid=$!
+
+                    # --- Real-time Launch Monitor ---
+                    (
+                        for ((i=0; i<200; i++)); do
+                            if ! kill -0 "$pid" 2>/dev/null; then break; fi
+                            if grep -q -E "^(VO|AO):" "$mpv_log"; then break; fi
+                            echo -n "."
+                            sleep 0.1
+                        done
+                    ) | pv -p -t -e -N "🚀 Launching mpv" -s 200 > /dev/null
+
+                    # Check if mpv failed and show log
+                    if ! kill -0 "$pid" 2>/dev/null; then
+                        echo "🚫 mpv failed to launch. Error log:"
+                        echo "-------------------------------------"
+                        cat "$mpv_log"
+                        echo "-------------------------------------"
+                        echo "Press Enter to continue."
+                        read -r
+                    fi
+
+                    # Clean up
+                    rm -f "$mpv_log"
+                    ;;
+
+                *.mp3|*.ogg|*.flac|*.wav|*.m4a)
+                    echo "🎧 Playing audio..."
+                    $AUDIO_PLAYER "$url" >/dev/null 2>&1 &
+                    ;;
+                *.png|*.jpg|*.jpeg|*.gif|*.bmp)
+                    download_and_view "$url" "$IMAGE_VIEWER" ;; 
+                *.pdf)
+                    download_and_view "$url" "$PDF_VIEWER" ;; 
+                *.txt|*.md|*.rst|*.csv|*.log|*.tex|*.sh|*.py|*.c|*.cpp|*.h|*.java|*.js|*.ts|*.json|*.xml|*.yaml|*.yml|*.ini|*.conf|*.cfg)
+                    local temp_file
+                    temp_file=$(mktemp)
+                    curl -sL "$url" -o "$temp_file"
+                    if [ -s "$temp_file" ]; then
+                        vim "$temp_file"
+                        rm -f "$temp_file"
+                    else
+                        echo "🚫 Failed to fetch $filename"
+                    fi ;; 
+                *)
+                    xdg-open "$url" >/dev/null 2>&1 &
+                    ;;
+            esac
+        elif [ "$sanitized_action" == "${ICON_DOWNLOAD} Download" ]; then
+            case "$filename" in
+                *.mp4|*.mkv|*.avi|*.webm|*.flv|*.ogv)
+                    $VIDEO_DOWNLOADER "$url" ;; 
+                *)
+                    curl -L -o "$filename" "$url" ;; 
+            esac
+            echo "✅ Done. Press Enter to continue."
+            read -r
+        fi
+    done
 }
 
+# --- Argument Parsing ---
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+fi
+
 # --- Main ---
+check_deps
 show_collections
 echo "👋 Goodbye."
 exit 0

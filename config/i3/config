@@ -117,6 +117,7 @@ for_window [class="Yad"] floating enable
 #for_window [class="cmusCoverViewer"] floating enable, resize set 280px 292px
 for_window [class="cmusCoverViewer"] floating enable, border normal 0, resize set 300px 314px
 for_window [class="Thunar"] floating enable, move absolute position center
+for_window [class="imv"] floating enable,
 for_window [class="Sxiv"] floating enable, 
 for_window [class="Nsxiv"] floating enable, resize set 600px 915px, move absolute position center
 for_window [class="firefox" window_role="Organizer"] floating enable
@@ -319,19 +320,23 @@ set $hx_spd 15
 bindsym Mod1+Shift+Up resize shrink width $x_spd px or $x_spd ppt, resize shrink height $x_spd px or $x_spd ppt, move right $hx_spd px, move down $hx_spd px
 bindsym Mod1+Shift+Down resize grow width $x_spd px or $x_spd ppt, resize grow height $x_spd px or $x_spd ppt, move left $hx_spd px, move up $hx_spd px
 
+# CURRENT_THEME=rosepine-dark
+# THEME_START: rosepine
 # class                 border  backgr. text    indicator child_border
-client.focused          #c4a7e7 #c4a7e7 #7550a5   #c4a7e7   #c4a7e7
-client.focused_inactive #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97
-client.unfocused        #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97 
-client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
-client.placeholder      #232136 #232136 #232136   #232136   #232136
-client.background       #c8c8e5
-
-# class                 border  backgr. text    indicator child_border
-#client.focused          #232136 #232136 #c8c8e5   #232136   #232136 
-#client.focused_inactive #232136 #232136 #6e6a86   #232136   #232136 
-#client.unfocused        #232136 #232136 #6e6a86   #232136   #232136 
+#client.focused          #c4a7e7 #c4a7e7 #7550a5   #c4a7e7   #c4a7e7
+#client.focused_inactive #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97
+#client.unfocused        #ea9a97 #ea9a97 #a05550   #ea9a97   #ea9a97 
 #client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
 #client.placeholder      #232136 #232136 #232136   #232136   #232136
 #client.background       #c8c8e5
-#
+# THEME_END: rosepine
+
+# THEME_START: rosepine-dark
+# class                 border  backgr. text    indicator child_border
+client.focused          #232136 #232136 #c8c8e5   #232136   #232136 
+client.focused_inactive #232136 #232136 #6e6a86   #232136   #232136 
+client.unfocused        #232136 #232136 #6e6a86   #232136   #232136 
+client.urgent           #eb6f92 #eb6f92 #b43f60   #eb6f92   #eb6f92
+client.placeholder      #232136 #232136 #232136   #232136   #232136
+client.background       #c8c8e5
+# THEME_END: rosepine-dark

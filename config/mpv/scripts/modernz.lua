@@ -1,4 +1,4 @@
--- ModernZ (https://github.com/Samillion/ModernZ)
+-- ModernZ v0.2.9 (https://github.com/Samillion/ModernZ)
 --
 -- This script is a derivative of the original mpv-osc-modern by maoiscat
 -- and subsequent forks:
@@ -41,6 +41,7 @@ local user_opts = {
     bottomhover_zone = 130,                -- height of hover zone for bottomhover (in pixels)
     osc_on_seek = false,                   -- show OSC when seeking
     osc_on_start = false,                  -- show OSC on start of every file
+    osc_keep_with_cursor = true,           -- keep OSC visible if mouse cursor is within OSC boundaries
     mouse_seek_pause = true,               -- pause video while seeking with mouse move (on button hold)
     force_seek_tooltip = false,            -- force show seekbar tooltip on mouse drag, even if not hovering seekbar
 
@@ -70,9 +71,10 @@ local user_opts = {
     tooltip_font_size = 14,                -- tooltips font size
 
     -- Title bar settings
-    window_title = false,                  -- show window title in borderless/fullscreen mode
+    show_window_title = false,             -- show window title in borderless/fullscreen mode
+    window_title = "${media-title}",       -- same as title but for window_top_bar
+    window_title_font_size = 26,           -- window title font size
     window_controls = true,                -- show window controls (close, minimize, maximize) in borderless/fullscreen
-    windowcontrols_title = "${media-title}", -- same as title but for windowcontrols
 
     -- Subtitle display settings
     raise_subtitles = true,                -- raise subtitles above the OSC when shown
@@ -92,20 +94,19 @@ local user_opts = {
     volume_control = true,                 -- show mute button and volume slider
     volume_control_type = "linear",        -- volume scale type: "linear" or "logarithmic"
     playlist_button = true,                -- show playlist button: Left-click for simple playlist, Right-click for interactive playlist
-    hide_empty_playlist_button = false,     -- hide playlist button when no playlist exists
-    gray_empty_playlist_button = false,     -- gray out the playlist button when no playlist exists
+    hide_empty_playlist_button = false,    -- hide playlist button when no playlist exists
+    gray_empty_playlist_button = false,    -- gray out the playlist button when no playlist exists
 
     fullscreen_button = true,              -- show fullscreen toggle button
     info_button = true,                    -- show info button
     ontop_button = true,                   -- show window on top button
     screenshot_button = false,             -- show screenshot button
-    screenshot_flag = "subtitles",         -- flag for screenshot button: "subtitles", "video", "window", "each-frame"
-                                           -- https://mpv.io/manual/master/#command-interface-screenshot-%3Cflags%3E
 
     download_button = true,                -- show download button on web videos (requires yt-dlp and ffmpeg)
     download_path = "~~desktop/mpv",       -- default download directory for videos (https://mpv.io/manual/master/#paths)
 
-    loop_button = false,                   -- show loop button
+    loop_button = false,                   -- show loop
+    shuffle_button = false,                -- show shuffle
     speed_button = false,                  -- show speed control button
     speed_button_click = 1,                -- speed change amount per click
     speed_button_scroll = 0.25,            -- speed change amount on scroll
@@ -123,27 +124,27 @@ local user_opts = {
     zoom_out_min = -1,                     -- minimum zoom out value
 
     -- Colors and style
-    osc_color = "#000000",                 -- accent color of the OSC and title bar
-    window_title_color = "#FFFFFF",        -- color of the title in borderless/fullscreen mode
-    window_controls_color = "#FFFFFF",     -- color of the window controls (close, minimize, maximize) in borderless/fullscreen mode
-    windowcontrols_close_hover = "#F45C5B", -- color of close window control on hover
-    windowcontrols_max_hover = "#F8BC3A",  -- color of maximize window controls on hover
-    windowcontrols_min_hover = "#43CB44",  -- color of minimize window controls on hover
-    title_color = "#FFFFFF",               -- color of the title (above seekbar)
-    cache_info_color = "#FFFFFF",          -- color of the cache information
-    seekbarfg_color = "#FB8C00",           -- color of the seekbar progress and handle
-    seekbarbg_color = "#94754F",           -- color of the remaining seekbar
-    seekbar_cache_color = "#918F8E",       -- color of the cache ranges on the seekbar
+    osc_color = "#232136",                 -- accent color of the OSC and title bar
+    window_title_color = "#c8c8e5",        -- color of the title in borderless/fullscreen mode
+    window_controls_color = "#c8c8e5",     -- color of the window controls (close, minimize, maximize) in borderless/fullscreen mode
+    windowcontrols_close_hover = "#eb6f92", -- color of close window control on hover
+    windowcontrols_max_hover = "#f6c177",  -- color of maximize window controls on hover
+    windowcontrols_min_hover = "#3e8fb0",  -- color of minimize window controls on hover
+    title_color = "#c8c8e5",               -- color of the title (above seekbar)
+    cache_info_color = "#c8c8e5",          -- color of the cache information
+    seekbarfg_color = "#ea9a97",           -- color of the seekbar progress and handle
+    seekbarbg_color = "#6e6a86",           -- color of the remaining seekbar
+    seekbar_cache_color = "#393552",       -- color of the cache ranges on the seekbar
     volumebar_match_seek_color = false,    -- match volume bar color with seekbar color (ignores side_buttons_color)
-    time_color = "#FFFFFF",                -- color of the timestamps (below seekbar)
-    chapter_title_color = "#FFFFFF",       -- color of the chapter title (above seekbar)
-    side_buttons_color = "#FFFFFF",        -- color of the side buttons (audio, subtitles, playlist, etc.)
-    middle_buttons_color = "#FFFFFF",      -- color of the middle buttons (skip, jump, chapter, etc.)
-    playpause_color = "#FFFFFF",           -- color of the play/pause button
-    held_element_color = "#999999",        -- color of the element when held down (pressed)
-    hover_effect_color = "#FB8C00",        -- color of a hovered button when hover_effect includes "color"
-    thumbnail_border_color = "#111111",    -- color of the border for thumbnails (with thumbfast)
-    thumbnail_border_outline = "#404040",  -- color of the border outline for thumbnails
+    time_color = "#c8c8e5",                -- color of the timestamps (below seekbar)
+    chapter_title_color = "#c8c8e5",       -- color of the chapter title (above seekbar)
+    side_buttons_color = "#c8c8e5",        -- color of the side buttons (audio, subtitles, playlist, etc.)
+    middle_buttons_color = "#9ccfd6",      -- color of the middle buttons (skip, jump, chapter, etc.)
+    playpause_color = "#3e8fb0",           -- color of the play/pause button
+    held_element_color = "#44415a",        -- color of the element when held down (pressed)
+    hover_effect_color = "#ea9a97",        -- color of a hovered button when hover_effect includes "color"
+    thumbnail_border_color = "#232136",    -- color of the border for thumbnails (with thumbfast)
+    thumbnail_border_outline = "#6e6a86",  -- color of the border outline for thumbnails
 
     fade_alpha = 130,                      -- alpha of the OSC background (0 to disable)
     fade_blur_strength = 100,              -- blur strength for the OSC alpha fade. caution: high values can take a lot of CPU time to render
@@ -170,6 +171,7 @@ local user_opts = {
     seekrangealpha = 150,                  -- transparency of the seek range
     livemarkers = true,                    -- update chapter markers on the seekbar when duration changes
     seekbarkeyframes = false,              -- use keyframes when dragging the seekbar
+    slider_radius = 2,                     -- radius of the seekbar slider (0 to disable rounded corners)
 
     nibbles_top = true,                    -- top chapter nibbles above seekbar
     nibbles_bottom = true,                 -- bottom chapter nibbles below seekbar
@@ -264,6 +266,9 @@ local user_opts = {
 
     -- info button mouse actions
     info_mbtn_left_command = "script-binding stats/display-page-1-toggle",
+
+    -- screenshot button mouse actions
+    screenshot_mbtn_left_command = "osd-msg screenshot subtitles",
 }
 
 mp.observe_property("osc", "bool", function(name, value) if value == true then mp.set_property("osc", "no") end end)
@@ -319,6 +324,8 @@ local icon_theme = {
         screenshot = "\238\169\150",
         loop_off = "\239\133\178",
         loop_on = "\239\133\181",
+        shuffle_off = "\238\188\188",
+        shuffle_on  = "\238\188\184",
         speed = "\239\160\177",
         download = "\239\133\144",
         downloading = "\239\140\174",
@@ -351,7 +358,7 @@ local icon_theme = {
         rewind = '\243\176\145\159',
         forward = '\243\176\136\145',
         jump = {
-            [5] = {'\243\176\135\185', '\243\176\135\184'},
+            [5] = {'\243\177\135\185', '\243\177\135\184'},
             [10] = {'\243\176\180\170', '\243\176\181\177'},
             [30] = {'\243\176\182\150', '\243\176\180\134'},
             default = {'\243\176\147\151', '\243\176\147\151'}, -- first would be '\243\176\147\149' but icon is mirrored in layout()
@@ -365,6 +372,8 @@ local icon_theme = {
         screenshot = '\243\176\132\128',
         loop_off = '\243\176\145\151',
         loop_on = '\243\176\145\150',
+        shuffle_off = '\243\176\146\158',
+        shuffle_on = '\243\176\146\157',
         speed = '\243\176\163\191',
         download = '\243\176\129\136',
         downloading = '\243\176\166\151',
@@ -391,6 +400,8 @@ local language = {
         ontop_disable = "Unpin Window",
         loop_enable = "Loop",
         loop_disable = "Disable Loop",
+        shuffle = "Shuffle Playlist",
+        unshuffle = "Unshuffle Playlist",
         speed_control = "Speed Control",
         screenshot = "Screenshot",
         stats_info = "Information",
@@ -513,8 +524,8 @@ local function set_osc_styles()
     osc_styles = {
         osc_fade_bg = "{\\blur" .. user_opts.fade_blur_strength .. "\\bord" .. user_opts.fade_alpha .. "\\1c&H0&\\3c&H" .. osc_color_convert(user_opts.osc_color) .. "&}",
         window_fade_bg = "{\\blur" .. user_opts.window_fade_blur_strength .. "\\bord" .. user_opts.window_fade_alpha .. "\\1c&H0&\\3c&H" .. osc_color_convert(user_opts.osc_color) .. "&}",
-        window_control = "{\\blur1\\bord0.5\\1c&H" .. osc_color_convert(user_opts.window_controls_color) .. "&\\3c&H0&\\fs25\\fn" .. iconfont .. "}",
-        window_title = "{\\blur1\\bord0.5\\1c&H" .. osc_color_convert(user_opts.window_title_color) .. "&\\3c&H0&\\fs26\\q2\\fn" .. user_opts.font .. "}",
+        window_control = "{\\blur0\\bord0\\1c&H" .. osc_color_convert(user_opts.window_controls_color) .. "&\\3c&H0&\\fs25\\fn" .. iconfont .. "}",
+        window_title = "{\\blur1\\bord0.5\\1c&H" .. osc_color_convert(user_opts.window_title_color) .. "&\\3c&H0&\\fs".. user_opts.window_title_font_size .."\\q2\\fn" .. user_opts.font .. "}",
         title = "{\\blur1\\bord0.5\\1c&H" .. osc_color_convert(user_opts.title_color) .. "&\\3c&H0&\\fs".. user_opts.title_font_size .."\\q2\\fn" .. user_opts.font .. "}",
         chapter_title = "{\\blur0\\bord0\\1c&H" .. osc_color_convert(user_opts.chapter_title_color) .. "&\\3c&H0&\\fs" .. user_opts.chapter_title_font_size .. "\\fn" .. user_opts.font .. "}",
         seekbar_bg = "{\\blur0\\bord0\\1c&H" .. osc_color_convert(user_opts.seekbarbg_color) .. "&}",
@@ -538,6 +549,7 @@ end
 local state = {
     showtime = nil,                         -- time of last invocation (last mouse move)
     touchtime = nil,                        -- time of last invocation (last touch event)
+    touchpoints = {},                       -- current touch points
     osc_visible = false,
     anistart = nil,                         -- time when the animation started
     anitype = nil,                          -- current type of animation
@@ -551,6 +563,7 @@ local state = {
     initREQ = false,                        -- is a re-init request pending?
     marginsREQ = false,                     -- is a margins update pending?
     last_mouseX = nil, last_mouseY = nil,   -- last mouse position, to detect significant mouse movement
+    last_touchX = -1, last_touchY = -1,     -- last touch position
     mouse_in_window = false,
     fullscreen = false,
     tick_timer = nil,
@@ -574,6 +587,7 @@ local state = {
     visibility_modes = {},                  -- visibility_modes to cycle through
     mute = false,
     looping = false,
+    shuffled = false,
     sliderpos = 0,
     touchingprogressbar = false,            -- if the mouse is touching the progress bar
     initialborder = mp.get_property("border"),
@@ -658,9 +672,19 @@ local function get_virt_scale_factor()
     return osc_param.playresx / w, osc_param.playresy / h
 end
 
+local function recently_touched()
+    if state.touchtime == nil then
+        return false
+    end
+    return state.touchtime + 1 >= mp.get_time()
+end
+
 -- return mouse position in virtual ASS coordinates (playresx/y)
 local function get_virt_mouse_pos()
-    if state.mouse_in_window then
+    if recently_touched() then
+        local sx, sy = get_virt_scale_factor()
+        return state.last_touchX * sx, state.last_touchY * sy
+    elseif state.mouse_in_window then
         local sx, sy = get_virt_scale_factor()
         local x, y = mp.get_mouse_pos()
         return x * sx, y * sy
@@ -1108,19 +1132,30 @@ local function draw_seekbar_ranges(element, elem_ass, xp, rh, override_alpha)
     elem_ass:append("{\\1cH&" .. osc_color_convert(user_opts.seekbar_cache_color) .. "&}")
     elem_ass:merge(element.static_ass)
 
+    local slider_lo = element.layout.slider
+    local radius = slider_lo.radius or 0
+
     for _, range in pairs(seekRanges) do
         local pstart = math.max(0, get_slider_ele_pos_for(element, range["start"]) - slider_lo.gap)
         local pend = math.min(elem_geo.w, get_slider_ele_pos_for(element, range["end"]) + slider_lo.gap)
 
         if handle and (pstart < xp + rh and pend > xp - rh) then
             if pstart < xp - rh then
-                elem_ass:rect_cw(pstart, slider_lo.gap, xp - rh, elem_geo.h - slider_lo.gap)
+                if radius > 0 then
+                    elem_ass:round_rect_cw(pstart, slider_lo.gap, xp - rh, elem_geo.h - slider_lo.gap, radius)
+                else
+                    elem_ass:rect_cw(pstart, slider_lo.gap, xp - rh, elem_geo.h - slider_lo.gap)
+                end
             end
             pstart = xp + rh
         end
 
         if pend > pstart then
-            elem_ass:rect_cw(pstart, slider_lo.gap, pend, elem_geo.h - slider_lo.gap)
+            if radius > 0 then
+                elem_ass:round_rect_cw(pstart, slider_lo.gap, pend, elem_geo.h - slider_lo.gap, radius)
+            else
+                elem_ass:rect_cw(pstart, slider_lo.gap, pend, elem_geo.h - slider_lo.gap)
+            end
         end
     end
 end
@@ -1134,7 +1169,12 @@ local function draw_seekbar_progress(element, elem_ass)
     local xp = get_slider_ele_pos_for(element, pos)
     local slider_lo = element.layout.slider
     local elem_geo = element.layout.geometry
-    elem_ass:rect_cw(0, slider_lo.gap, xp, elem_geo.h - slider_lo.gap)
+    local radius = slider_lo.radius or 0
+    if radius > 0 then
+        elem_ass:round_rect_cw(0, slider_lo.gap, xp, elem_geo.h - slider_lo.gap, radius)
+    else
+        elem_ass:rect_cw(0, slider_lo.gap, xp, elem_geo.h - slider_lo.gap)
+    end
 end
 
 local function render_elements(master_ass)
@@ -1615,6 +1655,7 @@ local function add_layout(name)
             elements[name].layout.slider = {
                 border = 1,
                 gap = 1,
+                radius = 0,
                 nibbles_top = user_opts.nibbles_top,
                 nibbles_bottom = user_opts.nibbles_bottom,
                 nibbles_style = user_opts.nibbles_style,
@@ -1679,7 +1720,7 @@ local function window_controls()
     end
 
     -- Window Title
-    if user_opts.window_title then
+    if user_opts.show_window_title then
         lo = add_layout("windowtitle")
         lo.geometry = {x = 20, y = button_y + 14, an = 1, w = osc_param.playresx - 50, h = wc_geo.h}
         lo.style = string.format("%s{\\clip(%f,%f,%f,%f)}", osc_styles.window_title, titlebox_left, wc_geo.y - wc_geo.h, titlebox_right, wc_geo.y + wc_geo.h)
@@ -1742,7 +1783,7 @@ layouts["modern"] = function ()
     lo.layer = 10
     lo.alpha[3] = user_opts.fade_transparency_strength
 
-    local top_titlebar = window_controls_enabled() and (user_opts.window_title or user_opts.window_controls)
+    local top_titlebar = window_controls_enabled() and (user_opts.show_window_title or user_opts.window_controls)
 
     -- Window bar alpha
     if ((user_opts.window_top_bar == "yes" or not (state.border and state.title_bar)) or state.fullscreen) and top_titlebar then
@@ -1765,6 +1806,7 @@ layouts["modern"] = function ()
     lo.geometry = {x = refX, y = refY - 72, an = 5, w = osc_geo.w - 50, h = seekbar_bg_h}
     lo.layer = 13
     lo.style = osc_styles.seekbar_bg
+    lo.box.radius = user_opts.slider_radius
     lo.alpha[1] = 128
     lo.alpha[3] = 128
 
@@ -1774,6 +1816,7 @@ layouts["modern"] = function ()
     lo.layer = 51
     lo.style = osc_styles.seekbar_fg
     lo.slider.gap = (seekbar_h - seekbar_bg_h) / 2.0
+    lo.slider.radius = user_opts.slider_radius
     lo.slider.tooltip_style = osc_styles.tooltip
     lo.slider.tooltip_an = 2
 
@@ -1795,6 +1838,7 @@ layouts["modern"] = function ()
     local ontop_button = user_opts.ontop_button
     local screenshot_button = user_opts.screenshot_button
     local loop_button = user_opts.loop_button
+    local shuffle_button = user_opts.shuffle_button
     local speed_button = user_opts.speed_button
     local download_button = user_opts.download_button and state.is_URL
     local playlist_button = user_opts.playlist_button and (not user_opts.hide_empty_playlist_button or mp.get_property_number("playlist-count", 0) > 1)
@@ -1902,11 +1946,13 @@ layouts["modern"] = function ()
         lo.layer = 13
         lo.alpha[1] = 128
         lo.style = user_opts.volumebar_match_seek_color and osc_styles.seekbar_bg or osc_styles.volumebar_bg
+        lo.box.radius = user_opts.slider_radius
 
         lo = add_layout("volumebar")
         lo.geometry = {x = start_x, y = refY - 35, an = 4, w = 55, h = 10}
         lo.style = user_opts.volumebar_match_seek_color and osc_styles.seekbar_fg or osc_styles.volumebar_fg
         lo.slider.gap = 3
+        lo.slider.radius = user_opts.slider_radius
         lo.slider.tooltip_style = osc_styles.tooltip
         lo.slider.tooltip_an = 2
         start_x = start_x + 75
@@ -1980,6 +2026,14 @@ layouts["modern"] = function ()
         end_x = end_x - 45
     end
 
+    if shuffle_button then
+        lo = add_layout("tog_shuffle")
+        lo.geometry = { x = end_x, y = refY - 35, an = 5, w = 24, h = 24 }
+        lo.style = osc_styles.control_3
+        lo.visible = (osc_param.playresx >= 600 - outeroffset) and shuffle_button
+        end_x = end_x - 45
+    end
+
     if speed_button then
         lo = add_layout("tog_speed")
         lo.geometry = {x = end_x, y = refY - 35, an = 5, w = 24, h = 24}
@@ -2038,7 +2092,7 @@ layouts["modern-image"] = function ()
     lo.layer = 10
     lo.alpha[3] = user_opts.fade_transparency_strength
 
-    local top_titlebar = window_controls_enabled() and (user_opts.window_title or user_opts.window_controls)
+    local top_titlebar = window_controls_enabled() and (user_opts.show_window_title or user_opts.window_controls)
 
     -- Window bar alpha
     if ((user_opts.window_top_bar == "yes" or not (state.border and state.title_bar)) or state.fullscreen) and top_titlebar then
@@ -2273,7 +2327,7 @@ local function osc_init()
     -- Window Title
     ne = new_element("windowtitle", "button")
     ne.content = function ()
-        local title = mp.command_native({"expand-text", user_opts.windowcontrols_title}) or ""
+        local title = mp.command_native({"expand-text", user_opts.window_title}) or ""
         title = title:gsub("\n", " ")
         return title ~= "" and mp.command_native({"escape-ass", title}) or "mpv"
     end
@@ -2617,14 +2671,7 @@ local function osc_init()
     ne.tooltip_style = osc_styles.tooltip
     ne.tooltipF = user_opts.tooltip_hints and locale.screenshot or ""
     ne.visible = (osc_param.playresx >= visible_min_width)
-    ne.eventresponder["mbtn_left_up"] = function ()
-        local temp_sub_pos = mp.get_property("sub-pos")
-        if user_opts.screenshot_flag == "subtitles" or user_opts.screenshot_flag == "subtitles+each-frame" then
-            mp.commandv("set", "sub-pos", 100)
-        end
-        mp.commandv("osd-msg", "screenshot", user_opts.screenshot_flag)
-        mp.commandv("set", "sub-pos", temp_sub_pos)
-    end
+    ne.eventresponder["mbtn_left_up"] = command_callback(user_opts.screenshot_mbtn_left_command)
     visible_min_width = visible_min_width + (user_opts.screenshot_button and 100 or 0)
 
     --tog_loop
@@ -2637,6 +2684,23 @@ local function osc_init()
         mp.command("show-text '" .. (state.looping and locale.loop_disable or locale.loop_enable) .. "'")
         state.looping = not state.looping
         mp.set_property_native("loop-file", state.looping)
+    end
+    visible_min_width = visible_min_width + (user_opts.loop_button and 100 or 0)
+
+    --tog_shuffle
+    ne = new_element("tog_shuffle", "button")
+    ne.content = function() return state.shuffled and icons.shuffle_on or icons.shuffle_off end
+    ne.visible = (osc_param.playresx >= visible_min_width)
+    ne.tooltip_style = osc_styles.tooltip
+    ne.tooltipF = function() return user_opts.tooltip_hints and (state.shuffled and locale.unshuffle or locale.shuffle) or "" end
+    ne.eventresponder["mbtn_left_up"] = function()
+        mp.command("show-text '" .. (state.shuffled and locale.unshuffle or locale.shuffle) .. "'")
+        state.shuffled = not state.shuffled
+        if state.shuffled then
+            mp.command("playlist-shuffle")
+        else
+            mp.command("playlist-unshuffle")
+        end
     end
     visible_min_width = visible_min_width + (user_opts.loop_button and 100 or 0)
 
@@ -2680,7 +2744,6 @@ local function osc_init()
             local command = {
                 "yt-dlp",
                 state.is_image and "" or ytdl_format,
-                state.is_image and "" or "--remux", state.is_image and "" or "mp4",
                 "--add-metadata",
                 "--embed-subs",
                 "-o", "%(title)s.%(ext)s",
@@ -3025,9 +3088,17 @@ local function mouse_leave()
     state.mouse_in_window = false
 end
 
-local function handle_touch()
-    --remember last time of invocation (touch event)
-    state.touchtime = mp.get_time()
+local function handle_touch(_, touchpoints)
+    --remember last touch points
+    if touchpoints then
+        state.touchpoints = touchpoints
+        if #touchpoints > 0 then
+            --remember last time of invocation (touch event)
+            state.touchtime = mp.get_time()
+            state.last_touchX = touchpoints[1].x
+            state.last_touchY = touchpoints[1].y
+        end
+    end
 end
 
 --
@@ -3095,7 +3166,7 @@ local function process_event(source, what)
                 )
             ) then
                 if user_opts.bottomhover then -- if enabled, only show osc if mouse is hovering at the bottom of the screen (where the UI elements are)
-                    local top_hover = window_controls_enabled() and (user_opts.window_title or user_opts.window_controls)
+                    local top_hover = window_controls_enabled() and (user_opts.show_window_title or user_opts.window_controls)
                     if mouseY > osc_param.playresy - (user_opts.bottomhover_zone or 130)
                     or ((user_opts.window_top_bar == "yes" or not (state.border and state.title_bar)) or state.fullscreen) and (mouseY < 40 and top_hover) then
                         show_osc()
@@ -3242,7 +3313,7 @@ local function render()
             state.input_enabled = state.osc_visible
         end
 
-        if mouse_hit_coords(cords.x1, cords.y1, cords.x2, cords.y2) then
+        if mouse_hit_coords(cords.x1, cords.y1, cords.x2, cords.y2) and user_opts.osc_keep_with_cursor then
             mouse_over_osc = true
         end
     end
@@ -3256,7 +3327,7 @@ local function render()
                 mp.disable_key_bindings("window-controls")
             end
 
-            if mouse_hit_coords(cords.x1, cords.y1, cords.x2, cords.y2) then
+            if mouse_hit_coords(cords.x1, cords.y1, cords.x2, cords.y2) and user_opts.osc_keep_with_cursor then
                 mouse_over_osc = true
             end
         end
@@ -3271,12 +3342,12 @@ local function render()
                 if state.osc_visible then
                     mp.enable_key_bindings("window-controls-title", "allow-vo-dragging")
                 else
-                    mp.disable_key_bindings("window-controls-title", "allow-vo-dragging")
+                    mp.disable_key_bindings("window-controls-title")
                 end
                 state.windowcontrols_title = state.osc_visible
             end
 
-            if mouse_hit_coords(cords.x1, cords.y1, cords.x2, cords.y2) then
+            if mouse_hit_coords(cords.x1, cords.y1, cords.x2, cords.y2) and user_opts.osc_keep_with_cursor then
                 mouse_over_osc = true
             end
         end
@@ -3506,6 +3577,7 @@ mp.observe_property("osd-dimensions", "native", function()
 end)
 mp.observe_property("osd-scale-by-window", "native", request_init_resize)
 mp.observe_property("touch-pos", "native", handle_touch)
+mp.observe_property("volume", "number", request_tick)
 mp.observe_property("mute", "bool", function(_, val)
     state.mute = val
     request_tick()
@@ -3715,17 +3787,6 @@ local function validate_user_opts()
        user_opts.volume_control_type ~= "logarithmic" then
           msg.warn("volumecontrol cannot be '" .. user_opts.volume_control_type .. "'. Ignoring.")
           user_opts.volume_control_type = "linear"
-    end
-
-    if user_opts.screenshot_flag ~= "subtitles" and
-       user_opts.screenshot_flag ~= "video" and
-       user_opts.screenshot_flag ~= "window" and
-       user_opts.screenshot_flag ~= "each-frame" and
-       user_opts.screenshot_flag ~= "subtitles+each-frame" and
-       user_opts.screenshot_flag ~= "video+each-frame" and
-       user_opts.screenshot_flag ~= "window+each-frame" then
-          msg.warn("screenshot_flag cannot be '" .. user_opts.screenshot_flag .. "'. Ignoring.")
-          user_opts.screenshot_flag = "subtitles"
     end
 
     if not language[user_opts.language] then
