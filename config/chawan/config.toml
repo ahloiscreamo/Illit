@@ -6,11 +6,55 @@ styling = true
 scripting = true
 images = true
 autofocus = true
+cookie = true
+user-style = '''
+html, body {
+    background-color: #232136 !important;
+    color: #c8c8e5 !important;
+}
+input, textarea, button, select {
+    background-color: #393552 !important;
+    color: #c8c8e5 !important;
+    border: 1px solid #6e6a86 !important;
+}
+p, span, div, td, li {
+    color: #c8c8e5 !important;
+    background-color: transparent !important;
+}
+h1, h2, h3, h4, h5, h6 {
+    color: #9ccfd8 !important;
+}
+a {
+    color: #c4a7e7 !important;
+}
+a:hover {
+    color: #eb6f92 !important;
+}
+strong, b {
+    color: #f6c177 !important;
+}
+pre, code, blockquote {
+    background-color: #393552 !important;
+    color: #c8c8e5 !important;
+    border: 1px solid #6e6a86 !important;
+    border-radius: 5px !important;
+    padding: 10px !important;
+}
+::selection {
+    background-color: #44415a !important;
+    color: #c8c8e5 !important;
+}
+img, video, svg {
+    filter: brightness(0.85) contrast(0.95);
+}
+'''
 
 [display]
 color-mode = "auto"
 format-mode = "auto"
 image-mode = "kitty"
+default-background-color = "#232136"
+default-foreground-color = "#c8c8e5"
 highlight-color = "#eb6f92"  # pink highlight
 highlight-marks = true
 double-width-ambiguous = false
@@ -18,6 +62,7 @@ set-title = true
 
 [page]
 # Open current page in rdrview for general text view
+'C-k' = '() => pager.load("ddg:")'
 'r' = "pager.externFilterSource('rdrview -Hu \"$CHA_URL\"')"
 
 # YouTube: allow scripting
@@ -28,38 +73,68 @@ styling = true
 
 # Wikipedia: use vector skin
 [[siteconf]]
-url = '^https?://[a-z]+\.wikipedia\.org/wiki/(?!.*useskin=.*)'
-rewrite-url = 'x => x.searchParams.append("useskin", "vector")'
-
-# Google: optional site-specific config
-[[siteconf]]
-host = "https://www.google.com/"
-scripting = true
-styling = true
-inline-css = """
-body, html, input, textarea, select, button {
+url = '^https?://[a-z]+\.wikipedia\.org/wiki/'
+rewrite-url = 'x => x.searchParams.set("useskin", "vector")'
+user-style = '''
+html, body {
     background-color: #232136 !important;
     color: #c8c8e5 !important;
 }
-
-a {
-    color: #9ccfd8 !important; /* blue links */
-}
-
-a:visited {
-    color: #c4a7e7 !important; /* magenta visited links */
-}
-
-input, textarea {
+input, textarea, button, select {
     background-color: #393552 !important;
     color: #c8c8e5 !important;
-    border-color: #6e6a86 !important;
+    border: 1px solid #6e6a86 !important;
 }
-
-div {
+p, span, div, td, li {
+    color: #c8c8e5 !important;
     background-color: transparent !important;
 }
-"""
+h1, h2, h3, h4, h5, h6 {
+    color: #9ccfd8 !important;
+}
+a {
+    color: #c4a7e7 !important;
+}
+a:hover {
+    color: #eb6f92 !important;
+}
+strong, b {
+    color: #f6c177 !important;
+}
+pre, code, blockquote {
+    background-color: #393552 !important;
+    color: #c8c8e5 !important;
+    border: 1px solid #6e6a86 !important;
+    border-radius: 5px !important;
+    padding: 10px !important;
+}
+::selection {
+    background-color: #44415a !important;
+    color: #c8c8e5 !important;
+}
+img, video, svg {
+    filter: brightness(0.85) contrast(0.95);
+    background-color: transparent !important;
+}
+'''
+
+# Google: optional site-specific config
+[[siteconf]]
+host = '(www\.)?google\.com'
+rewrite-url = '''
+(x) => {
+    // If a search query or other parameters exist (like the initial redirect)
+    if (x.search) {
+        x.searchParams.set("gbv", "1");
+    }
+}
+'''
+cookie = true
+scripting = true
+styling = true
+user-style = '''
+*, *::before, *::after { color: revert !important; background-color: revert !important }
+'''
 # Uncomment if needed:
 # Reddit
 # [[siteconf]]

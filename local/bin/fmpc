@@ -1,0 +1,194 @@
+#!/usr/bin/env bash
+
+# colors
+G="\033[1;32m"
+Y="\033[1;33m"
+R="\033[1;31m"
+M="\033[1;35m"
+C="\033[1;36m"
+W="\033[0;90m"
+WH="\033[1;37m"
+NC="\033[0m"
+
+# help text
+if [[ "$1" == "--help" || "$1" == "-h" ]]; then
+    echo -e "${M}fmpc${NC} - Fast MPC Browser"
+    echo -e "--------------------------------"
+    echo -e "${G}ENTER${NC}      : Play song"
+    echo -e "${Y}TAB${NC}        : Select multi"
+    echo -e "${G}Ctrl-x${NC}     : Play selection"
+    echo -e "${C}Ctrl-f${NC}     : Search current"
+    echo -e "${M}Ctrl-p/n/b${NC} : Toggle/Next/Prev"
+    echo -e "${R}Ctrl-q${NC}     : Quit"
+    echo -e "--------------------------------"
+    exit 0
+fi
+
+# paths
+export MUSIC_DIR="/mnt/Kingston/Music"
+FIFO_PIPE="/tmp/fmpc_fifo"
+UB_PID_FILE="/tmp/fmpc_ub.pid"
+CACHE_DIR="$HOME/.cache/fmpc"
+export PREVIEW_POS="bottom" #bottom/right
+PREVIEW_SIZE="50%"
+
+# fzf preview logic
+if [[ "$1" == "--preview" ]]; then
+    [[ -z "$2" ]] && exit
+    
+    FILE="$2"
+    FULL_PATH="$MUSIC_DIR/$FILE"
+    ALBUM_DIR=$(dirname "$FILE")
+    ALBUM_HASH=$(echo "$ALBUM_DIR" | md5sum | cut -d' ' -f1)
+    ALBUM_COVER="$CACHE_DIR/${ALBUM_HASH}.jpg"
+
+    mkdir -p "$CACHE_DIR"
+
+    # get the cover
+    if [[ ! -f "$ALBUM_COVER" ]]; then
+        timeout 2s ffmpeg -i "$FULL_PATH" -an -vframes 1 -q:v 2 "$ALBUM_COVER" -y >/dev/null 2>&1
+    fi
+
+    # text centering 
+    center_text() {
+        local text="$1"
+        if [[ "$PREVIEW_POS" == "bottom" ]]; then
+            local clean_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
+            local width=${FZF_PREVIEW_COLUMNS:-80}
+            local n=${#clean_text}
+            local pad=$(( (width - n) / 2 ))
+            [[ $pad -lt 0 ]] && pad=0
+            printf "%${pad}s" " "
+        fi
+        echo -e "$text"
+    }
+
+    # metadata display
+    SEP_LINE=$(printf '%.0s-' $(seq 1 ${FZF_PREVIEW_COLUMNS:-40}))
+    center_text "${W}${SEP_LINE}${NC}"
+    
+    CURRENT=$(mpc current -f "%file%")
+    if [[ "$FILE" == "$CURRENT" ]]; then
+        center_text "${G}[ NOW PLAYING ]${NC}"
+    else
+        center_text "${W}[ Selected ]${NC}"
+    fi
+
+    center_text "${M}Album:${NC} ${WH}$ALBUM_DIR${NC}"
+    center_text "${C}Track:${NC} ${WH}${FILE##*/}${NC}"
+    center_text "${W}${SEP_LINE}${NC}"
+
+# image rendering
+    if [[ -f "$ALBUM_COVER" && -p "$FIFO_PIPE" ]]; then
+        if [[ "$PREVIEW_POS" == "bottom" ]]; then
+            # get real pixels
+            dims=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$ALBUM_COVER")
+            IFS=x read -r W_PX H_PX <<< "$dims"
+            [[ -z "$W_PX" || -z "$H_PX" ]] && { W_PX=1; H_PX=1; }
+            
+            # anchor to top of image area (line 5)
+            OFFSET_Y=$((FZF_PREVIEW_TOP + 5))
+            # fill every line down to the bottom border
+            IMG_H=$((FZF_PREVIEW_LINES - 5))
+            
+            # manual tuning - bump this if it's still left
+            # try 1, 2, or 3 until image is centered
+            MANUAL_ADJUST=2
+            
+            # ratio-based width
+            # we use 2.5 here to give it plenty of "stretch" room
+            IMG_W=$(( IMG_H * W_PX / H_PX * 25 / 10 ))
+
+            # cap it so it doesn't break out of fzf
+            [[ $IMG_W -gt $FZF_PREVIEW_COLUMNS ]] && IMG_W=$FZF_PREVIEW_COLUMNS
+
+            # centering math with the manual nudge
+            IMG_X=$(( FZF_PREVIEW_LEFT + (FZF_PREVIEW_COLUMNS - IMG_W) / 2 + MANUAL_ADJUST ))
+        else
+            IMG_X=$FZF_PREVIEW_LEFT
+            IMG_W=$FZF_PREVIEW_COLUMNS
+            IMG_H=$((FZF_PREVIEW_LINES - 6))
+            OFFSET_Y=$((FZF_PREVIEW_TOP + 6))
+        fi
+
+        printf '{"action": "remove", "identifier": "fmpc-preview"}\n' > "$FIFO_PIPE"
+        printf '{"action": "add", "identifier": "fmpc-preview", "x": %d, "y": %d, "width": %d, "height": %d, "scaler": "contain", "path": "%s"}\n' \
+            "$IMG_X" "$OFFSET_Y" "$IMG_W" "$IMG_H" "$ALBUM_COVER" > "$FIFO_PIPE"
+    fi
+    exit
+fi
+
+# kill background procs on exit
+cleanup() {
+    if [ -f "$FOLLOW_PID_FILE" ]; then
+        follower_pid=$(cat "$FOLLOW_PID_FILE")
+        kill "$follower_pid" 2>/dev/null
+    fi
+    [ -f "$UB_PID_FILE" ] && kill -9 "$(cat "$UB_PID_FILE")" 2>/dev/null
+    tput cnorm; tput rmcup;
+    rm -f "$UB_PID_FILE" "$FIFO_PIPE" "$FOLLOW_PID_FILE" "$LIST_CACHE" "$FZF_SOCK_PATH"
+    exit
+}
+trap cleanup EXIT
+
+# init ueberzug
+rm -f "$FIFO_PIPE"
+mkfifo "$FIFO_PIPE"
+ueberzugpp layer --silent < <(tail -f "$FIFO_PIPE") &
+echo $! > "$UB_PID_FILE"
+
+LIST_CACHE="/tmp/fmpc_list_cache"
+FOLLOW_PID_FILE="/tmp/fmpc_follow.pid"
+FZF_SOCK_PATH="/tmp/fmpc.sock"
+FOLLOWER_SCRIPT="$HOME/.local/bin/fmpc-follower"
+
+# cache list for speed
+mpc listall > "$LIST_CACHE"
+
+# initial scroll pos
+current_file=$(mpc current -f "%file%")
+initial_jump_index=1
+if [[ -n "$current_file" ]]; then
+    index_from_awk=$(awk -v song="$current_file" '$0 == song { print NR; exit }' "$LIST_CACHE")
+    [[ -n "$index_from_awk" ]] && initial_jump_index=$index_from_awk
+fi
+
+DIR_COL=$'\e[35m'
+FILE_COL=$'\e[37m'
+RESET=$'\e[0m'
+
+# formatting
+if [[ "$PREVIEW_POS" == "bottom" ]]; then
+    LIST_CMD="sed \"s|^.*/\(.*\)$|${FILE_COL}\1${RESET}\t&|\" $LIST_CACHE"
+    L1="ENTER ${G}${NC} Play ${W}|${NC} TAB ${Y}󰄳${NC} Sel   ${W}|${NC} C-x ${G}${NC} Play Sel"
+    L2="C-q   ${R}${NC} Quit ${W}|${NC} ESC ${M}${NC} Clear ${W}|${NC} C-f ${C}${NC} Find"
+    HEADER_TEXT=$(echo -e "$L1\n$L2")
+else
+    LIST_CMD="sed \"s|^\(.*\)/\(.*\)$|${DIR_COL}\1/${FILE_COL}\2${RESET}\t\1/\2|\" $LIST_CACHE"
+    HEADER_TEXT=$(echo -e "ENTER ${G}${NC} Play ${W}|${NC} TAB ${Y}󰄳${NC} Sel ${W}|${NC} C-x ${G}${NC} Play Sel ${W}|${NC} C-q ${R}${NC} Quit ${W}|${NC} ESC ${M}${NC} Clear ${W}|${NC} C-f ${C}${NC} Find")
+fi
+
+# fire it up
+eval "$LIST_CMD" | fzf \
+    --ansi \
+    --delimiter '\t' \
+    --with-nth=1 \
+    --multi \
+    --listen="$FZF_SOCK_PATH" \
+    --header "$HEADER_TEXT" \
+    --prompt " 󰎆 Music > " \
+    --preview "$0 --preview {2}" \
+    --preview-window="${PREVIEW_POS}:${PREVIEW_SIZE}:border-rounded" \
+    --bind "load:pos($initial_jump_index)" \
+    --bind "start:execute($FOLLOWER_SCRIPT '$LIST_CACHE' '$FZF_SOCK_PATH' & echo \$! > '$FOLLOW_PID_FILE')" \
+    --bind "enter:execute-silent($HOME/.local/bin/fmpc-play {2} >/dev/null 2>&1)+refresh-preview" \
+    --bind "ctrl-x:execute($HOME/.local/bin/fmpc-play {+2} >/dev/null 2>&1)+deselect-all" \
+    --bind "esc:change-query()+top" \
+    --bind "change:top" \
+    --bind "ctrl-f:transform-query(mpc current -f '%file%' | sed 's|.*/||')" \
+    --bind "ctrl-p:execute-silent(mpc toggle >/dev/null 2>&1)+refresh-preview" \
+    --bind "ctrl-n:execute-silent(mpc next >/dev/null 2>&1)+refresh-preview" \
+    --bind "ctrl-b:execute-silent(mpc prev >/dev/null 2>&1)+refresh-preview" \
+    --bind "ctrl-u:execute-silent(mpc update >/dev/null 2>&1)+refresh-preview" \
+    --bind "ctrl-q:abort" \
+    --reverse --border

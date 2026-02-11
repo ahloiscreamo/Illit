@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# helper for fmpc follow mode - don't run this manually
+
+CACHE="$1"
+SOCK="$2"
+
+# need these or we're dead
+[[ ! -f "$CACHE" || -z "$SOCK" ]] && exit 1
+
+# kill the idleloop when we bail
+cleanup() {
+    kill $(jobs -p) 2>/dev/null
+}
+trap cleanup EXIT
+
+# watch for track changes
+mpc idleloop player | while read -r _; do
+    # make sure main script didn't nuked the cache already
+    [[ ! -f "$CACHE" ]] && break
+
+    FILE=$(mpc current -f "%file%")
+    if [[ -n "$FILE" ]]; then
+        # find where we are in the list
+        IDX=$(awk -v song="$FILE" '$0 == song { print NR; exit }' "$CACHE")
+        if [[ -n "$IDX" ]]; then
+            # jump fzf to the new track
+            curl --unix-socket "$SOCK" http -d "pos($IDX)" >/dev/null 2>&1
+        fi
+    fi
+done &
+
+wait

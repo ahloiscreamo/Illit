@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# all commands silenced to prevent output leaking into fzf
+[[ -z "$1" ]] && exit 1
+
+# Batch play for multiple selection
+if [[ "$#" -gt 1 ]]; then
+    mpc clear >/dev/null 2>&1
+    mpc add "$@" >/dev/null 2>&1
+    mpc play >/dev/null 2>&1
+    exit 0
+fi
+
+# Single play logic
+SONG="$1"
+DIR=$(dirname "$SONG")
+
+mpc clear >/dev/null 2>&1
+mpc add "$DIR" >/dev/null 2>&1
+mpc searchplay filename "$SONG" >/dev/null 2>&1
+mpc single off >/dev/null 2>&1
+mpc repeat off >/dev/null 2>&1

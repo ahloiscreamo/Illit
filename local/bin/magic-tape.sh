@@ -26,7 +26,7 @@ function load_colors(){
   Red="\e[31m"
   Magenta="\e[35m"
   Cyan="\e[36m"
-  Gray="\e[32m"
+  Gray="\e[90m"
   Black="\e[30m" 
   bold="\x1b[1m"
   normal="\e[m"
@@ -75,6 +75,10 @@ function setup_cache_directories() {
     mkdir -p "$HOME/.cache/magic-tape/jpg"
     mkdir -p "$HOME/.cache/magic-tape/subscriptions/jpg"
     mkdir -p "$HOME/.cache/magic-tape/comments"
+    touch "$HOME/.cache/magic-tape/subscriptions/subscriptions.txt"
+    touch "$HOME/.cache/magic-tape/history/watch_history.txt"
+    touch "$HOME/.cache/magic-tape/history/search_history.txt"
+    touch "$HOME/.cache/magic-tape/history/liked.txt"
 }
 
 function load_config() {
@@ -89,10 +93,10 @@ function load_config() {
   if [[ -z "$USE_NERD_FONTS" ]]; then USE_NERD_FONTS="yes"; fi
   if [ "$USE_NERD_FONTS" = "yes" ]; then
     # Nerd Font Icons
-    ICON_FEED="󰄾"; ICON_ALGORITHM=""; ICON_TRENDING=""; ICON_SEARCH=""; ICON_REPEAT=""; ICON_CHANNEL="󰑈"; ICON_LIKED=""; ICON_HISTORY=""; ICON_SEARCH_HISTORY="󱘢"; ICON_MISC=""; ICON_QUIT="󰈆"; ICON_PREFERENCES=""; ICON_UPDATE=""; ICON_LIKE=""; ICON_UNLIKE=""; ICON_IMPORT=""; ICON_SUBSCRIBE="󰄾"; ICON_UNSUBSCRIBE="󰗼"; ICON_CLEAR=""; ICON_BACK="󰌍"; ICON_PLAY="󰎁"; ICON_PLAY_AUDIO="󰎄"; ICON_DOWNLOAD=""; ICON_BROWSER="爵"; ICON_LINK=""; ICON_MAIN_MENU="󰋞"; ICON_NO_FILTER="󰗢"; ICON_DUR_S="󰔟"; ICON_DUR_M="󰔣"; ICON_DUR_L="󰔞"; ICON_PLAYLIST="󰥴";
+    ICON_FEED="󰗃"; ICON_ALGORITHM="󰌶"; ICON_TRENDING=""; ICON_SEARCH=""; ICON_REPEAT=""; ICON_CHANNEL="󰑈"; ICON_LIKED=""; ICON_HISTORY=""; ICON_SEARCH_HISTORY="󱘢"; ICON_MISC=""; ICON_QUIT="󰈆"; ICON_PREFERENCES=""; ICON_UPDATE=""; ICON_LIKE=""; ICON_UNLIKE=""; ICON_IMPORT=""; ICON_SUBSCRIBE="󰗃"; ICON_UNSUBSCRIBE="󰗼"; ICON_CLEAR=""; ICON_BACK="󰌍"; ICON_PLAY="󰎁"; ICON_PLAY_AUDIO="󰎄"; ICON_DOWNLOAD=""; ICON_BROWSER="爵"; ICON_LINK=""; ICON_MAIN_MENU="󰋞"; ICON_NO_FILTER="󰗢"; ICON_DUR_S="󰔟"; ICON_DUR_M="󰔣"; ICON_DUR_L="󰔞"; ICON_PLAYLIST="󰥴"; ICON_SELECT_VIDEO="";
   else
     # Emoji Fallbacks
-    ICON_FEED="📡"; ICON_ALGORITHM="🔥"; ICON_TRENDING="📈"; ICON_SEARCH="🔎"; ICON_REPEAT="🔁"; ICON_CHANNEL="📺"; ICON_LIKED="👍"; ICON_HISTORY="🕒"; ICON_SEARCH_HISTORY="📋"; ICON_MISC="⚙️"; ICON_QUIT="❌"; ICON_PREFERENCES="⚙️"; ICON_UPDATE="⬇️"; ICON_LIKE="👍"; ICON_UNLIKE="👎"; ICON_IMPORT="📥"; ICON_SUBSCRIBE="➕"; ICON_UNSUBSCRIBE="➖"; ICON_CLEAR="🗑️"; ICON_BACK="⬅️"; ICON_PLAY="▶️"; ICON_PLAY_AUDIO="🎵"; ICON_DOWNLOAD="⬇️"; ICON_BROWSER="🌐"; ICON_LINK="🔗"; ICON_MAIN_MENU="🏠"; ICON_NO_FILTER="🚫"; ICON_DUR_S="🕒"; ICON_DUR_M="🕔"; ICON_DUR_L="🕤"; ICON_PLAYLIST="🎶";
+    ICON_FEED="📡"; ICON_ALGORITHM="🔥"; ICON_TRENDING="📈"; ICON_SEARCH="🔎"; ICON_REPEAT="🔁"; ICON_CHANNEL="📺"; ICON_LIKED="👍"; ICON_HISTORY="🕒"; ICON_SEARCH_HISTORY="📋"; ICON_MISC="⚙️"; ICON_QUIT="❌"; ICON_PREFERENCES="⚙️"; ICON_UPDATE="⬇️"; ICON_LIKE="👍"; ICON_UNLIKE="👎"; ICON_IMPORT="📥"; ICON_SUBSCRIBE="➕"; ICON_UNSUBSCRIBE="➖"; ICON_CLEAR="🗑️"; ICON_BACK="⬅️"; ICON_PLAY="▶️"; ICON_PLAY_AUDIO="🎵"; ICON_DOWNLOAD="⬇️"; ICON_BROWSER="🌐"; ICON_LINK="🔗"; ICON_MAIN_MENU="🏠"; ICON_NO_FILTER="🚫"; ICON_DUR_S="🕒"; ICON_DUR_M="🕔"; ICON_DUR_L="🕤"; ICON_PLAYLIST="🎶"; ICON_SELECT_VIDEO="🎬";
   fi
 
   if [[ $LIST_LENGTH -gt 99 ]];then LIST_LENGTH=99;fi;
@@ -112,31 +116,42 @@ function load_config() {
  fi
 }
 
-function search_filter ()
+function select_duration_filter ()
 {
- local prompt_output
- prompt_output="$(echo -e "${Cyan}${ICON_NO_FILTER}${normal} No Duration Filter\n${Cyan}${ICON_DUR_S}${normal} Duration up to 4 mins\n${Cyan}${ICON_DUR_M}${normal} Duration between 4 and 20 mins\n${Cyan}${ICON_DUR_L}${normal} Duration longer than 20 mins\n${Cyan}${ICON_PLAYLIST}${normal} Search for playlist\n${Red}${ICON_MAIN_MENU}${normal} Back to Main Menu"|eval "$PREF_SELECTOR""\"Select Filter \"")";
+ local duration_prompt
+ duration_prompt="$(echo -e "${Cyan}${ICON_NO_FILTER}${normal} Any Duration\n${Cyan}${ICON_DUR_S}${normal} Duration up to 4 mins\n${Cyan}${ICON_DUR_M}${normal} Duration between 4 and 20 mins\n${Cyan}${ICON_DUR_L}${normal} Duration longer than 20 mins\n${Red}${ICON_MAIN_MENU}${normal} Back to Main Menu"|eval "$PREF_SELECTOR""\"Step 1: Select Duration \"")";
 
- if [[ -z "$prompt_output" ]] || [[ "$prompt_output" == *"Back to Main Menu"* ]]; then
-     echo "__BACK__"
-     return
- fi
+    if [[ -z "$duration_prompt" ]] || [[ "$duration_prompt" == *"Back to Main Menu"* ]]; then
+        echo "back"
+        return
+    fi
 
- case "$prompt_output" in
-  *"No Duration Filter"*) FILTER="&sp=EgQQARgE";
-  ;;
-  *"Duration up to 4 mins"*) FILTER="&sp=EgQQARgB";
-  ;;
-  *"Duration between 4 and 20 mins"*) FILTER="&sp=EgQQARgD";
-  ;;
-  *"Duration longer than 20 mins"*) FILTER="&sp=EgQQARgC";
-  ;;
-  *"Search for playlist"*) FILTER="&sp=EgQQAxgE";
-  ;;
-  *) FILTER="&sp=EgQQARgE";
-  ;;
- esac
- echo "$prompt_output"
+    case "$duration_prompt" in
+        *"Any Duration"*) echo "any" ;;
+        *"up to 4 mins"*) echo "short" ;;
+        *"between 4 and 20 mins"*) echo "medium" ;;
+        *"longer than 20 mins"*) echo "long" ;;
+        *) echo "any" ;;
+    esac
+}
+
+function select_sort_order ()
+{
+    local sort_prompt
+    sort_prompt="$(echo -e "${Green}${ICON_SEARCH}${normal} Sort by Relevance\n${Green}${ICON_HISTORY}${normal} Sort by Upload Date\n${Green}${ICON_TRENDING}${normal} Sort by View Count\n${Green}${ICON_LIKED}${normal} Sort by Rating\n${Red}${ICON_MAIN_MENU}${normal} Back to Main Menu"|eval "$PREF_SELECTOR""\"Step 2: Select Sort Order \"")"
+
+    if [[ -z "$sort_prompt" ]] || [[ "$sort_prompt" == *"Back to Main Menu"* ]]; then
+        echo "back"
+        return
+    fi
+
+    case "$sort_prompt" in
+        *"Sort by Relevance"*) echo "relevance" ;;
+        *"Sort by Upload Date"*) echo "date" ;;
+        *"Sort by View Count"*) echo "views" ;;
+        *"Sort by Rating"*) echo "rating" ;;
+        *) echo "relevance" ;;
+    esac
 }
 
 function new_subscription ()
@@ -168,13 +183,14 @@ function new_subscription ()
   done;
   echo -e "${Gray}Downloading channel thumbnails...${normal}";
   curl -s -K $HOME/.cache/magic-tape/search/channels/thumbnails.txt  2>/dev/null&echo -e "${Gray}Background downloading channel thumbnails...${normal}";
-  if [ $ITEM -gt 1 ];then echo "Previous Page">>$HOME/.cache/magic-tape/search/channels/titles.txt;fi;
-  if [ $(cat $HOME/.cache/magic-tape/search/channels/ids.txt|wc -l) -ge $LIST_LENGTH ];then echo "Next Page">>$HOME/.cache/magic-tape/search/channels/titles.txt;fi;
-  echo "Abort Selection">>$HOME/.cache/magic-tape/search/channels/titles.txt;
+  if [ $ITEM -gt 1 ];then echo -e "${Cyan}Previous Page${normal}">>$HOME/.cache/magic-tape/search/channels/titles.txt;fi;
+  if [ $(cat $HOME/.cache/magic-tape/search/channels/ids.txt|wc -l) -ge $LIST_LENGTH ];then echo -e "${Cyan}Next Page${normal}">>$HOME/.cache/magic-tape/search/channels/titles.txt;fi;
+  echo -e "${Red}Abort Selection${normal}">>$HOME/.cache/magic-tape/search/channels/titles.txt;
 
   CHAN=" $(cat -n $HOME/.cache/magic-tape/search/channels/titles.txt|sed 's/^. *//g' |fzf\
   --info=hidden \
   --layout=reverse \
+  --ansi \
   --height=100% \
   --prompt="Select Channel: " \
   --header="$fzf_header" \
@@ -192,13 +208,14 @@ function new_subscription ()
   echo $i>$HOME/.cache/magic-tape/search/channels/index.txt;\
   if [[ "$IMAGE_SUPPORT" == "ueberz"* ]];then ll=0; while [ $ll -le $hght ];do echo "";((ll++));done;fi;\
   if [[ "$IMAGE_SUPPORT" == "kitty" ]]&&[[ $kitty_version -le 21 ]];then ll=0; while [ $ll -le $hght ];do echo "";((ll++));done;fi;\
-  TITLE="$(sed -n "${i}p" $HOME/.cache/magic-tape/search/channels/titles.txt)";\
+  TITLE_WITH_COLOR="$(sed -n "${i}p" $HOME/.cache/magic-tape/search/channels/titles.txt)";\
+  TITLE=$(echo "$TITLE_WITH_COLOR" | sed "s/\x1b\[[0-9;]*m//g");\
   if [[ "$TITLE" == "Previous Page" ]];then draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght  "$SHARE_DIR"/previous.png;\
   elif [[ "$TITLE" == "Next Page" ]];then draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght  "$SHARE_DIR"/next.png;\
   elif [[ "$TITLE" == "Abort Selection" ]];then draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght  "$SHARE_DIR"/abort.png;\
   else draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght  "$HOME""/.cache/magic-tape/jpg/""$(sed -n "${i}p" $HOME/.cache/magic-tape/search/channels/ids.txt)"".jpg";fi;\
   ll=1; echo -ne "\e[30m"; while [ $ll -le $FZF_PREVIEW_COLUMNS ];do echo -n -e "─";((ll++));done;echo -e "\e[m";\
-  echo -e "\n\e[33m$TITLE\e[m"|fold -w $FZF_PREVIEW_COLUMNS -s;\
+  echo -e "\n\e[33m$TITLE_WITH_COLOR\e[m"|fold -w $FZF_PREVIEW_COLUMNS -s;\
    if [[ $TITLE != "Abort Selection" ]]&&[[ $TITLE != "Next Page" ]]&&[[ $TITLE != "Previous Page" ]];\
    then SUBS="$(sed -n "${i}p" $HOME/.cache/magic-tape/search/channels/subscribers.txt)";\
   echo -e "\n\e[32mSubscribers: \e[36m$SUBS\e[m";\
@@ -209,6 +226,7 @@ function new_subscription ()
   clear_image;
   i=$(cat $HOME/.cache/magic-tape/search/channels/index.txt);
   NAME=$(sed -n "${i}p" $HOME/.cache/magic-tape/search/channels/titles.txt);
+  NAME=$(echo "$NAME" | sed 's/\x1b\[[0-9;]*m//g');
   if [[ $CHAN == " " ]]; then echo "ABORT!"; NAME="Abort Selection";clear;fi;
   echo -e "${Gray}Channel Selected: $NAME${normal}";
   if [ $ITEM  -ge $LIST_LENGTH ]&&[[ $CHAN == *"shift-left"* ]]; then NAME="Previous Page";fi;
@@ -337,7 +355,7 @@ function print_mpv_video_shortcuts()
 function misc_menu ()
 {
  while [ "$db2" != "q" ] ;
- do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓╻┏━┓┏━╸   ┏┳┓┏━╸┏┓╻╻ ╻${normal}\n${Yellow}${bold}┃┃┃┃┗━┓┃     ┃┃┃┣╸ ┃┗┫┃ ┃${normal}\n${Yellow}${bold}╹ ╹╹┗━┛┗━╸   ╹ ╹┗━╸╹ ╹┗━┛${normal}\n${Cyan}${normal}  ${Yellow}${bold}P${normal} ${Cyan}SET UP PREFERENCES\n${Cyan}${normal}  ${Yellow}${bold}Y${normal} ${Cyan}UPDATE yt-dlp\n${Red}${normal}  ${Yellow}${bold}l${normal} ${Red}LIKE a video\n${Red}${normal}  ${Yellow}${bold}L${normal} ${Red}UNLIKE a video\n${Green}${normal}  ${Yellow}${bold}I${normal} ${Green}Import subscriptions from YouTube\n${Green}󰄾${normal}  ${Yellow}${bold}n${normal} ${Green}Subscribe to a new channel\n${Green}󰗼${normal}  ${Yellow}${bold}u${normal} ${Green}Unsubscribe from a channel\n${Magenta}${normal}  ${Yellow}${bold}H${normal} ${Magenta}Clear watch history\n${Magenta}${normal}  ${Yellow}${bold}S${normal} ${Magenta}Clear search history\n${Magenta}${normal}  ${Yellow}${bold}T${normal} ${Magenta}Clear thumbnail cache\n${Cyan}󰌍${normal}  ${Yellow}${bold}q${normal} ${Cyan}Back to Main Menu"|fzf \
+ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓╻┏━┓┏━╸   ┏┳┓┏━╸┏┓╻╻ ╻${normal}\n${Yellow}${bold}┃┃┃┃┗━┓┃     ┃┃┃┣╸ ┃┗┫┃ ┃${normal}\n${Yellow}${bold}╹ ╹╹┗━┛┗━╸   ╹ ╹┗━╸╹ ╹┗━┛${normal}\n${Cyan}${ICON_PREFERENCES}${normal}  ${Yellow}${bold}P${normal} ${Cyan}SET UP PREFERENCES\n${Cyan}${ICON_UPDATE}${normal}  ${Yellow}${bold}Y${normal} ${Cyan}UPDATE yt-dlp\n${Red}${ICON_LIKE}${normal}  ${Yellow}${bold}l${normal} ${Red}LIKE a video\n${Red}${ICON_UNLIKE}${normal}  ${Yellow}${bold}L${normal} ${Red}UNLIKE a video\n${Green}${ICON_IMPORT}${normal}  ${Yellow}${bold}I${normal} ${Green}Import subscriptions from YouTube\n${Green}${ICON_SUBSCRIBE}${normal}  ${Yellow}${bold}n${normal} ${Green}Subscribe to a new channel\n${Green}${ICON_UNSUBSCRIBE}${normal}  ${Yellow}${bold}u${normal} ${Green}Unsubscribe from a channel\n${Magenta}${ICON_CLEAR}${normal}  ${Yellow}${bold}H${normal} ${Magenta}Clear watch history\n${Magenta}${ICON_CLEAR}${normal}  ${Yellow}${bold}S${normal} ${Magenta}Clear search history\n${Magenta}${ICON_CLEAR}${normal}  ${Yellow}${bold}T${normal} ${Magenta}Clear thumbnail cache\n${Cyan}${ICON_BACK}${normal}  ${Yellow}${bold}q${normal} ${Cyan}Back to Main Menu"|fzf \
 --preview-window=0 \
 --disabled \
 --reverse \
@@ -550,10 +568,52 @@ function get_feed_json ()
  #if statement added to fix json problem. If the problem re-appears, uncomment the if statement, and comment  following line
  #if [ $db == "f" ]||[ $db == "t" ]||[ $db == "y" ];then LIST_LENGTH=$(($LIST_LENGTH * 2 ));else LIST_LENGTH="$(grep 'LIST_LENGTH:' $HOME/.config/magic-tape/magic-tape.conf|sed 's/^#.*//g;s/^.*: //')";fi;
 ###LIST_LENGTH="$(grep 'LIST_LENGTH:' $HOME/.config/magic-tape/magic-tape.conf|sed 's/^#.*//g;s/^.*: //')";
- yt-dlp --cookies-from-browser $PREF_BROWSER --flat-playlist --extractor-args youtubetab:approximate_date --playlist-start $ITEM0 --playlist-end $(($ITEM0 + $(($LIST_LENGTH - 1)))) -j "https://www.youtube.com$FEED">$HOME/.cache/magic-tape/json/video_search.json;
+
+ local local_ytdlp_filter_args=""
+ if [[ -n "$YTDLP_MATCH_FILTER_ARG" ]]; then
+     local_ytdlp_filter_args="--match-filter \"$YTDLP_MATCH_FILTER_ARG\""
+ fi
+
+ local ytdlp_url
+ if [[ "$FEED" == "TRENDING_PAGE" ]]; then
+    ytdlp_url="youtube:trending"
+ else
+    ytdlp_url="https://www.youtube.com$FEED"
+ fi
+
+ local ytdlp_cmd="yt-dlp --cookies-from-browser \"$PREF_BROWSER\" --flat-playlist --extractor-args youtubetab:approximate_date --playlist-start \"$ITEM0\" --playlist-end \"$(($ITEM0 + $(($LIST_LENGTH - 1))))\" -j \"$ytdlp_url\" $local_ytdlp_filter_args"
+ eval "$ytdlp_cmd" > "$HOME/.cache/magic-tape/json/video_search.json"
+
  echo -e "${Gray}Completed $FEED.${normal}";
  #correct back LIST_LENGTH value(fix json problem);
  #if [ $db == "f" ]||[ $db == "t" ];then LIST_LENGTH=$(($LIST_LENGTH / 2 ));fi;
+}
+
+function get_playlist_videos_json ()
+{
+ echo -e "${Gray}Downloading $FEED...${normal}";
+ echo -e "$db\n$ITEM\n$ITEM0\n$FEED\n$fzf_header">$HOME/.cache/magic-tape/history/last_action.txt;
+
+ local ytdlp_url="https://www.youtube.com$FEED"
+
+ # Build arguments array for safety instead of using eval
+ local -a ytdlp_args
+ ytdlp_args=(
+    --ignore-config
+    --flat-playlist
+    --cookies-from-browser "$PREF_BROWSER"
+    --extractor-args "youtubetab:approximate_date"
+    --playlist-start "$ITEM0"
+    --playlist-end "$(($ITEM0 + $(($LIST_LENGTH - 1))))"
+    -j "$ytdlp_url"
+ )
+ if [[ -n "$YTDLP_MATCH_FILTER_ARG" ]]; then
+     ytdlp_args+=(--match-filter "$YTDLP_MATCH_FILTER_ARG")
+ fi
+
+ yt-dlp "${ytdlp_args[@]}" > "$HOME/.cache/magic-tape/json/video_search.json"
+
+ echo -e "${Gray}Completed $FEED.${normal}";
 }
 
 function get_data ()
@@ -564,18 +624,14 @@ function get_data ()
  jq '.id' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/ids.txt;
  jq '.title' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/titles.txt;
  jq '.duration_string' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/lengths.txt;
- jq '.url' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/urls.txt;
+ jq '.url // .webpage_url' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/urls.txt;
  jq '.timestamp' $HOME/.cache/magic-tape/json/video_search.json>$HOME/.cache/magic-tape/search/video/timestamps.txt;
  jq '.description' $HOME/.cache/magic-tape/json/video_search.json>$HOME/.cache/magic-tape/search/video/descriptions.txt;
  jq '.view_count' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/views.txt;
- jq '.channel_id' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/channel_ids.txt;
- jq '.channel' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/channel_names.txt;
- jq '.thumbnails[0].url' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'|sed 's/\.jpg.*$/\.jpg/g'>$HOME/.cache/magic-tape/search/video/image_urls.txt;
+ jq '.channel_id // .uploader_id' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/channel_ids.txt;
+ jq '.channel // .uploader' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/channel_names.txt;
+ jq '((.thumbnails | map(select(.height == 480)) | .[0].url) // (.thumbnails | map(select(.height == 320)) | .[0].url)) // .thumbnails[-1].url // .thumbnail // .thumbnails[0].url' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/image_urls.txt;
  jq '.live_status' $HOME/.cache/magic-tape/json/video_search.json>$HOME/.cache/magic-tape/search/video/live_status.txt;
- epoch="$(jq '.epoch' $HOME/.cache/magic-tape/json/video_search.json|head -1)";
- Y_epoch="$(date --date=@$epoch +%Y|sed 's/^0*//')";
- M_epoch="$(date --date=@$epoch +%m|sed 's/^0*//')";
- D_epoch="$(date --date=@$epoch +%j|sed 's/^0*//')";
  if [[ $db == "c" ]];
  then jq '.playlist_uploader' $HOME/.cache/magic-tape/json/video_search.json|sed 's/"//g'>$HOME/.cache/magic-tape/search/video/channel_names.txt;
   jq '.playlist_uploader_id' $HOME/.cache/magic-tape/json/video_search.json|sed 's/"//g'>$HOME/.cache/magic-tape/search/video/channel_ids.txt;
@@ -585,10 +641,15 @@ function get_data ()
  i=1;
  while [ $i -le $(cat $HOME/.cache/magic-tape/search/video/titles.txt|wc -l) ];
  do img_path="$HOME/.cache/magic-tape/jpg/img-$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/ids.txt).jpg";
-  if [ ! -f  "$img_path" ];
-  then echo "url = \"$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/image_urls.txt)\"">>$HOME/.cache/magic-tape/search/video/thumbnails.txt;
-   echo "output = \"$img_path\"">>$HOME/.cache/magic-tape/search/video/thumbnails.txt;
-   cp "$SHARE_DIR"/wait.png $HOME/.cache/magic-tape/jpg/img-$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/ids.txt).jpg
+  if [ ! -f  "$img_path" ]; then
+    img_url=$(sed -n "${i}p" "$HOME/.cache/magic-tape/search/video/image_urls.txt")
+    if [[ "$img_url" == "//"* ]]; then
+      img_url="https:$img_url"
+    fi
+    if [[ -n "$img_url" ]] && [[ "$img_url" != "null" ]]; then
+        echo "url = \"$img_url\"" >> "$HOME/.cache/magic-tape/search/video/thumbnails.txt";
+        echo "output = \"$img_path\"" >> "$HOME/.cache/magic-tape/search/video/thumbnails.txt";
+    fi
   fi;
   ### parse approx date
   timestamp="$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/timestamps.txt)";
@@ -635,8 +696,9 @@ function select_video ()
  PLAY=" $(cat -n $HOME/.cache/magic-tape/search/video/titles.txt|sed 's/^. *//g' |fzf\
  --info=hidden \
  --layout=reverse \
+ --ansi \
  --height=100% \
- --prompt="Select video: " \
+ --prompt="$ICON_SELECT_VIDEO Select video: " \
  --header="$fzf_header" \
  --preview-window=left,40% \
  --tabstop=1 \
@@ -652,16 +714,23 @@ function select_video ()
  i=$(echo {}|cut -b -2);echo $i>$HOME/.cache/magic-tape/search/video/index.txt;\
  if [[ "$IMAGE_SUPPORT" == "ueberz"* ]];then ll=0; while [ $ll -le $hght ];do echo "";((ll++));done;fi;\
  if [[ "$IMAGE_SUPPORT" == "kitty" ]]&&[[ $kitty_version -le 21 ]];then ll=0; while [ $ll -le $hght ];do echo "";((ll++));done;fi;\
- TITLE="$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/titles.txt)";\
+ TITLE_WITH_COLOR="$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/titles.txt)";\
+ TITLE=$(echo "$TITLE_WITH_COLOR" | sed "s/\x1b\[[0-9;]*m//g");\
  channel_name="$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/channel_names.txt)";\
  channel_jpg="$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/channel_ids.txt)"".jpg";\
  if [[ "$TITLE" == "Previous Page" ]];then draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght "$SHARE_DIR"/previous.png;\
  elif [[ "$TITLE" == "Next Page" ]];then draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght "$SHARE_DIR"/next.png;\
  elif [[ "$TITLE" == "Abort Selection" ]];then draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght "$SHARE_DIR"/abort.png;\
- else draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght "$HOME/.cache/magic-tape/jpg/img-""$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/ids.txt)"".jpg";\
+ else \
+  img_path="$HOME/.cache/magic-tape/jpg/img-""$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/ids.txt)"".jpg";\
+  if [ -f "$img_path" ]; then \
+    draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght "$img_path"; \
+  else \
+    echo -e "\n\n      loading thumbnail..."; \
+  fi; \
  fi;\
  ll=1; echo -ne "\e[30m"; while [ $ll -le $FZF_PREVIEW_COLUMNS ];do echo -n -e "─";((ll++));done;echo -e "\e[m";\
- echo -e "\n\e[33m$TITLE\e[m" |fold -w $FZF_PREVIEW_COLUMNS -s ; \
+ echo -e "\n\e[33m$TITLE_WITH_COLOR\e[m" |fold -w $FZF_PREVIEW_COLUMNS -s ; \
  ll=1; echo -ne "\e[30m"; while [ $ll -le $FZF_PREVIEW_COLUMNS ];do echo -n -e "─";((ll++));done;echo -e "\e[m";\
  if [[ $TITLE != "Abort Selection" ]]&&[[ $TITLE != "Previous Page" ]]&&[[ $TITLE != "Next Page" ]];\
  then  LENGTH="$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/lengths.txt)";\
@@ -685,6 +754,7 @@ function select_video ()
   notification_img="$HOME/.cache/magic-tape/jpg/img-"$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/ids.txt)".jpg";
  play_now="$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/urls.txt)";
  TITLE=$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/titles.txt);
+ TITLE=$(echo "$TITLE" | sed 's/\x1b\[[0-9;]*m//g');
  channel_name="$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/channel_names.txt)";
  channel_id="$(sed -n "${i}p" $HOME/.cache/magic-tape/search/video/channel_ids.txt)";
  if [ $ITEM  -ge $LIST_LENGTH ]&&[[ $PLAY == *"shift-left"* ]]; then TITLE="Previous Page";fi;
@@ -771,9 +841,9 @@ function print_pinned_comment()
 
  if [[ -n "$pindex" ]]
  then
-  draw_line "${Green}" 
-  print_comment "${Red}🖈" "$pindex" "${Green}"
-  draw_line "${Green}"
+  draw_line "${Gray}" 
+  print_comment "${Red}🖈" "$pindex" "${Gray}"
+  draw_line "${Gray}"
  fi
 }
 
@@ -866,7 +936,22 @@ function message_audio_video ()
 function select_action ()
 {
  clear;
-ACTION="$(echo -e "${Green}${ICON_PLAY}${normal} Play Best Video\n${Green}${ICON_PLAY_AUDIO}${normal} Play Best Audio\n${Green}${ICON_PLAY}${normal} Play Video 720p\n${Green}${ICON_PLAY}${normal} Play Video 360p\n${Green}${ICON_PLAY}${normal} Play Video 144p\n${Cyan}${ICON_DOWNLOAD}${normal} Download Video\n${Cyan}${ICON_DOWNLOAD}${normal} Download Audio\n${Red}${ICON_LIKE}${normal} Like Video\n${Yellow}${ICON_CHANNEL}${normal} Browse Feed of channel \"$channel_name\"\n${Yellow}${ICON_SUBSCRIBE}${normal} Subscribe to channel \"$channel_name\"\n${Magenta}${ICON_BROWSER}${normal} Open in browser\n${Magenta}${ICON_LINK}${normal} Copy link\n${Cyan}${ICON_BACK}${normal} Back\n${Cyan}${ICON_MAIN_MENU}${normal} Back to Main Menu"|eval "$PREF_SELECTOR"\"Select action\")";
+ # Build the menu options string dynamically
+ local menu_options="${Green}${ICON_PLAY}${normal} Play Best Video\n${Green}${ICON_PLAY_AUDIO}${normal} Play Best Audio\n${Green}${ICON_PLAY}${normal} Play Video 720p\n${Green}${ICON_PLAY}${normal} Play Video 360p\n${Green}${ICON_PLAY}${normal} Play Video 144p\n${Cyan}${ICON_DOWNLOAD}${normal} Download Video\n${Cyan}${ICON_DOWNLOAD}${normal} Download Audio\n${Red}${ICON_LIKE}${normal} Like Video"
+ 
+ # Conditionally add channel options if channel_name is not "null" or empty
+ if [[ "$channel_name" != "null" ]] && [[ -n "$channel_name" ]]; then
+    menu_options+="\n${Yellow}${ICON_CHANNEL}${normal} Browse Feed of channel \"$channel_name\"\n${Yellow}${ICON_SUBSCRIBE}${normal} Subscribe to channel \"$channel_name\""
+ fi
+
+ # Conditionally add the Refresh option if browsing a playlist
+ if [[ "$FEED" == *"/playlist?list="* ]]; then
+    menu_options+="\n${Cyan}${normal} Refresh Playlist Cache"
+ fi
+ 
+ menu_options+="\n${Magenta}${ICON_BROWSER}${normal}Open in browser\n${Magenta}${ICON_LINK}${normal} Copy link\n${Cyan}${ICON_BACK}${normal} Back\n${Cyan}${ICON_MAIN_MENU}${normal} Back to Main Menu"
+
+ACTION="$(echo -e "$menu_options"|eval "$PREF_SELECTOR"\"Select action \")";
  case $ACTION in
    *"Play Best Video"*) message_audio_video;load_comments&mpv --msg-level=all=no "$play_now";play_now="";TITLE="";
   ;;
@@ -889,6 +974,18 @@ ACTION="$(echo -e "${Green}${ICON_PLAY}${normal} Play Best Video\n${Green}${ICON
    else notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape/png "❤️ Video already added to Liked Videos.";
    fi;
   ;;
+  *"Refresh Playlist Cache"*)
+      local playlist_id=$(echo "$FEED" | sed 's/\/playlist?list=//')
+      # Use a wildcard to find all page caches for this playlist
+      local cache_files_pattern="$HOME/.cache/magic-tape/json/playlist-${playlist_id}-p*.json"
+      # Check if any files match the pattern before trying to delete
+      if ls $cache_files_pattern 1> /dev/null 2>&1; then
+        rm $cache_files_pattern
+        notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "Cache cleared. Re-open playlist to refresh."
+      else
+        notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "No cache found for this playlist."
+      fi
+      ;;
   *"Browse Feed of channel"*) clear;db="c"; P="$channel_id";
    channel_feed;
   ;;
@@ -919,7 +1016,9 @@ ACTION="$(echo -e "${Green}${ICON_PLAY}${normal} Play Best Video\n${Green}${ICON
   ;;
   *"Back to Main Menu"*) clear; exec "$0"; # Restart the script
   ;;
-  *)echo -e "\n😕${Yellow}${bold}$db${normal} ${Green}is an invalid key, please try again.${normal}\n"; sleep $TERMINAL_MESSAGE_DURATION;clear;
+   "") clear; # User pressed ESC, go back to video list
+   ;;
+  *)echo -e "\n😕${Yellow}${bold}$db${normal} ${Green}is an invalid key, please try again.\n"; sleep $TERMINAL_MESSAGE_DURATION;clear;
   ;;
  esac
  ACTION="";
@@ -946,7 +1045,7 @@ load_config
 if [[ $IMAGE_SUPPORT == "ueberzugpp" ]];then trap exit_upp  HUP INT QUIT TERM EXIT ERR ABRT ;clean_upp; fi
 clear_image
 while [ "$db" != "q" ]
-do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━╸   ╺┳╸┏━┓┏━┓┏━╸${normal}\n${Yellow}${bold}┃┃┃┣━┫┃╺┓┃┃  ╺━╸ ┃ ┣━┫┣━┛┣╸ ${normal}\n${Yellow}${bold}╹ ╹╹ ╹┗━┛╹┗━╸    ╹ ╹ ╹╹  ┗━╸${normal} \n ${Red}${ICON_FEED}${normal}  ${Yellow}${bold}f${normal} ${Red}to browse Subscriptions Feed${normal}\n ${Red}${ICON_ALGORITHM}${normal}  ${Yellow}${bold}y${normal} ${Red}to browse YT Algorithm Feed${normal}\n ${Red}${ICON_TRENDING}${normal}  ${Yellow}${bold}t${normal} ${Red}to browse Trending Feed${normal}\n ${Green}${ICON_SEARCH}${normal}  ${Yellow}${bold}s${normal} ${Green}to Search for a key word/phrase${normal}\n ${Green}${ICON_REPEAT}${normal}  ${Yellow}${bold}r${normal} ${Green}to Repeat previous action${normal}\n ${Green}${ICON_CHANNEL}${normal}  ${Yellow}${bold}c${normal} ${Green}to select a Channel Feed${normal}\n ${Magenta}${ICON_LIKED}${normal}  ${Yellow}${bold}l${normal} ${Magenta}to browse your Liked Videos${normal}\n ${Magenta}${ICON_HISTORY}${normal}  ${Yellow}${bold}h${normal} ${Magenta}to browse your Watch History${normal}\n ${Magenta}${ICON_SEARCH_HISTORY}${normal}  ${Yellow}${bold}j${normal} ${Magenta}to browse your Search History${normal}\n ${Cyan}${ICON_MISC}${normal}  ${Yellow}${bold}m${normal} ${Cyan}for Miscellaneous Menu${normal}\n ${Cyan}${ICON_QUIT}${normal}  ${Yellow}${bold}q${normal} ${Cyan}to Quit${normal}"|fzf \
+do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━╸   ╺┳╸┏━┓┏━┓┏━╸${normal}\n${Yellow}${bold}┃┃┃┣━┫┃╺┓┃┃  ╺━╸ ┃ ┣━┫┣━┛┣╸ ${normal}\n${Yellow}${bold}╹ ╹╹ ╹┗━┛╹┗━╸    ╹ ╹ ╹╹  ┗━╸${normal} \n ${Red}${ICON_FEED}${normal}  ${Yellow}${bold}f${normal} ${Red}to browse Subscriptions Feed${normal}\n ${Red}${ICON_ALGORITHM}${normal}  ${Yellow}${bold}y${normal} ${Red}to browse YT Algorithm Feed${normal}\n ${Red}${ICON_PLAYLIST}${normal}  ${Yellow}${bold}t${normal} ${Red}to browse Your Playlists${normal}\n ${Green}${ICON_SEARCH}${normal}  ${Yellow}${bold}s${normal} ${Green}to Search for a key word/phrase${normal}\n ${Green}${ICON_REPEAT}${normal}  ${Yellow}${bold}r${normal} ${Green}to Repeat previous action${normal}\n ${Green}${ICON_CHANNEL}${normal}  ${Yellow}${bold}c${normal} ${Green}to select a Channel Feed${normal}\n ${Magenta}${ICON_LIKED}${normal}  ${Yellow}${bold}l${normal} ${Magenta}to browse your Liked Videos${normal}\n ${Magenta}${ICON_HISTORY}${normal}  ${Yellow}${bold}h${normal} ${Magenta}to browse your Watch History${normal}\n ${Magenta}${ICON_SEARCH_HISTORY}${normal}  ${Yellow}${bold}j${normal} ${Magenta}to browse your Search History${normal}\n ${Cyan}${ICON_MISC}${normal}  ${Yellow}${bold}m${normal} ${Cyan}for Miscellaneous Menu${normal}\n ${Cyan}${ICON_QUIT}${normal}  ${Yellow}${bold}q${normal} ${Cyan}to Quit${normal}"|fzf \
 --preview-window=0 \
 --disabled \
 --color='gutter:-1' \
@@ -968,6 +1067,7 @@ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━�
    else
      db=$key_press
    fi
+ YTDLP_MATCH_FILTER_ARG=""
  case $db in
   "f") clear;
      big_loop=1;
@@ -1008,21 +1108,123 @@ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━�
      clear;
   ;;
   "t") clear;
+     # --- STAGE 1: Select a Playlist ---
+     echo -e "${Gray}Downloading playlist feed...${normal}";
+     yt-dlp --ignore-errors --cookies-from-browser "$PREF_BROWSER" --flat-playlist -j "https://www.youtube.com/feed/playlists" > "$HOME/.cache/magic-tape/json/playlist_list.json" 2>/dev/null
+     echo -e "${Gray}Completed.${normal}";
+
+     jq -r '.id' "$HOME/.cache/magic-tape/json/playlist_list.json" > "$HOME/.cache/magic-tape/search/video/playlist_ids.txt"
+     jq -r '.title' "$HOME/.cache/magic-tape/json/playlist_list.json" > "$HOME/.cache/magic-tape/search/video/playlist_titles.txt"
+     jq -r '.video_count' "$HOME/.cache/magic-tape/json/playlist_list.json" > "$HOME/.cache/magic-tape/search/video/playlist_counts.txt"
+     jq -r '.thumbnails[0].url' "$HOME/.cache/magic-tape/json/playlist_list.json" > "$HOME/.cache/magic-tape/search/video/playlist_thumbs.txt"
+
+     # Create download list for playlist thumbnails
+     cat /dev/null > "$HOME/.cache/magic-tape/search/video/playlist_thumb_downloads.txt"
+     i=1
+     playlist_count=$(wc -l < "$HOME/.cache/magic-tape/search/video/playlist_ids.txt")
+     while [ $i -le $playlist_count ]; do
+       playlist_id=$(sed -n "${i}p" "$HOME/.cache/magic-tape/search/video/playlist_ids.txt")
+       img_path="$HOME/.cache/magic-tape/jpg/playlist-${playlist_id}.jpg"
+       if [ ! -f "$img_path" ]; then
+         thumb_url=$(sed -n "${i}p" "$HOME/.cache/magic-tape/search/video/playlist_thumbs.txt")
+         if [[ -n "$thumb_url" ]] && [[ "$thumb_url" != "null" ]]; then
+           echo "url = \"$thumb_url\"" >> "$HOME/.cache/magic-tape/search/video/playlist_thumb_downloads.txt"
+           echo "output = \"$img_path\"" >> "$HOME/.cache/magic-tape/search/video/playlist_thumb_downloads.txt"
+         fi
+       fi
+       ((i++))
+     done
+     # Start background download only if there are thumbnails to download
+     if [ -s "$HOME/.cache/magic-tape/search/video/playlist_thumb_downloads.txt" ]; then
+       curl -s -K "$HOME/.cache/magic-tape/search/video/playlist_thumb_downloads.txt"
+     fi
+
+     # Add an abort option to the list
+     echo "Abort Selection" > "$HOME/.cache/magic-tape/search/video/playlist_titles_with_abort.txt"
+     cat "$HOME/.cache/magic-tape/search/video/playlist_titles.txt" >> "$HOME/.cache/magic-tape/search/video/playlist_titles_with_abort.txt"
+
+     # Use fzf to get the line number directly
+     selected_index=$(cat -n "$HOME/.cache/magic-tape/search/video/playlist_titles_with_abort.txt" | fzf \
+        --ansi \
+        --layout=reverse \
+        --prompt="🔎 Select Playlist: " \
+        --header="Your Playlists" \
+        --preview-window=left,40% \
+        --cycle \
+        --preview='\
+            hght=$(($FZF_PREVIEW_COLUMNS /3));\
+            i=$(echo {} | awk "{print \$1}");\
+            if [[ $i -eq 1 ]]; then # Abort option\
+                draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght "$SHARE_DIR"/abort.png;\
+                echo -e "\nReturn to the main menu.";\
+            else\
+                # Adjust index to match original file (since we added "Abort" at the top)\
+                preview_i=$((i - 1));\
+                playlist_id=$(sed -n "${preview_i}p" "$HOME/.cache/magic-tape/search/video/playlist_ids.txt");\
+                img_path="$HOME/.cache/magic-tape/jpg/playlist-${playlist_id}.jpg";\
+                \
+                if [ -f "$img_path" ]; then\
+                    draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght "$img_path";\
+                fi;\
+\
+                TITLE=$(sed -n "${preview_i}p" "$HOME/.cache/magic-tape/search/video/playlist_titles.txt");\
+                COUNT=$(sed -n "${preview_i}p" "$HOME/.cache/magic-tape/search/video/playlist_counts.txt");\
+                echo -e "\n\e[33m$TITLE\e[m\n\nVideo Count: $COUNT";\
+            fi\
+        ' | awk '{print $1}' ); clear_image;
+
+     # Abort if nothing selected or "Abort" is chosen (line 1)
+     if [[ -z "$selected_index" ]] || [[ "$selected_index" -eq 1 ]]; then
+         clear;
+         continue;
+     fi
+
+     # Adjust index for the 'Abort' line and get the ID and title
+     actual_index=$((selected_index - 1))
+     selected_playlist_id=$(sed -n "${actual_index}p" "$HOME/.cache/magic-tape/search/video/playlist_ids.txt")
+     selected_playlist_title=$(sed -n "${actual_index}p" "$HOME/.cache/magic-tape/search/video/playlist_titles.txt")
+
+     # --- STAGE 2: Browse Videos in the Selected Playlist (with Caching) ---
+     generic_cache_file="$HOME/.cache/magic-tape/json/video_search.json"
+     
      big_loop=1;
      ITEM=1;
      ITEM0=1;
-     FEED="/feed/trending";
-     while [ $big_loop -eq 1 ];
-     do fzf_header="$(echo ${FEED^^}|sed 's/[\/\?=]/ /g') videos $ITEM to $(($ITEM + $(($LIST_LENGTH - 1))))";
-      get_feed_json;
-      get_data;
-      small_loop=1;
-      while [ $small_loop -eq 1 ];
-      do select_video ;
-       if [[ "$TITLE" == "Next Page" ]]||[[ "$TITLE" == "Previous Page" ]];then small_loop=0;fi;
-       if [[ "$TITLE" == "Abort Selection" ]];then small_loop=0;big_loop=0;fi;
-       if [[ "$TITLE" != "Abort Selection" ]]&&[[ "$TITLE" != "Next Page" ]]&&[[ "$TITLE" != "Previous Page" ]];then select_action;fi;
-      done;
+     FEED="/playlist?list=$selected_playlist_id";
+
+     while [ $big_loop -eq 1 ]; do
+        fzf_header="Playlist: $selected_playlist_title | Videos $ITEM to $(($ITEM + $(($LIST_LENGTH - 1))))";
+        
+        # Use a unique cache file for each page, based on the starting item number
+        video_cache_file="$HOME/.cache/magic-tape/json/playlist-${selected_playlist_id}-p${ITEM}.json"
+
+        # If a cache file exists but is empty, remove it to force a refresh.
+        if [ -f "$video_cache_file" ] && [ ! -s "$video_cache_file" ]; then
+            rm "$video_cache_file"
+        fi
+
+        if [ -f "$video_cache_file" ]; then
+            echo -e "${Gray}Loading playlist page from cache...${normal}";
+            cp "$video_cache_file" "$generic_cache_file"
+        else
+            # Fetch from network
+            echo -e "${Gray}Fetching playlist page, creating cache...${normal}";
+            get_playlist_videos_json; # Fetches and writes to generic_cache_file
+            # Only create a cache file if the download was successful (file is not empty)
+            if [ -s "$generic_cache_file" ]; then
+                cp "$generic_cache_file" "$video_cache_file" # Save the fetched data
+            fi
+        fi
+
+        get_data;
+        
+        small_loop=1;
+        while [ $small_loop -eq 1 ];
+        do select_video ;
+         if [[ "$TITLE" == "Next Page" ]]||[[ "$TITLE" == "Previous Page" ]];then small_loop=0;fi;
+         if [[ "$TITLE" == "Abort Selection" ]];then small_loop=0;big_loop=0;fi;
+         if [[ "$TITLE" != "Abort Selection" ]]&&[[ "$TITLE" != "Next Page" ]]&&[[ "$TITLE" != "Previous Page" ]];then select_action;fi;
+        done;
      done;
      clear;
   ;;
@@ -1039,28 +1241,149 @@ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━�
       echo "$P_for_history" >> "$HOME/.cache/magic-tape/history/search_history.txt"
 
       P=${P// /+};
-      FILT_PROMPT=$(search_filter)
-      if [[ "$FILT_PROMPT" == "__BACK__" ]]; then
-          clear;
-          continue;
+      
+      # Prompt user to select between Video or Playlist search
+      search_type_prompt="$(echo -e "${Cyan}${ICON_SELECT_VIDEO}${normal} Search for Videos\n${Cyan}${ICON_PLAYLIST}${normal} Search for Playlists\n${Red}${ICON_MAIN_MENU}${normal} Back to Main Menu"|eval "$PREF_SELECTOR""\"Select Search Type \"")"
+
+      if [[ -z "$search_type_prompt" ]] || [[ "$search_type_prompt" == *"Back to Main Menu"* ]]; then
+          clear
+          continue
       fi
-      # Rest of the search logic uses FILTER (which was set by search_filter)
-      big_loop=1;
-      ITEM=1;
-      ITEM0=1;
-      FEED="/results?search_query=""$P""$FILTER";
-      while [ $big_loop -eq 1 ];
-      do fzf_header="$(echo "$FILT_PROMPT"|sed 's/ .*/ /')""$(echo ${FEED^^}|sed 's/&SP=.*$//;s/^.*SEARCH_QUERY=/search: /;s/[\/\?=&+]/ /g') videos: $ITEM to $(($ITEM + $(($LIST_LENGTH - 1))))";
-       get_feed_json;
-       get_data;
-       small_loop=1;
-       while [ $small_loop -eq 1 ];
-       do select_video ;
-        if [[ "$TITLE" == "Next Page" ]]||[[ "$TITLE" == "Previous Page" ]];then small_loop=0;fi;
-        if [[ "$TITLE" == "Abort Selection" ]];then small_loop=0;big_loop=0;fi;
-        if [[ "$TITLE" != "Abort Selection" ]]&&[[ "$TITLE" != "Next Page" ]]&&[[ "$TITLE" != "Previous Page" ]];then select_action;fi;
-       done;
-      done;
+
+      if [[ "$search_type_prompt" == *"Search for Playlists"* ]]; then
+          FILTER="&sp=EgIQAw%3D%3D"
+          FILT_PROMPT="Search for playlist"
+      else
+          # Step 1: Get duration filter
+          duration_choice=$(select_duration_filter)
+          if [[ "$duration_choice" == "back" ]]; then
+              clear
+              continue
+          fi
+
+          # Step 2: Get sort order
+          sort_choice=$(select_sort_order)
+          if [[ "$sort_choice" == "back" ]]; then
+              clear
+              continue
+          fi
+          
+          # Step 3: Determine the final SP code based on the two choices
+          case "$duration_choice" in
+              "any")
+                  case "$sort_choice" in
+                      "relevance") FILTER="&sp=EgQQARgE";;
+                      "date") FILTER="&sp=CAISAhAB";;
+                      "views") FILTER="&sp=CAMSAhAB";;
+                      "rating") FILTER="&sp=CAESAhAB";;
+                  esac
+                  ;;
+              "short")
+                  YTDLP_MATCH_FILTER_ARG="duration <= 240"
+                  case "$sort_choice" in
+                      "relevance") FILTER="&sp=EgQQARgB";;
+                      "date") FILTER="&sp=CAISBEgQQARgB";;
+                      "views") FILTER="&sp=CAMSBEgQQARgB";;
+                      "rating") FILTER="&sp=CAESBEgQQARgB";;
+                  esac
+                  ;;
+              "medium")
+                  YTDLP_MATCH_FILTER_ARG="duration >= 240 & duration <= 1200"
+                  case "$sort_choice" in
+                      "relevance") FILTER="&sp=EgQQARgD";;
+                      "date") FILTER="&sp=CAISBEgQQARgD";;
+                      "views") FILTER="&sp=CAMSBEgQQARgD";;
+                      "rating") FILTER="&sp=CAESBEgQQARgD";;
+                  esac
+                  ;;
+              "long")
+                  YTDLP_MATCH_FILTER_ARG="duration > 1200"
+                  case "$sort_choice" in
+                      "relevance") FILTER="&sp=EgQQARgC";;
+                      "date") FILTER="&sp=CAISBEgQQARgC";;
+                      "views") FILTER="&sp=CAMSBEgQQARgC";;
+                      "rating") FILTER="&sp=CAESBEgQQARgC";;
+                  esac
+                  ;;
+          esac
+          FILT_PROMPT="Search" # This variable seems to be used for the fzf header.
+      fi
+
+      if [[ "$FILT_PROMPT" == *"Search for playlist"* ]]; then
+        # Logic for searching for and then browsing a playlist
+        ITEM=1;
+        ITEM0=1;
+        FEED="/results?search_query=$P$FILTER"
+        get_feed_json; # This gets the list of playlists
+        get_data;      # This parses them
+
+        fzf_header="Select a playlist to browse"
+        select_video # Use select_video to pick a playlist from the search results
+
+        if [[ "$TITLE" != "Abort Selection" ]]&&[[ "$TITLE" != "Next Page" ]]&&[[ "$TITLE" != "Previous Page" ]]; then
+            # Extract playlist ID and title from the selection
+            # The playlist ID is in the 'play_now' url, and title is in 'TITLE'
+            selected_playlist_id=$(echo "$play_now" | sed 's/.*list=//')
+            selected_playlist_title=$TITLE
+
+            # Now, use the same logic as the 't' block to browse *inside* the playlist
+            generic_cache_file="$HOME/.cache/magic-tape/json/video_search.json"
+            big_loop=1;
+            ITEM=1;
+            ITEM0=1;
+            FEED="/playlist?list=$selected_playlist_id";
+
+            while [ $big_loop -eq 1 ]; do
+               fzf_header="Playlist: $selected_playlist_title | Videos $ITEM to $(($ITEM + $(($LIST_LENGTH - 1))))";
+
+               # Use a unique cache file for each page
+               video_cache_file="$HOME/.cache/magic-tape/json/playlist-${selected_playlist_id}-p${ITEM}.json"
+
+               if [ -f "$video_cache_file" ] && [ ! -s "$video_cache_file" ]; then
+                   rm "$video_cache_file"
+               fi
+
+               if [ -f "$video_cache_file" ]; then
+                   echo -e "${Gray}Loading playlist page from cache...${normal}";
+                   cp "$video_cache_file" "$generic_cache_file"
+               else
+                   echo -e "${Gray}Fetching playlist page, creating cache...${normal}";
+                   get_playlist_videos_json;
+                   if [ -s "$generic_cache_file" ]; then
+                       cp "$generic_cache_file" "$video_cache_file"
+                   fi
+               fi
+
+               get_data;
+
+               small_loop=1;
+               while [ $small_loop -eq 1 ];
+               do select_video ;
+                if [[ "$TITLE" == "Next Page" ]]||[[ "$TITLE" == "Previous Page" ]];then small_loop=0;fi;
+                if [[ "$TITLE" == "Abort Selection" ]];then small_loop=0;big_loop=0;fi;
+                if [[ "$TITLE" != "Abort Selection" ]]&&[[ "$TITLE" != "Next Page" ]]&&[[ "$TITLE" != "Previous Page" ]];then select_action;fi;
+               done;
+            done;
+        fi
+      else
+        # Original logic for normal video search
+        big_loop=1;
+        ITEM=1;
+        ITEM0=1;
+        FEED="/results?search_query=""$P""$FILTER";
+        while [ $big_loop -eq 1 ];
+        do fzf_header="Search: $(echo ${FEED^^}|sed 's/&SP=.*$//;s/^.*SEARCH_QUERY=//;s/[\/\?=&+]/ /g') videos: $ITEM to $(($ITEM + $(($LIST_LENGTH - 1))))";
+         get_feed_json;
+         get_data;
+         small_loop=1;
+         while [ $small_loop -eq 1 ];
+         do select_video ;
+          if [[ "$TITLE" == "Next Page" ]]||[[ "$TITLE" == "Previous Page" ]];then small_loop=0;fi;
+          if [[ "$TITLE" == "Abort Selection" ]];then small_loop=0;big_loop=0;fi;
+          if [[ "$TITLE" != "Abort Selection" ]]&&[[ "$TITLE" != "Next Page" ]]&&[[ "$TITLE" != "Previous Page" ]];then select_action;fi;
+         done;
+        done;
+      fi;
      fi;
      clear;
   ;;
@@ -1086,30 +1409,83 @@ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━�
      done;
      clear;
   ;;
-  "c") clear;channel_search="";
-     if [[ -f $HOME/.cache/magic-tape/subscriptions/subscriptions.txt ]];
-     then channel_search=yes;
-     else echo -e " ${Yellow}There are no subscriptions locally imported from YouTube. Do you wish to import your subscriptions now?(Y/y)";
-      read -N 1 import_subs_prompt ;echo;
-      if [[ $import_subs_prompt == Y ]]||[[ $import_subs_prompt == y ]];
-      then import_subscriptions;channel_search=yes;
-      else channel_search=no;
-      fi;
-     fi;
-     if [[ $channel_search == yes ]];
-     then channel_name="$(cat $HOME/.cache/magic-tape/subscriptions/subscriptions.txt|cut -d' ' -f2-|eval "$PREF_SELECTOR""\"🔎 Select channel \"")";
-      echo -e "${Gray}Selected channel: $channel_name"${normal};
-      if [[ -z "$channel_name" ]];
-      then empty_query;
-      else P="$(grep "$channel_name" $HOME/.cache/magic-tape/subscriptions/subscriptions.txt|head -1|awk '{print $1}')";
-       channel_feed;
-      fi;
-     fi;
+  "c") clear;
+     c_loop=1
+     while [[ $c_loop -eq 1 ]]; do
+       channel_search="";
+       if [[ -f $HOME/.cache/magic-tape/subscriptions/subscriptions.txt ]];
+       then channel_search=yes;
+       else echo -e " ${Yellow}There are no subscriptions locally imported from YouTube. Do you wish to import your subscriptions now?(Y/y)";
+        read -N 1 import_subs_prompt ;echo;
+        if [[ $import_subs_prompt == Y ]]||[[ $import_subs_prompt == y ]];
+        then import_subscriptions;channel_search=yes;
+        else channel_search=no; c_loop=0;
+        fi;
+       fi;
 
+       if [[ $channel_search == yes ]];
+       then
+        selected_line="$( (echo -e "back_to_menu ${Cyan}${ICON_BACK} Back to Main Menu${normal}"; cat "$HOME/.cache/magic-tape/subscriptions/subscriptions.txt") | fzf \
+          --ansi \
+          --layout=reverse \
+          --height=100% \
+          --prompt="🔎 Select channel: " \
+          --with-nth=2.. \
+          --preview-window=left,40% \
+          --preview='
+              hght=$(($FZF_PREVIEW_COLUMNS / 3));
+              line="{}";
+              clean_line=$(echo "$line" | sed "s/\x1b\[[0-9;]*m//g");
+              channel_id=$(echo "$clean_line" | cut -d" " -f1 | tr -d "\047");
+              channel_name=$(echo "$clean_line" | cut -d" " -f2-);
+              img_path="$HOME/.cache/magic-tape/subscriptions/jpg/${channel_id}.jpg";
+
+              if [[ "$IMAGE_SUPPORT" == "kitty" ]]; then clear_image; fi;
+              if [[ "$IMAGE_SUPPORT" == "ueberz"* ]];then ll=0; while [ $ll -le $hght ];do echo "";((ll++));done;fi;
+              if [[ "$IMAGE_SUPPORT" == "kitty" ]]&&[[ $kitty_version -le 21 ]];then ll=0; while [ $ll -le $hght ];do echo "";((ll++));done;fi;
+
+              if [[ "$channel_id" == "back_to_menu" ]]; then
+                  draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght "$SHARE_DIR"/abort.png;
+              elif [ -f "$img_path" ]; then
+                  draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght "$img_path";
+              else
+                  draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght "$SHARE_DIR"/magic-tape.png;
+              fi;
+
+              ll=1; echo -ne "\e[30m"; while [ $ll -le $FZF_PREVIEW_COLUMNS ];do echo -n -e "─";((ll++));done;echo -e "\e[m";
+              echo -e "\n\e[33m$(echo "$line" | cut -d" " -f2-)\e[m" | fold -w $FZF_PREVIEW_COLUMNS -s;
+          ' || true
+        )";
+        clear_image;
+
+        if [[ -z "$selected_line" ]]; then
+          # User pressed ESC in channel list, so exit to main menu
+          c_loop=0
+        else
+          clean_line=$(echo "$selected_line" | sed "s/\x1b\[[0-9;]*m//g");
+          P=$(echo "$clean_line" | awk '{print $1}');
+          if [[ "$P" == "back_to_menu" ]]; then
+            # User selected "Back to Main Menu" in channel list
+            c_loop=0
+          else
+            # User selected a channel, show its feed
+            channel_name=$(echo "$clean_line" | cut -d' ' -f2-);
+            echo -e "${Gray}Selected channel: $channel_name"${normal};
+            channel_feed;
+            # After channel_feed returns (e.g., from ESC in video list),
+            # this loop will iterate again, showing the channel list.
+          fi
+        fi;
+       else
+         # This case is for when channel_search is not "yes".
+         c_loop=0
+       fi;
+     done;
+     clear; # Clean up screen before showing main menu again
   ;;
   "h") clear;
-     TITLE="$(echo -e "ABORT SELECTION\n""$(tac $HOME/.cache/magic-tape/history/watch_history.txt|sed 's/^.*https:\/\/www\.youtube\.com/https:\/\/www\.youtube\.com/g'|cut -d' ' -f2-)"|eval "$PREF_SELECTOR""\"🔎 Select previous video \"")";
-     if [[ "$TITLE" == "ABORT SELECTION" ]]||[[ -z "$TITLE" ]];
+     TITLE="$(echo -e "$(tac $HOME/.cache/magic-tape/history/watch_history.txt|sed 's/^.*https:\/\/www\.youtube\.com/https:\/\/www\.youtube\.com/g'|cut -d' ' -f2-)\n${Cyan}${ICON_BACK}${normal} Back to Main Menu"|eval "$PREF_SELECTOR""\"🔎 Select previous video \"" || true)";
+     if [[ "$TITLE" == *"${ICON_BACK} Back to Main Menu"* ]]||[[ -z "$TITLE" ]];
      then empty_query;
      else  HISTORY_TITLE="$(echo "$TITLE"|sed 's/[][}{*\]//g')";
       channel_id="$(sed 's/[][}{*\]//g' $HOME/.cache/magic-tape/history/watch_history.txt|grep "$HISTORY_TITLE" |head -1|awk '{print $1}')";
@@ -1121,8 +1497,8 @@ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━�
      clear;
   ;;
   "j") clear;
-     P="$(echo -e "ABORT SELECTION\n""$(tac $HOME/.cache/magic-tape/history/search_history.txt|sed 's/+/ /g;s/\//')"|eval "$PREF_SELECTOR""\"🔎 Select key word/phrase \"")";
-     if [[ "$P" == "ABORT SELECTION"  ]]||[[ -z "$P" ]];
+     P="$(echo -e "$(tac $HOME/.cache/magic-tape/history/search_history.txt|sed 's/+/ /g;s/\//')\n${Cyan}${ICON_BACK}${normal} Back to Main Menu"|eval "$PREF_SELECTOR""\"🔎 Select key word/phrase \"" || true)";
+     if [[ "$P" == *"${ICON_BACK} Back to Main Menu"*  ]]||[[ -z "$P" ]];
      then empty_query;
      else P=${P// /+};
       big_loop=1;
@@ -1131,8 +1507,7 @@ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━�
       search_filter;
       FEED="/results?search_query=""$P""$FILTER";
       while [ $big_loop -eq 1 ];
-      do fzf_header="$(echo "$FILT_PROMPT"|sed 's/ .*/ /')""$(echo ${FEED^^}|sed 's/&SP=.*$//;s/^.*SEARCH_QUERY=/search: /;s/[\/\?=&+]/ /g') videos: $ITEM to $(($ITEM + $(($LIST_LENGTH - 1))))";
-       get_feed_json;
+              do fzf_header="$(echo "$FILT_PROMPT"|sed 's/ .*/ /')""$(echo ${FEED^^}|sed 's/&SP=.*$//;s/^.*SEARCH_QUERY=/search: /g;s/[\/\?=&+]/ /g') videos: $ITEM to $(($ITEM + $(($LIST_LENGTH - 1))))";       get_feed_json;
        get_data;
        small_loop=1;
        while [ $small_loop -eq 1 ];
@@ -1146,8 +1521,8 @@ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━�
      clear;
   ;;
   "l") clear;
-     TITLE="$(echo -e "ABORT SELECTION\n""$(tac $HOME/.cache/magic-tape/history/liked.txt|sed 's/^.*https:\/\/www\.youtube\.com/https:\/\/www\.youtube\.com/g'|cut -d' ' -f2-)"|eval "$PREF_SELECTOR""\"❤️ Select liked video \"")";
-     if [[ "$TITLE" == "ABORT SELECTION" ]]||[[ -z "$TITLE" ]];
+     TITLE="$(echo -e "$(tac $HOME/.cache/magic-tape/history/liked.txt|sed 's/^.*https:\/\/www\.youtube\.com/https:\/\/www\.youtube\.com/g'|cut -d' ' -f2-)\n${Cyan}${ICON_BACK}${normal} Back to Main Menu"|eval "$PREF_SELECTOR""\"❤️ Select liked video \"" || true)";
+     if [[ "$TITLE" == *"${ICON_BACK} Back to Main Menu"* ]]||[[ -z "$TITLE" ]];
      then empty_query;
      else TITLE=${TITLE//\*/\\*};
      channel_id="$(grep "$TITLE" $HOME/.cache/magic-tape/history/liked.txt|head -1|awk '{print $1}')";
