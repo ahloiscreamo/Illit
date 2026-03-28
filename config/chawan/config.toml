@@ -89,6 +89,35 @@ p, span, div, td, li {
     color: #c8c8e5 !important;
     background-color: transparent !important;
 }
+
+/* Fix table headers and cells - the main culprit */
+table, th, td, tr {
+    background-color: #2a2740 !important;
+    color: #c8c8e5 !important;
+    border-color: #44415a !important;
+}
+th {
+    background-color: #393552 !important;
+    color: #e0def4 !important;
+}
+/* Alternating rows */
+tr:nth-child(even) td {
+    background-color: #2d2b45 !important;
+}
+tr:nth-child(odd) td {
+    background-color: #2a2740 !important;
+}
+
+/* Wikipedia-specific table classes */
+.wikitable, .wikitable > * > tr > th, .wikitable > * > tr > td {
+    background-color: #2a2740 !important;
+    color: #c8c8e5 !important;
+    border-color: #44415a !important;
+}
+.wikitable > * > tr > th {
+    background-color: #393552 !important;
+}
+
 h1, h2, h3, h4, h5, h6 {
     color: #9ccfd8 !important;
 }

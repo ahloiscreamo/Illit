@@ -1,0 +1,38 @@
+/* This targets the top bar items */
+QMenuBar::item {
+    background: transparent;
+    color: #6e6a86 !important; /* This is your muted gray/Subtle color */
+    padding: 4px 10px;
+}
+
+QMenuBar::item:selected {
+    background-color: #44415a !important;
+    color: #c4a7e7 !important; /* Iris purple highlight */
+}
+
+/* This forces the dropdown to be darker than the main window */
+QMenu {
+    background-color: #191724 !important; /* Deeper black-purple */
+    color: #c8c8e5 !important;
+    border: 1px solid #44415a !important;
+    padding: 5px;
+}
+
+/* Specifically styling the items inside the dropdown */
+QMenu::item {
+    padding: 5px 25px 5px 20px;
+    background-color: transparent;
+}
+
+QMenu::item:selected {
+    background-color: #44415a !important; /* Highlight color */
+    color: #c4a7e7 !important;
+}
+
+/* Separator lines inside the menu */
+QMenu::separator {
+    height: 1px;
+    background: #44415a;
+    margin: 5px 10px;
+}
+

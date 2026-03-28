@@ -1,0 +1,18 @@
+/* Target the toolbox buttons */
+KoToolBoxButton {
+    /* Set the icon color to your Rosé Pine Moon Subtle gray */
+    qproperty-customIconColor: #6e6a86;
+    background-color: #3e8fb0;
+    border: none;
+}
+
+/* Ensure the ACTIVE tool uses your Iris purple highlight */
+KoToolBoxButton:checked {
+    qproperty-customIconColor: #c4a7e7;
+    background-color: #44415a;
+}
+
+/* Optional: This targets any other symbolic icons in the UI */
+QToolButton {
+    qproperty-customIconColor: #6e6a86;
+}

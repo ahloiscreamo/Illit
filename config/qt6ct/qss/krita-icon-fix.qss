@@ -1,0 +1,22 @@
+/* krita-icon-fix.qss */
+/* Toolbox buttons - inactive */
+KoToolBoxButton {
+    background-color: transparent;
+    border: none;
+}
+
+/* Active/selected tool - teal highlight */
+KoToolBoxButton:checked {
+    background-color: #3e8fb0;
+}
+
+/* Hover state */
+KoToolBoxButton:hover {
+    background-color: #44415a;
+}
+
+/* Other toolbar buttons */
+QToolButton {
+    background-color: transparent;
+    border: none;
+}
