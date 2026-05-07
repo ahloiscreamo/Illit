@@ -1,0 +1,4 @@
+# vim: set ft=bash:
+export MUSIC_DIR="/mnt/Kingston/Music"  # defaults to your mpd.conf music_directory
+export PREVIEW_POS="bottom"              # right|bottom
+export PREVIEW_SIZE="50%"

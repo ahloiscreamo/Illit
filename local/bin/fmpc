@@ -18,7 +18,11 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo -e "${Y}TAB${NC}        : Select multi"
     echo -e "${G}Ctrl-x${NC}     : Play selection"
     echo -e "${C}Ctrl-f${NC}     : Search current"
-    echo -e "${M}Ctrl-p/n/b${NC} : Toggle/Next/Prev"
+    echo -e "${M}Ctrl-p${NC}     : Toggle play/pause"
+    echo -e "${M}Ctrl-n${NC}     : Next track"
+    echo -e "${M}Ctrl-b${NC}     : Prev track"
+    echo -e "${Y}Ctrl-u${NC}     : Update database"
+    echo -e "${W}ESC${NC}        : Clear search"
     echo -e "${R}Ctrl-q${NC}     : Quit"
     echo -e "--------------------------------"
     exit 0
@@ -53,9 +57,11 @@ if [[ "$1" == "--preview" ]]; then
     center_text() {
         local text="$1"
         if [[ "$PREVIEW_POS" == "bottom" ]]; then
-            local clean_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
+            local clean_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*[mGKHF]//g')
             local width=${FZF_PREVIEW_COLUMNS:-80}
-            local n=${#clean_text}
+            # count double-width CJK characters
+            local dw=$(echo -n "$clean_text" | grep -oP '[\x{1100}-\x{11FF}\x{2E80}-\x{303F}\x{3040}-\x{9FFF}\x{AC00}-\x{D7AF}\x{F900}-\x{FAFF}\x{FE30}-\x{FE4F}\x{FF00}-\x{FFEF}]' | wc -l)
+            local n=$(( ${#clean_text} + dw ))
             local pad=$(( (width - n) / 2 ))
             [[ $pad -lt 0 ]] && pad=0
             printf "%${pad}s" " "
@@ -63,22 +69,24 @@ if [[ "$1" == "--preview" ]]; then
         echo -e "$text"
     }
 
-    # metadata display
+   # metadata display 
     SEP_LINE=$(printf '%.0s-' $(seq 1 ${FZF_PREVIEW_COLUMNS:-40}))
-    center_text "${W}${SEP_LINE}${NC}"
-    
     CURRENT=$(mpc current -f "%file%")
+
     if [[ "$FILE" == "$CURRENT" ]]; then
         center_text "${G}[ NOW PLAYING ]${NC}"
     else
         center_text "${W}[ Selected ]${NC}"
     fi
 
+    [[ "$PREVIEW_POS" == "right" ]] && center_text "${W}${SEP_LINE}${NC}"
+
     center_text "${M}Album:${NC} ${WH}$ALBUM_DIR${NC}"
     center_text "${C}Track:${NC} ${WH}${FILE##*/}${NC}"
-    center_text "${W}${SEP_LINE}${NC}"
 
-# image rendering
+    [[ "$PREVIEW_POS" == "right" ]] && center_text "${W}${SEP_LINE}${NC}"
+
+    # image rendering
     if [[ -f "$ALBUM_COVER" && -p "$FIFO_PIPE" ]]; then
         if [[ "$PREVIEW_POS" == "bottom" ]]; then
             # get real pixels
@@ -87,9 +95,9 @@ if [[ "$1" == "--preview" ]]; then
             [[ -z "$W_PX" || -z "$H_PX" ]] && { W_PX=1; H_PX=1; }
             
             # anchor to top of image area (line 5)
-            OFFSET_Y=$((FZF_PREVIEW_TOP + 5))
+            OFFSET_Y=$((FZF_PREVIEW_TOP + 4))
             # fill every line down to the bottom border
-            IMG_H=$((FZF_PREVIEW_LINES - 5))
+            IMG_H=$((FZF_PREVIEW_LINES - 4))
             
             # manual tuning - bump this if it's still left
             # try 1, 2, or 3 until image is centered
@@ -162,11 +170,14 @@ if [[ "$PREVIEW_POS" == "bottom" ]]; then
     LIST_CMD="sed \"s|^.*/\(.*\)$|${FILE_COL}\1${RESET}\t&|\" $LIST_CACHE"
     L1="ENTER ${G}${NC} Play ${W}|${NC} TAB ${Y}󰄳${NC} Sel   ${W}|${NC} C-x ${G}${NC} Play Sel"
     L2="C-q   ${R}${NC} Quit ${W}|${NC} ESC ${M}${NC} Clear ${W}|${NC} C-f ${C}${NC} Find"
-    HEADER_TEXT=$(echo -e "$L1\n$L2")
+    L3="C-n   ${M}󰒭${NC} Next ${W}|${NC} C-b ${Y}󰒮${NC} Prev  ${W}|${NC} C-p ${R}󰐎${NC} Toggle"
+    HEADER_TEXT=$(echo -e "$L1\n$L2\n$L3")
 else
     LIST_CMD="sed \"s|^\(.*\)/\(.*\)$|${DIR_COL}\1/${FILE_COL}\2${RESET}\t\1/\2|\" $LIST_CACHE"
-    HEADER_TEXT=$(echo -e "ENTER ${G}${NC} Play ${W}|${NC} TAB ${Y}󰄳${NC} Sel ${W}|${NC} C-x ${G}${NC} Play Sel ${W}|${NC} C-q ${R}${NC} Quit ${W}|${NC} ESC ${M}${NC} Clear ${W}|${NC} C-f ${C}${NC} Find")
-fi
+    RL1="ENTER ${G}${NC} Play ${W}|${NC} TAB ${Y}󰄳${NC} Sel ${W}|${NC} C-x ${G}${NC} Play Sel ${W}|${NC} C-q ${R}${NC} Quit ${W}|${NC} ESC ${M}${NC} Clear ${W}|${NC} C-f ${C}${NC} Find"
+    RL2="C-p ${R}󰐎${NC} Toggle ${W}|${NC} C-n ${M}󰒭${NC} Next ${W}|${NC} C-b ${Y}󰒮${NC} Prev"
+    HEADER_TEXT=$(echo -e "$RL1\n$RL2")   
+    fi
 
 # fire it up
 eval "$LIST_CMD" | fzf \

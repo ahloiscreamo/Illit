@@ -5,8 +5,10 @@
 # --- Player Config ---
 VIDEO_PLAYER="mpv"
 AUDIO_PLAYER="mpv"
-IMAGE_VIEWER="nsxiv"
+IMAGE_VIEWER="nsxiv" #or imv (wayland)
 PDF_VIEWER="zathura"
+EPUB_VIEWER="zathura"
+TEXT_VIEWER="vim"
 VIDEO_DOWNLOADER="yt-dlp"
 
 # --- Icon Config ---
@@ -60,7 +62,9 @@ if [ "$USE_COLORS" = "true" ]; then
     RESET=$(tput sgr0)
 fi
 
-
+# --- FZF Config ---
+FZF_FOOTER="${ICON_INFO} ESC to go back/exit | Enter to select"
+FZF_FOOTER_SEARCH="${ICON_INFO} Ctrl+E to search exact query | For 'field' and 'mediatype' details, check ia-search --help"
 
 # --- API Config ---
 API_URL="https://archive.org/advancedsearch.php"
@@ -84,7 +88,7 @@ export CACHE_EXPIRY=$((60*60*24*7)) # 7 days
 # --- Dependency Check ---
 check_deps() {
     local missing=0
-    for cmd in fzf jq curl ia pv mpv nsxiv zathura yt-dlp python3; do
+    for cmd in fzf jq curl ia pv mpv nsxiv zathura yt-dlp python3 vim; do
         if ! command -v "$cmd" &> /dev/null; then
             echo "❌ Error: Required command '$cmd' is not installed."
             missing=1
@@ -94,11 +98,10 @@ check_deps() {
 }
 
 # --- FZF Previewer ---
-# Caches and displays `ia list` output for fzf previews
+# Caches and displays file list with sizes for fzf previews
 fzf_previewer() {
     local item_text="$1"
 
-    # If the line is empty, do nothing
     if [ -z "$item_text" ]; then
         return
     fi
@@ -106,7 +109,6 @@ fzf_previewer() {
     local identifier
     identifier=$(echo "$item_text" | awk -F'\t' '{print $1}')
 
-    # Dont preview for navigation items
     if [[ "$identifier" == action_* ]]; then
         echo "Navigate with Enter. No item preview for options."
         return
@@ -116,27 +118,39 @@ fzf_previewer() {
         return
     fi
 
-    # Use the identifier as the cache key, removing any problematic characters
     local cache_key
     cache_key=$(echo "$identifier" | sed "s/[^a-zA-Z0-9_-]/_/g")
     local cache_file="$PREVIEW_CACHE_DIR/$cache_key"
     
-    # Check for and use a non-empty cache file.
     if [ -s "$cache_file" ]; then
         cat "$cache_file"
     else
-        # If cache is missing or empty, fetch the list.
-        local list_output
-        list_output=$(ia list "$identifier" 2>/dev/null | head -n 20)
+        local metadata
+        metadata=$(curl -s "https://archive.org/metadata/$identifier/files" 2>/dev/null)
         
-        # If we got some output, cache it and display it.
+        if [ -z "$metadata" ]; then
+            local empty_msg="-- Failed to fetch metadata --"
+            echo "$empty_msg" > "$cache_file"
+            echo "$empty_msg"
+            return
+        fi
+
+        local list_output
+        list_output=$(echo "$metadata" | jq -r '.result[] | 
+            . as $f | 
+            ($f.size // "?" | tonumber? // 0) as $bytes |
+            if $bytes > 1073741824 then (($bytes / 1073741824 * 10 | round) / 10 | tostring) + " GB"
+            elif $bytes > 1048576 then (($bytes / 1048576 * 10 | round) / 10 | tostring) + " MB"
+            elif $bytes > 1024 then (($bytes / 1024 * 10 | round) / 10 | tostring) + " KB"
+            else ($bytes | tostring) + " B"
+            end + "\t" + $f.name' 2>/dev/null | \
+            column -t -s $'\t' | head -n 20)
+
         if [ -n "$list_output" ]; then
             echo "$list_output" > "$cache_file"
             echo "$list_output"
         else
-            # If we got no output, it's likely an empty item.
-            # Cache a message to prevent re-fetching every time.
-            local empty_msg="-- No listable files found for this item --"
+            local empty_msg="-- No files found for this item --"
             echo "$empty_msg" > "$cache_file"
             echo "$empty_msg"
         fi
@@ -148,23 +162,75 @@ export -f fzf_previewer
 download_and_view() {
     local url="$1"
     local viewer="$2"
-    local temp_file
-    temp_file=$(mktemp)
-    # Ensure temp file is removed on exit/interrupt
-    trap 'rm -f "$temp_file"' INT TERM EXIT
+    (
+        local temp_file
+        temp_file=$(mktemp)
+        trap 'rm -f "$temp_file"' INT TERM EXIT
 
-    echo "⏳ Downloading to view..."
-    curl -sL "$url" | pv > "$temp_file"
+        echo "⏳ Downloading to view..."
+        curl -sL "$url" | pv > "$temp_file"
 
-    if [ -s "$temp_file" ]; then
-        # Run viewer in the background and clean up afterwards
-        ( "$viewer" "$temp_file" >/dev/null 2>&1; rm -f "$temp_file" ) &
-    else
-        echo "🚫 Failed to download file for viewing."
-        rm -f "$temp_file"
+        if [ -s "$temp_file" ]; then
+            "$viewer" "$temp_file" >/dev/null 2>&1
+            rm -f "$temp_file"
+        else
+            echo "🚫 Failed to download file for viewing."
+            rm -f "$temp_file"
+        fi
+    )
+}
+
+# --- Open All Images ---
+open_all_images() {
+    local identifier="$1"
+    local file_list="$2"
+    # Filter images, exclude thumbs
+    mapfile -t image_files < <(echo "$file_list" | grep -iE '\.(jpg|jpeg|png)$' | grep -iv 'thumb')
+    if [ "${#image_files[@]}" -eq 0 ]; then
+        echo "🚫 No images found for this item."
+        sleep 2
+        return
     fi
-    # Clear the trap so it doesn't fire on successful exit from this function
-    trap - INT TERM EXIT
+    echo "🖼️  Found ${#image_files[@]} images. Downloading..."
+    local temp_dir
+    temp_dir="$HOME/Downloads/ia-downloads/$identifier"
+    mkdir -p "$temp_dir"
+    # Download using ia download
+    (ia download "$identifier" \
+        --destdir="$temp_dir" \
+        --no-directories) &
+    local dl_pid=$!
+    # Show progress while downloading
+    while kill -0 "$dl_pid" 2>/dev/null; do
+        local count
+        count=$(find "$temp_dir" -type f | wc -l)
+        echo -ne "\r⏳ Downloaded $count/${#image_files[@]} files..."
+        sleep 0.5
+    done
+    wait "$dl_pid"
+    echo ""
+    # Keep only image files, remove thumbs and everything else
+    find "$temp_dir" -type f ! -iname "*.jpg" ! -iname "*.jpeg" ! -iname "*.png" -delete
+    find "$temp_dir" -type f -iname "*thumb*" -delete
+    local downloaded
+    downloaded=$(find "$temp_dir" -type f | wc -l)
+    if [ "$downloaded" -eq 0 ]; then
+        echo "🚫 Failed to download images."
+        rm -rf "$temp_dir"
+        sleep 2
+        return
+    fi
+    echo "✅ Downloaded $downloaded images. Opening with $IMAGE_VIEWER..."
+    "$IMAGE_VIEWER" "$temp_dir" >/dev/null 2>&1
+    # After viewer closes, prompt keep or delete
+    echo ""
+    read -r -p "Keep downloaded files? [y/N] " response
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+        echo "✅ Files kept at: $temp_dir"
+    else
+        rm -rf "$temp_dir"
+        echo "✅ Cleaned up."
+    fi
 }
 
 # --- URL Encode ---
@@ -202,6 +268,8 @@ SEARCH SYNTAX:
                    Example: title:"Floating weeds"
     - creator:     The person or entity that created the work.
                    Example: creator:"yasujiro ozu"
+    - uploader:    The account that uploaded the item to the Archive.
+                   Example: uploader:username
     - subject:     Keywords, topics, or themes describing the content.
                    Example: subject:"japanese cinema"
     - collection:  The collection(s) the item belongs to.
@@ -256,15 +324,24 @@ SEARCH SYNTAX:
     - OR:  Widens the search (e.g., language:eng OR language:fre)
     - NOT: Excludes items (e.g., mediatype:texts AND NOT collection:gutenberg)
 
+KEYBINDINGS:
+    In the search prompt:
+    Ctrl+E    Submit exactly what you typed, ignoring any highlighted history item.
+    ESC       Return to the previous menu.
+
+    In all fzf menus:
+    ESC       Go back to the previous level.
+    Enter     Select the highlighted item.
+
 DEPENDENCIES:
-    fzf, jq, curl, ia, pv, mpv, nsxiv, zathura, yt-dlp, python3
+    fzf, jq, curl, ia, pv, mpv, nsxiv, zathura, yt-dlp, python3, vim
 EOF
     exit 0
 }
 
 # --- Show Collections ---
 show_collections() {
-    local PAGE_SIZE=50
+    local PAGE_SIZE=28
     local page=0
 
     fetch_collections() {
@@ -308,23 +385,26 @@ show_collections() {
     local total_pages=$(( (${#all_entries[@]} + PAGE_SIZE - 1) / PAGE_SIZE ))
 
     while true; do
-        local start=$(( page * PAGE_SIZE ))
-        local end=$(( start + PAGE_SIZE - 1 ))
-        [ $end -ge ${#all_entries[@]} ] && end=$((${#all_entries[@]} - 1))
-
-        local page_entries=("${all_entries[@]:start:end-start+1}")
-
-        choices=("[${YELLOW}${ICON_SEARCH}${RESET} Search all collections]" "[${BLUE}${ICON_REFRESH}${RESET} Refresh cache]" "")
-        choices+=("${page_entries[@]}")
+    local start=$(( page * PAGE_SIZE ))
+    local end=$(( start + PAGE_SIZE - 1 ))
+    [ $end -ge ${#all_entries[@]} ] && end=$((${#all_entries[@]} - 1))
+    local page_entries=("${all_entries[@]:start:end-start+1}")
+    choices=("[${YELLOW}${ICON_SEARCH}${RESET} Search all collections]" "[${BLUE}${ICON_REFRESH}${RESET} Refresh cache]" "")
+    choices+=("${page_entries[@]}")
+    if [ "$page" -gt 0 ]; then
+        choices+=("" "[${BLUE}${ICON_PREV}${RESET} Previous page]" "[${BLUE}${ICON_NEXT}${RESET} Next page]" "[${RED}${ICON_EXIT}${RESET} Exit]")
+    else
         choices+=("" "[${BLUE}${ICON_NEXT}${RESET} Next page]" "[${RED}${ICON_EXIT}${RESET} Exit]")
-
-        selection=$(printf '%s\n' "${choices[@]}" | fzf \
+    fi
+    
+           selection=$(printf '%s\n' "${choices[@]}" | fzf \
             --ansi \
             --prompt="${MAGENTA}${BOLD}${ICON_PROMPT_COLLECTION}${RESET} Select collection (Page $((page+1))/$total_pages) > " \
             --height=100% \
             --reverse \
             --border \
-            --cycle)
+            --cycle \
+            --footer="$FZF_FOOTER")
 
         # Strip ANSI codes for reliable case matching
         sanitized_selection=$(echo "$selection" | sed 's/\x1b\[[0-9;]*[mG]//g')
@@ -347,9 +427,22 @@ show_collections() {
                     page=$((total_pages - 1))
                 fi
                 ;;
-            "[${ICON_EXIT} Exit]"|"")
+            "[${ICON_PREV} Previous page]")
+                if [ "$page" -gt 0 ]; then
+                    ((page--))
+                fi
+                ;;
+            "[${ICON_EXIT} Exit]")
                 echo "👋 Exiting."
                 exit 0
+                ;;
+            "")
+                if [ "$page" -gt 0 ]; then
+                    ((page--))
+                else
+                    echo "👋 Exiting."
+                    exit 0
+                fi
                 ;;
             *)
                 collection=$(echo "$selection" | sed -E 's/.*\[(.*)\].*/\1/')
@@ -373,12 +466,20 @@ search_mode() {
             history_content=$(tac "$IA_SEARCH_HISTORY_FILE" | awk '!a[$0]++' | head -n 20)
         fi
 
-        local examples="collection:anime_miscellaneous
+        local examples='collection:anime_miscellaneous
 subject:japanese cinema
-mediatype:movies AND language:japanese
+mediatype:movies AND language:jpn
+mediatype:movies AND language:chi
+mediatype:movies AND creator:"wong kar wai"
+mediatype:movies AND creator:"edward yang"
+mediatype:movies AND creator:"yasujiro ozu"
 mediatype:audio AND subject:album
 mediatype:image AND subject:magazine
-mediatype:texts AND subject:linux"
+mediatype:texts AND subject:linux
+mediatype:texts AND language:jpn AND subject:magazine
+collection:magazine_rack AND language:jpn
+subject:gravure AND mediatype:image
+uploader:some_username'       
 
         full_list=$(printf "%s\n%s" "$history_content" "$examples" | awk '!b[$0]++ {if (NF) print}')
 
@@ -390,8 +491,9 @@ mediatype:texts AND subject:linux"
             --reverse \
             --border \
             --cycle \
-            --footer="${ICON_INFO} For more 'field' and 'mediatype' details, check ia-search --help")
-        
+            --bind 'ctrl-e:print-query' \
+            --footer="$FZF_FOOTER_SEARCH")
+       
         query=$(echo "$query" | tail -n 1)
 
         [ -z "$query" ] && return 0
@@ -411,7 +513,7 @@ mediatype:texts AND subject:linux"
         fi
         
         page=1
-        rows=30
+        rows=28
 
         while true; do
             echo "${ICON_SEARCH} Searching for \"$query\" (Page $page)..."
@@ -467,9 +569,10 @@ mediatype:texts AND subject:linux"
                 --border \
                 --delimiter=$'\t' \
                 --with-nth=2.. \
-                --preview-window=right:40% \
+                --preview-window=right:50% \
                 --preview "$preview_command" \
-                --cycle)
+                --cycle \
+                --footer="$FZF_FOOTER")
             
             identifier_or_action=$(echo "$selected_line" | awk -F'\t' '{print $1}')
 
@@ -495,7 +598,13 @@ mediatype:texts AND subject:linux"
                     ;;
                 "action_search_all")
                     local sub_query_text
-                    sub_query_text=$(printf '' | fzf --ansi --prompt="${MAGENTA}${BOLD}${ICON_SEARCH}${RESET} Search within results for '$query': " --print-query --height=10 --reverse --border | head -n1)
+                    sub_query_text=$(printf '' | fzf --ansi \
+                        --prompt="${MAGENTA}${BOLD}${ICON_SEARCH}${RESET} Search within results for '$query': " \
+                        --print-query \
+                        --height=10 \
+                        --reverse \
+                        --border \
+                        --footer="$FZF_FOOTER_SEARCH" | head -n1)
                     [ -z "$sub_query_text" ] && continue
 
                     local sub_query_fragment
@@ -539,9 +648,10 @@ mediatype:texts AND subject:linux"
                         --border \
                         --delimiter=$'\t' \
                         --with-nth=2.. \
-                        --preview-window=right:40% \
+                        --preview-window=right:50% \
                         --preview "$preview_command" \
-                        --cycle)
+                        --cycle \
+                        --footer="$FZF_FOOTER")
                     
                     rm "$temp_combined_file"
 
@@ -556,6 +666,7 @@ mediatype:texts AND subject:linux"
                     return
                     ;;
                 *)
+                    [ -z "$identifier_or_action" ] && continue
                     open_item "$identifier_or_action"
                     ;;
             esac
@@ -572,19 +683,25 @@ browse_collection() {
     local preview_command='bash -c '\''fzf_previewer "$@"'\'' _ {1}'
 
     page=1
-    rows=30
+    rows=29
 
     while true; do
         echo "${ICON_PROMPT_COLLECTION} Browsing collection: $coll (Page $page)..."
 
-        local cache_file="$COLLECTIONS_CACHE_DIR/${coll}-page-${page}.json"
-        if ! item_json=$(ia search "collection:$coll" --field identifier --field title --sort "downloads desc" -p "page:$page" -p "rows:$rows"); then
-            echo "❌ Error: 'ia search' command failed for collection: $coll. Check connection or command."
-            sleep 3
-            break
-        fi
-        echo "$item_json" > "$cache_file"
-        if [ -z "$item_json" ]; then
+       local cache_file="$COLLECTIONS_CACHE_DIR/${coll}-page-${page}.json"
+
+       if [ -f "$cache_file" ]; then
+           item_json=$(cat "$cache_file")
+       else
+           if ! item_json=$(ia search "collection:$coll" --field identifier --field title --sort "downloads desc" -p "page:$page" -p "rows:$rows"); then
+               echo "❌ Error: 'ia search' command failed for collection: $coll. Check connection or command."
+               sleep 3
+               break
+           fi
+           echo "$item_json" > "$cache_file"
+       fi 
+
+       if [ -z "$item_json" ]; then
             echo "🚫 No results found for page $page."
             if [ "$page" -eq 1 ]; then break; fi
         fi
@@ -619,9 +736,10 @@ browse_collection() {
             --border \
             --delimiter=$'\t' \
             --with-nth=2.. \
-            --preview-window=right:40% \
+            --preview-window=right:50% \
             --preview "$preview_command" \
-            --cycle)
+            --cycle \
+            --footer="$FZF_FOOTER")
 
         identifier_or_action=$(echo "$selected_line" | awk -F'\t' '{print $1}')
 
@@ -647,7 +765,13 @@ browse_collection() {
                 ;;
             "action_search_all")
                 local sub_query_text
-                sub_query_text=$(printf '' | fzf --ansi --prompt="${MAGENTA}${BOLD}${ICON_SEARCH}${RESET} Search within collection '$coll': " --print-query --height=10 --reverse --border | head -n1)
+                sub_query_text=$(printf '' | fzf --ansi \
+                    --prompt="${MAGENTA}${BOLD}${ICON_SEARCH}${RESET} Search within collection '$coll': " \
+                    --print-query \
+                    --height=10 \
+                    --reverse \
+                    --border \
+                    --footer="$FZF_FOOTER_SEARCH" | head -n1)
                 [ -z "$sub_query_text" ] && continue
 
                 local sub_query_fragment
@@ -691,9 +815,10 @@ browse_collection() {
                         --border \
                         --delimiter=$'\t' \
                         --with-nth=2.. \
-                        --preview-window=right:40% \
+                        --preview-window=right:50% \
                         --preview "$preview_command" \
-                        --cycle)
+                        --cycle \
+                        --footer="$FZF_FOOTER")
                 
                 rm "$temp_combined_file"
 
@@ -707,7 +832,7 @@ browse_collection() {
             "action_back")
                 return
                 ;;
-            " ")
+            ""|" ")
                 # This is the blank line, do nothing.
                 ;;
             *)
@@ -721,8 +846,19 @@ browse_collection() {
 open_item() {
     local identifier="$1"
     echo "${ICON_OPEN} Fetching file list for: $identifier ..."
+
+    local metadata
+    metadata=$(curl -s "https://archive.org/metadata/$identifier/files" 2>/dev/null)
+
+    if [ -z "$metadata" ]; then
+        echo "🚫 No files found for this item or failed to fetch."
+        sleep 2
+        return
+    fi
+
+    # Plain file list for subtitle matching, image detection etc.
     local file_list
-    file_list=$(ia list "$identifier")
+    file_list=$(echo "$metadata" | jq -r '.result[].name' 2>/dev/null)
 
     if [ -z "$file_list" ]; then
         echo "🚫 No files found for this item or failed to fetch."
@@ -730,10 +866,21 @@ open_item() {
         return
     fi
 
+    # Display list with sizes: filename<TAB>size  filename
+    local file_list_display
+    file_list_display=$(echo "$metadata" | jq -r '.result[] |
+        . as $f |
+        ($f.size // "?" | tonumber? // 0) as $bytes |
+        ($f.name) + "\t" +
+        (if $bytes > 1073741824 then (($bytes / 1073741824 * 10 | round) / 10 | tostring) + " GB"
+        elif $bytes > 1048576 then (($bytes / 1048576 * 10 | round) / 10 | tostring) + " MB"
+        elif $bytes > 1024 then (($bytes / 1024 * 10 | round) / 10 | tostring) + " KB"
+        else ($bytes | tostring) + " B"
+        end) + "  " + $f.name' 2>/dev/null)
+
     # Helper function to extract a 'core' name for fuzzy matching
     get_core_name() {
         local input_name="$1"
-        # To lowercase, remove extension, replace all non-alphanumeric chars with a space, squeeze spaces, and trim.
         echo "$input_name" | \
         tr '[:upper:]' '[:lower:]' | \
         sed -E 's/\.[^.]*$//' | \
@@ -742,43 +889,60 @@ open_item() {
         sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
     }
 
-    while true; do
-        local file_choices="${file_list}"
-        file_choices+=$'\n\n'"[${RED}${ICON_EXIT} Back to title list${RESET}]"
+    # Check if item has images (excluding thumbs) for "Open all images" option
+    local has_images
+    has_images=$(echo "$file_list" | grep -iE '\.(jpg|jpeg|png)$' | grep -iv 'thumb')
 
-        local filename
-        filename=$(echo -e "${file_choices}" | fzf \
+    while true; do
+        local selected_line
+        selected_line=$(printf '%s\n' "$file_list_display" | fzf \
             --ansi \
-            --prompt="${MAGENTA}${BOLD}${ICON_PROMPT_FILE}${RESET} Select a file to open (or back) > " \
+            --prompt="${MAGENTA}${BOLD}${ICON_PROMPT_FILE}${RESET} Select a file to open (or press esc to go back) > " \
             --height=100% \
             --reverse \
             --border \
-            --cycle)
+            --cycle \
+            --delimiter=$'\t' \
+            --with-nth=2.. \
+            --footer="$FZF_FOOTER")
 
-        local sanitized_filename
-        sanitized_filename=$(echo "$filename" | sed 's/\x1b\[[0-9;]*[mG]//g')
-
-        if [ -z "$filename" ] || [[ "$sanitized_filename" == "[${ICON_EXIT} Back to title list]" ]]; then
+        if [ -z "$selected_line" ]; then
             return
         fi
 
-        local action_label
-        case "$filename" in
-            *.mp4|*.mkv|*.avi|*.webm|*.flv|*.ogv|*.mp3|*.ogg|*.flac|*.wav|*.m4a)
-                action_label="${CYAN}${ICON_PLAY} Play${RESET}" ;; 
-            *) action_label="${CYAN}${ICON_OPEN} Open${RESET}" ;; 
-        esac
+        # Extract clean filename from column 1
+        local filename
+        filename=$(echo "$selected_line" | awk -F'\t' '{print $1}')
 
-        local action
-        action=$(echo -e "$action_label\n${CYAN}${ICON_DOWNLOAD} Download${RESET}\n${RED}${ICON_EXIT} Back to file list${RESET}" | fzf \
+        if [ -z "$filename" ]; then
+            return
+        fi
+
+       local action_label
+       case "$filename" in
+           *.mp4|*.mkv|*.avi|*.webm|*.flv|*.ogv|*.mp3|*.ogg|*.flac|*.wav|*.m4a)
+               action_label="${CYAN}${ICON_PLAY} Play${RESET}" ;; 
+           *) action_label="${CYAN}${ICON_OPEN} Open${RESET}" ;; 
+       esac
+       
+       # Build action menu
+       local action_menu
+       action_menu="$action_label\n${CYAN}${ICON_DOWNLOAD} Download${RESET}"
+       if [ -n "$has_images" ]; then
+           action_menu+="\n${CYAN}${ICON_OPEN} Open all images${RESET}"
+       fi
+       action_menu+="\n${RED}${ICON_EXIT} Back to file list${RESET}"
+       
+       local action
+       action=$(echo -e "$action_menu" | fzf \
             --ansi \
             --prompt="${MAGENTA}${BOLD}${ICON_PROMPT_ACTION}${RESET} Choose action for $filename > " \
             --height=100% \
             --reverse \
             --border \
-            --cycle)
+            --cycle \
+            --footer="$FZF_FOOTER")
 
-        # Strip ANSI codes for reliable matching
         local sanitized_action
         sanitized_action=$(echo "$action" | sed 's/\x1b\[[0-9;]*[mG]//g')
         
@@ -795,56 +959,48 @@ open_item() {
                 *.mp4|*.mkv|*.avi|*.webm|*.flv|*.ogv)
                     echo "🎞️ Playing video..."
                     
-                    # --- Fuzzy Subtitle Matching Logic ---
-                    local sub_file=""
-                    local video_core_name
-                    video_core_name=$(get_core_name "$filename")
+                  # --- Subtitle Matching Logic ---
+                  local sub_file=""
+                  local subtitle_candidates
+                  mapfile -t subtitle_candidates < <(echo "$file_list" | grep -E '\.(srt|ass|vtt)$')
+                  
+                  if [ "${#subtitle_candidates[@]}" -eq 1 ]; then
+                      sub_file="${subtitle_candidates[0]}"
+                  
+                  elif [ "${#subtitle_candidates[@]}" -gt 1 ]; then
+                      local video_core_name
+                      video_core_name=$(get_core_name "$filename")
+                      read -ra video_words <<< "$video_core_name"
+                  
+                      local best_match=""
+                      local best_score=0
+                      local min_diff=9999
+                  
+                      for sub_candidate in "${subtitle_candidates[@]}"; do
+                          local sub_core_name
+                          sub_core_name=$(get_core_name "$sub_candidate")
+                  
+                          local common_word_count=0
+                          for word in "${video_words[@]}"; do
+                              [ -z "$word" ] && continue
+                              [[ " $sub_core_name " =~ " $word " ]] && ((common_word_count++))
+                          done
+                  
+                          local diff=$(( ${#video_core_name} > ${#sub_core_name} ? \
+                              ${#video_core_name} - ${#sub_core_name} : \
+                              ${#sub_core_name} - ${#video_core_name} ))
+                  
+                          if [ "$common_word_count" -gt "$best_score" ] || \
+                             [ "$common_word_count" -eq "$best_score" ] && [ "$diff" -lt "$min_diff" ]; then
+                              best_score=$common_word_count
+                              min_diff=$diff
+                              best_match="$sub_candidate"
+                          fi
+                      done
+                      sub_file="$best_match"
+                  fi
+                  # --- End of Subtitle Matching Logic --- 
 
-                    if [ -n "$video_core_name" ]; then
-                        local best_match=""
-                        local best_score=-1
-                        local min_diff=9999
-                        
-                        local subtitle_candidates
-                        subtitle_candidates=$(echo "$file_list" | grep -E '\.(srt|ass|vtt)$')
-
-                        while IFS= read -r sub_candidate; do
-                            if [ -z "$sub_candidate" ]; then continue; fi
-                            
-                            local sub_core_name
-                            sub_core_name=$(get_core_name "$sub_candidate")
-                            if [ -z "$sub_core_name" ]; then continue; fi
-
-                            # Calculate score based on common words
-                            local video_words=("$video_core_name")
-                            local common_word_count=0
-                            for word in "${video_words[@]}"; do
-                                if [[ " $sub_core_name " =~ " $word " ]]; then
-                                    ((common_word_count++))
-                                fi
-                            done
-
-                            # Tie-breaking: use length difference
-                            local video_len=${#video_core_name}
-                            local sub_len=${#sub_core_name}
-                            local diff=$(( video_len > sub_len ? video_len - sub_len : sub_len - video_len ))
-
-                            if [ "$common_word_count" -gt "$best_score" ]; then
-                                best_score=$common_word_count
-                                min_diff=$diff
-                                best_match="$sub_candidate"
-                            elif [ "$common_word_count" -eq "$best_score" ] && [ "$common_word_count" -gt 0 ]; then
-                                if [ "$diff" -lt "$min_diff" ]; then
-                                    min_diff=$diff
-                                    best_match="$sub_candidate"
-                                fi
-                            fi
-                        done <<< "$subtitle_candidates"
-                        sub_file="$best_match"
-                    fi
-                    # --- End of Fuzzy Matching Logic ---
-
-                    # Create a temporary log file to monitor mpv status
                     local mpv_log
                     mpv_log=$(mktemp)
 
@@ -853,7 +1009,6 @@ open_item() {
                         local sub_encoded
                         sub_encoded=$(urlencode "$sub_file")
                         local sub_url="https://archive.org/download/$identifier/$sub_encoded"
-                        # Redirect stderr/stdout to log file so we can grep it
                         $VIDEO_PLAYER --ytdl=no "$url" --sub-file="$sub_url" > "$mpv_log" 2>&1 &
                     else
                         echo "🚫 No matching subtitle found."
@@ -862,7 +1017,6 @@ open_item() {
                     
                     local pid=$!
 
-                    # --- Real-time Launch Monitor ---
                     (
                         for ((i=0; i<200; i++)); do
                             if ! kill -0 "$pid" 2>/dev/null; then break; fi
@@ -872,7 +1026,6 @@ open_item() {
                         done
                     ) | pv -p -t -e -N "🚀 Launching mpv" -s 200 > /dev/null
 
-                    # Check if mpv failed and show log
                     if ! kill -0 "$pid" 2>/dev/null; then
                         echo "🚫 mpv failed to launch. Error log:"
                         echo "-------------------------------------"
@@ -882,7 +1035,6 @@ open_item() {
                         read -r
                     fi
 
-                    # Clean up
                     rm -f "$mpv_log"
                     ;;
 
@@ -894,12 +1046,14 @@ open_item() {
                     download_and_view "$url" "$IMAGE_VIEWER" ;; 
                 *.pdf)
                     download_and_view "$url" "$PDF_VIEWER" ;; 
+                *.epub)
+                    download_and_view "$url" "$EPUB_VIEWER" ;;
                 *.txt|*.md|*.rst|*.csv|*.log|*.tex|*.sh|*.py|*.c|*.cpp|*.h|*.java|*.js|*.ts|*.json|*.xml|*.yaml|*.yml|*.ini|*.conf|*.cfg)
                     local temp_file
                     temp_file=$(mktemp)
                     curl -sL "$url" -o "$temp_file"
                     if [ -s "$temp_file" ]; then
-                        vim "$temp_file"
+                        $TEXT_VIEWER "$temp_file"
                         rm -f "$temp_file"
                     else
                         echo "🚫 Failed to fetch $filename"
@@ -917,6 +1071,8 @@ open_item() {
             esac
             echo "✅ Done. Press Enter to continue."
             read -r
+        elif [ "$sanitized_action" == "${ICON_OPEN} Open all images" ]; then
+            open_all_images "$identifier" "$file_list"
         fi
     done
 }
