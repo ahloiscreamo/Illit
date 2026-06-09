@@ -15,9 +15,51 @@
 /* === DuckDuckGo background === */
 @-moz-document domain("duckduckgo.com") {
   html, body {
-    background-color: #232136 !important; /* match your theme */
+    background-color: #232136 !important;
     color: #e0def4 !important;
   }
+}
+
+/* === Force Nerd Font everywhere except icon elements === */
+@-moz-document regexp(".*") {
+  *:not([data-mat-icon-namespace])
+   :not([class*="icon"])
+   :not([class*="symbol"])
+   :not([class*="material"])
+   :not([class*="glyph"])
+   :not([class*="fa"])
+   :not([class*="feather"])
+   :not([class*="lucide"])
+   :not([class*="heroicon"])
+   :not([class*="tabler"])
+   :not([class*="phosphor"])
+   :not([class*="remix"])
+   :not([class*="codicon"])
+   :not([class*="octicon"])
+   :not([class*="icomoon"])
+   :not([class*="ionicon"])
+   :not([class*="anticon"])
+   :not([class*="mdi"])
+   :not([class*="svg-icon"])
+   :not([class*="sprite"])
+   :not([data-icon])
+   :not([aria-label][role="img"])
+   :not([role="img"]) {
+    font-family: "Maple Mono NF CN" !important;
+    font-size: 16px !important;
+  }
+}
+
+/* === Protect icon fonts from Nerd Font override === */
+@-moz-document regexp(".*") {
+  @font-face { font-family: "Font Awesome 5 Free";        src: local("Font Awesome 5 Free"); }
+  @font-face { font-family: "Font Awesome 5 Brands";      src: local("Font Awesome 5 Brands"); }
+  @font-face { font-family: "Font Awesome 6 Free";        src: local("Font Awesome 6 Free"); }
+  @font-face { font-family: "Font Awesome 6 Brands";      src: local("Font Awesome 6 Brands"); }
+  @font-face { font-family: "Material Icons";             src: local("Material Icons"); }
+  @font-face { font-family: "Material Symbols Outlined";  src: local("Material Symbols Outlined"); }
+  @font-face { font-family: "codicon";                    src: local("codicon"); }
+  @font-face { font-family: "icomoon";                    src: local("icomoon"); }
 }
 
 /* === Transparent images (checkerboard background) === */
@@ -29,25 +71,152 @@
       linear-gradient(-45deg, #393552 25%, transparent 25%),
       linear-gradient(45deg, transparent 75%, #393552 75%),
       linear-gradient(-45deg, transparent 75%, #393552 75%);
-    background-size: 20px 20px;   /* Checker square size */
+    background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
   }
 }
 
 /* === Fix ugly border when using firefox default override color === */
 @-moz-document regexp(".*") {
-  /* Tone down border colors globally */
   * {
     border-color: rgba(100, 100, 120, 0.4) !important;
     outline-color: rgba(100, 100, 120, 0.4) !important;
   }
 
-  /* Softer box shadows/rings */
   *:focus-visible {
     outline-color: rgba(130, 130, 160, 0.6) !important;
   }
+
   svg {
     color: #3e8fb0 !important;
     fill: #3e8fb0 !important;
   }
+
+  /* === Input fields, search boxes === */
+  input, select,
+  [role="searchbox"],
+  [role="combobox"],
+  [type="search"],
+  [type="text"],
+  [type="email"],
+  [type="password"] {
+    background-color: #2a273f !important; /* surface */
+    color: #e0def4 !important;
+    border-color: #44415a !important;
+  }
+
+  /* === Tables, infoboxes === */
+  table, tbody, thead, tr, td, th,
+  .infobox, .wikitable,
+  [class*="infobox"],
+  [class*="table"] {
+    background-color: #2a273f !important; /* surface */
+    color: #e0def4 !important;
+    border-color: #44415a !important;
+  }
+
+  th {
+    background-color: #393552 !important; /* overlay */
+  }
+}
+
+/* ================================================
+   Rosé Pine Moon - Universal Syntax Highlighting
+   Covers: GitHub (pl-*), highlight.js, Prism.js
+   ================================================ */
+
+@-moz-document regexp(".*") {
+
+  /* --- Code block backgrounds --- */
+  pre, code,
+  .highlight, .blob-wrapper,
+  pre[class*="language-"],
+  code[class*="language-"],
+  .hljs {
+    background-color: #232136 !important;
+    color: #e0def4 !important;
+  }
+
+  /* === GitHub (pl-*) === */
+  .pl-k                { color: #3e8fb0 !important; }  /* keyword - pine */
+  .pl-s, .pl-s1, .pl-pds { color: #f6c177 !important; } /* string - gold */
+  .pl-en               { color: #ea9a97 !important; }  /* function - rose */
+  .pl-c1               { color: #f6c177 !important; }  /* constant - gold */
+  .pl-smi              { color: #9ccfd8 !important; }  /* variable - foam */
+  .pl-c                { color: #6e6a86 !important; font-style: italic; } /* comment - muted */
+  .pl-ent              { color: #9ccfd8 !important; }  /* tag - foam */
+  .pl-v                { color: #ea9a97 !important; }  /* variable - rose */
+  .pl-kos, .pl-c2      { color: #908caa !important; }  /* operator - subtle */
+  .pl-e                { color: #c4a7e7 !important; }  /* attribute - iris */
+  .pl-stj              { color: #9ccfd8 !important; }  /* type - foam */
+  .blob-num            { color: #6e6a86 !important; }  /* line number - muted */
+
+  /* === highlight.js (hljs) === */
+  .hljs-keyword,
+  .hljs-selector-tag,
+  .hljs-built_in,
+  .hljs-tag .hljs-name  { color: #3e8fb0 !important; }  /* pine */
+
+  .hljs-string,
+  .hljs-template-string,
+  .hljs-template-variable,
+  .hljs-attr            { color: #f6c177 !important; }  /* gold */
+
+  .hljs-title,
+  .hljs-title.function_ { color: #ea9a97 !important; }  /* rose */
+
+  .hljs-number,
+  .hljs-literal         { color: #f6c177 !important; }  /* gold */
+
+  .hljs-type,
+  .hljs-class,
+  .hljs-title.class_    { color: #9ccfd8 !important; }  /* foam */
+
+  .hljs-comment,
+  .hljs-quote           { color: #6e6a86 !important; font-style: italic; } /* muted */
+
+  .hljs-variable,
+  .hljs-params          { color: #ea9a97 !important; }  /* rose */
+
+  .hljs-operator,
+  .hljs-punctuation     { color: #908caa !important; }  /* subtle */
+
+  .hljs-decorator,
+  .hljs-meta,
+  .hljs-doctag          { color: #c4a7e7 !important; }  /* iris */
+
+  .hljs-property,
+  .hljs-selector-class,
+  .hljs-selector-id     { color: #9ccfd8 !important; }  /* foam */
+
+  .hljs-regexp          { color: #eb6f92 !important; }  /* love */
+
+  .hljs-symbol,
+  .hljs-bullet          { color: #ea9a97 !important; }  /* rose */
+
+  /* === Prism.js (token) === */
+  .token.keyword        { color: #3e8fb0 !important; }  /* pine */
+  .token.string,
+  .token.char           { color: #f6c177 !important; }  /* gold */
+  .token.function       { color: #ea9a97 !important; }  /* rose */
+  .token.number,
+  .token.boolean        { color: #f6c177 !important; }  /* gold */
+  .token.class-name,
+  .token.builtin        { color: #9ccfd8 !important; }  /* foam */
+  .token.comment,
+  .token.prolog,
+  .token.doctype        { color: #6e6a86 !important; font-style: italic; } /* muted */
+  .token.variable       { color: #ea9a97 !important; }  /* rose */
+  .token.operator,
+  .token.punctuation    { color: #908caa !important; }  /* subtle */
+  .token.decorator,
+  .token.annotation,
+  .token.attr-name      { color: #c4a7e7 !important; }  /* iris */
+  .token.tag            { color: #9ccfd8 !important; }  /* foam */
+  .token.regex          { color: #eb6f92 !important; }  /* love */
+  .token.symbol         { color: #ea9a97 !important; }  /* rose */
+  .token.namespace      { color: #9ccfd8 !important; }  /* foam */
+  .token.selector       { color: #c4a7e7 !important; }  /* iris */
+  .token.property       { color: #9ccfd8 !important; }  /* foam */
+  .token.important      { color: #eb6f92 !important; }  /* love */
 }

@@ -6,50 +6,41 @@
  * User: Ahloi
  * Copyright: *!
  */
-
 configuration {
   font: "Maple Mono NF CN Medium 14";
-
   drun {
     display-name: "LAUNCH";
   }
-
   run {
     display-name: "TERM";
   }
-
   window {
-  width: 23em;
-  height: 33em;
-  location: center;
-  anchor: center;
-  x-offset: 0;
-  y-offset: 0;
+    width: 23em;
+    height: 33em;
+    location: center;
+    anchor: center;
+    x-offset: 0;
+    y-offset: 0;
     display-name: "WINDOW";
   }
-
   timeout {
     delay: 10;
     action: "kb-cancel";
   }
 }
-
 * {
   border: 0;
   margin: 0;
   padding: 0;
   spacing: 0;
-
   bg: #232136;
   fg: #e0def4;
   blue: #3e8fb0;
   purple: #f6c177;
   green: #3e8fb0;
-
   background-color: @bg;
   text-color: @fg;
 }
-
 window {
   width: 23em;
   height: 33em;
@@ -60,45 +51,56 @@ window {
   transparency: "real";
   border: 6;
   border-color: @green;
+  border-radius: 12px;
 }
-
 mainbox {
   children: [inputbar, listview];
 }
-
 inputbar {
   background-color: @blue;
+  border-radius: 6px 6px 0 0;
   children: [prompt, entry];
 }
-
 entry {
   background-color: inherit;
   padding: 12px 3px;
 }
-
 prompt {
   background-color: inherit;
   padding: 12px;
 }
-
 listview {
   lines: 8;
 }
-
 element {
   children: [element-icon, element-text];
   text-color: @fg;
+  background-color: @bg;
 }
-
+element normal.normal {
+  background-color: @bg;
+}
+element selected.normal {
+  background-color: #393552;
+  border-radius: 4px;
+}
+element selected.urgent {
+  background-color: #393552;
+  border-radius: 4px;
+}
+element selected.active {
+  background-color: #393552;
+  border-radius: 4px;
+}
 element-icon {
   padding: 10px 10px;
+  background-color: inherit;
 }
-
 element-text {
   padding: 10px 0;
   text-color: inherit;
+  background-color: inherit;
 }
-
 element-text selected {
   text-color: @purple;
 }

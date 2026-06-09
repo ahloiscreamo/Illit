@@ -1,0 +1,6 @@
+#!/bin/sh
+# Get active window coordinates from scrollmsg and launch wl-kbptr restricted to that area
+active_area=$(scrollmsg -t get_tree | jq --raw-output \
+    '.. | (.nodes? + .floating_nodes? // empty)[] | select (.focused) | .rect | "\(.width)x\(.height)+\(.x)+\(.y)"')
+
+wl-kbptr --restrict "$active_area" "$@"

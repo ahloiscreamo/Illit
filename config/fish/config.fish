@@ -2,6 +2,15 @@
 if status is-interactive
     # Removes the initial greeting message
     set -U fish_greeting
+
+    # D-Bus session bus (for agy/gnome-keyring on WMs without a display manager)
+    if not set -q DBUS_SESSION_BUS_ADDRESS
+        if not test -S /run/user/(id -u)/bus
+            set -gx DBUS_SESSION_BUS_ADDRESS (dbus-launch --sh-syntax | grep -oP "(?<=')[^']+(?=')" | head -1)
+        else
+            set -gx DBUS_SESSION_BUS_ADDRESS unix:path=/run/user/(id -u)/bus
+        end
+    end
 end
 
 # === NNN Environment Variables (Kept as 'export' for compatibility) ===
@@ -17,6 +26,9 @@ export NNN_PLUG='a:addtoplaylist;j:autojump;p:preview-tui;l:launch;r:renamer;o:f
 
 # === Global Variables (using 'set -gx' for export) ===
 
+# Clifm
+set -gx CLIFM_PROMPT_P_MAX_PATH "40"
+
 # Github-Cli
 set -gx GLAMOUR_STYLE ".config/glamour/rose-pine.json"
 
@@ -24,14 +36,14 @@ set -gx GLAMOUR_STYLE ".config/glamour/rose-pine.json"
 set -gx EDITOR "vim"
 set -gx VISUAL "vim"
 
-# Qt5ct
-set -gx QT_QPA_PLATFORMTHEME "qt5ct"
+# Qt6ct
+set -gx QT_QPA_PLATFORMTHEME "qt6ct"
 
 # fex
 # Source .fex.fish if it's present
 [ -f ~/.fex.fish ] && source ~/.fex.fish
 
-# Bind CTRL-F to invoke fex (key binds can be custom)
+# Bind SUPER-F to invoke fex (key binds can be custom)
 bind \super-f fex-widget
 
 # fzf
@@ -88,7 +100,6 @@ set -gx FFF_COL5 0
 # Gemini API
 set -gx GEMINI_API_KEY "AIzaSyBdgtnEh_SI_9Dnkre3zLaPAuq162-Dal0"
 
-
 # === PATH Modifications (use fish_add_path) ===
 
 # Npm, Pipx, and Cargo are now added safely and idempotently, removing colon-separated PATH commands
@@ -106,15 +117,18 @@ alias fex "fex --time-type modified"
 alias magic="magic-tape.sh"
 alias nnn="nnn -r -e -x"
 alias icat="kitty +kitten icat"
+alias record='wf-recorder -f ~/Videos/recording-(date +%Y%m%d-%H%M%S).mp4 -c libx264 -r 60 -x yuv420p --filter "scale=out_color_matrix=bt709:out_range=full" -p color_range=jpeg -p colorspace=bt709 -p color_trc=iec61966-2-1 -p color_primaries=bt709'
 alias w3m="w3m -o inline_img_protocol=4"
 alias ls="eza --icons --group-directories-first -s=type"
 alias ncdu="ncdu --color dark"
 alias archwiki-offline="archwiki-offline -o w3m -m fzf"
 alias archwiki="archwiki-offline"
 alias ffind="find ~ -type f | fzf --preview 'fzf-preview.sh {}' --bind 'enter:execute(vim {})' --bind 'focus:transform-header:file --brief {}'"
+alias preview="fzf --preview 'file {}' | xargs -d '\n' xdg-open"
 alias muc="muc --file ~/.local/share/fish/fish_history --count 10 --pretty --shell=\"fish\""
 alias tap="tap -db --color fg=c8c8e5,bg=232136,hl=c4a7e7,prompt=3e8fb0,header=ea9a97,header+=eb6f92,progress=f6c177,info=3e8fb0,err=eb6f92"
-
+alias tether-stop-charge="adb shell dumpsys battery set status 3"
+alias tether-reset-charge="adb shell dumpsys battery reset"
 
 # === Sourcing Other Files/Tools ===
 
@@ -148,4 +162,20 @@ set -U fish_color_user green
 
 # === Zoxide  ===
 zoxide init fish | source
+
+# Ueberzugpp default config (X11)
+echo '{
+  "layer": {
+    "silent": true,
+    "use-escape-codes": false,
+    "output": "x11"
+  }
+}' > ~/.config/ueberzugpp/config.json
+
+# If this is a Wayland session, source the Wayland-specific settings to override defaults.
+if test "$XDG_SESSION_TYPE" = "wayland"
+    if test -f ~/.config/fish/wayland.fish
+        source ~/.config/fish/wayland.fish
+    end
+end
 

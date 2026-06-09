@@ -2,3 +2,8 @@
 export MUSIC_DIR="/mnt/Kingston/Music"  # defaults to your mpd.conf music_directory
 export PREVIEW_POS="bottom"              # right|bottom
 export PREVIEW_SIZE="50%"
+
+# Sixel image tuning overrides for bottom preview
+export BOTTOM_OFFSET_Y="4"
+export BOTTOM_H_ADJUST="4"
+# export BOTTOM_MANUAL_ADJUST="3" # uncomment if you want to adjust horizontal nudge
