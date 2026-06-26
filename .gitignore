@@ -1,0 +1,3 @@
+# Ignore nested git repositories in vim bundles and packs
+home/.vim/bundle/*/.git
+home/.vim/pack/*/*/.git
