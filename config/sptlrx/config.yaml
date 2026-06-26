@@ -1,9 +1,48 @@
-# config.yaml
+#player: spotify
+#ignoreErrors: true
+#timerInterval: 200
+#updateInterval: 2000
+#style:
+#  hAlignment: center
+#  before:
+#    background: ""
+#    foreground: ""
+#    bold: true
+#    italic: false
+#    underline: false
+#    strikethrough: false
+#    blink: false
+#    faint: false
+#  current:
+#    background: ""
+#    foreground: ""
+#    bold: true
+#    italic: false
+#    underline: false
+#    strikethrough: false
+#    blink: false
+#    faint: false
+#  after:
+#    background: ""
+#    foreground: ""
+#    bold: false
+#    italic: false
+#    underline: false
+#    strikethrough: false
+#    blink: false
+#    faint: true
+#pipe:
+#  length: 0
+#  overflow: word
 player: mpd
 mpd:
   address: 127.0.0.1:6600
   password: ""
-
-# spotify
-player: spotify
-cookie: <sp_t=780acc88480955e0571358cfc771fa46; OptanonConsent=isGpcEnabled=0&datestamp=Wed+Nov+27+2024+01%3A42%3A06+GMT%2B0800+(Malaysia+Time)&version=202409.2.0&browserGpcFlag=1&isIABGlobal=false&hosts=&consentId=d1194fc1-e21b-4743-882d-907f7f81d342&interactionCount=1&isAnonUser=1&landingPath=NotLandingPage&groups=s00%3A1%2Cf00%3A0%2Cm00%3A0%2Ct00%3A0%2Cf11%3A0%2Ci00%3A0%2CV2STACK3%3A0%2CV2STACK11%3A0%2CV2STACK20%3A0%2Cm03%3A1&AwaitingReconsent=false; sp_dc=AQAKSsoAYKZIIflI-icM4bV9jEQnjuL7nt261Xo3kT_Ubud6Ltr3JtHfXseEACyXQoJqNhvmbmkyXGZXz4lpD9EmRE6CNp15XBM4x8o79tUup0qZH2f2jwDj6_PPT6Hx5nux372HKh0cPu5fAuo8Uaw3crPM956-; sp_key=1162e52d-33a8-484b-94fd-5783c6bacf55; sp_m=my-en; sp_last_utm=%7B%22utm_campaign%22%3A%22your_account%22%2C%22utm_medium%22%3A%22menu%22%2C%22utm_source%22%3A%22spotify%22%7D; sp_gaid=0088fcdc9595ebd9ea5e16a91d4cbfe9bf84de17c6b924aab82d5c; sp_landing=https%3A%2F%2Fopen.spotify.com%2Fsearch%3Fsp_cid%3D780acc88480955e0571358cfc771fa46%26device%3Ddesktop>
+#mopidy:
+#  address: 127.0.0.1:6680
+#mpris:
+#  players: []
+#browser:
+#  port: 8974
+#local:
+#  folder: ""

@@ -1,0 +1,123 @@
+/* === Font === */
+* {
+   font-family: "Maple Mono NF CN" !important;
+   font-size: 16px !important;  
+   font-weight: 500 !important;
+}
+/* === Toolbar button === */
+.toolbarbutton-badge {
+    font-size: 10px !important; 
+    line-height: 10px !important;
+    padding-block: 0 !important;
+    min-width: 14px !important;
+}
+/* === URL bar suggestion text === */
+.urlbarView-url,
+.urlbarView-title,
+.urlbarView-secondary {
+  color: #575279 !important;
+}
+.urlbarView-url {
+  color: #286983 !important; /* pine instead of blue */
+}
+/* === URL bar dropdown highlight === */
+.urlbarView-row[selected],
+.urlbarView-row:hover {
+  background-color: #b4637a !important;
+}
+/* === URL bar text selection === */
+#urlbar input::selection {
+  background-color: #dfdad9 !important;
+  color: #575279 !important;
+}
+/* === URL bar background and text === */
+#urlbar-background {
+  background-color: #f2e9e1 !important;
+}
+#urlbar input {
+  color: #575279 !important;
+}
+/* === Remove URL bar focus outline === */
+#urlbar[focused] > #urlbar-background {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #d7827e !important;
+}
+/* === Toolbar/navbar background === */
+#nav-bar,
+#PersonalToolbar,
+#TabsToolbar {
+  background-color: #faf4ed !important;
+  color: #575279 !important;
+}
+/* === Tab colors === */
+.tabbrowser-tab[selected] .tab-background {
+  background-color: #f2e9e1 !important;
+}
+.tabbrowser-tab:not([selected]) .tab-background {
+  background-color: #faf4ed !important;
+}
+.tab-label {
+  color: #575279 !important;
+}
+/* === Tab styling === */
+:root[lwtheme] {
+  --tab-selected-outline-color: transparent !important;
+}
+/* === Bookmark manager window === */
+#places-organizer {
+  background-color: #faf4ed !important;
+  color: #575279 !important;
+}
+
+#placesList treechildren::-moz-tree-row(selected),
+#placeContent treechildren::-moz-tree-row(selected) {
+  background-color: #d7827e !important;
+}
+
+#placesList treechildren::-moz-tree-cell-text(selected),
+#placeContent treechildren::-moz-tree-cell-text(selected) {
+  color: #faf4ed !important;
+}
+
+#placesList,
+#placeContent {
+  background-color: #faf4ed !important;
+  color: #575279 !important;
+}
+
+#placesToolbar {
+  background-color: #f2e9e1 !important;
+  color: #575279 !important;
+}
+/* === Bookmark manager highlight === */
+#bookmarks-view treechildren::-moz-tree-row(selected),
+#PlacesToolbar treechildren::-moz-tree-row(selected),
+tree treechildren::-moz-tree-row(selected) {
+  background-color: #d7827e !important;
+}
+tree treechildren::-moz-tree-cell-text(selected) {
+  color: #faf4ed !important;
+}
+/* === General selection color override === */
+:root {
+  --focus-outline-color: #d7827e !important;
+  --selected-item-color: #faf4ed !important;
+  --selected-item-text-color: #faf4ed !important;
+}
+/* === Fix page load background === */
+@namespace xul url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+browser,
+#tabbrowser-tabpanels,
+.browserStack,
+.browserContainer {
+  background-color: #faf4ed !important;  /* Rose Pine Dawn */
+}
+/* === Kill Firefox's extra vertical tab splitter border === */
+#sidebar-launcher-splitter,
+splitter {
+  border: none !important;
+  background: transparent !important;
+  min-width: 0 !important;
+  width: 0 !important;
+}

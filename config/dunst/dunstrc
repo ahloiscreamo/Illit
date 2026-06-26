@@ -32,7 +32,7 @@
     # geometry = "300x5-30+20"
     # geometry = "0x5-30+55"
     origin=top-center
-    offset = (0, 50)
+    offset = (0, 10)
 
     # Enable image support
     enable_image_support = true

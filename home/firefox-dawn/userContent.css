@@ -1,0 +1,200 @@
+/* === New Tab & Home === */
+@-moz-document url("about:newtab"),
+               url("about:home") {
+  :root[lwt-newtab-brighttext] {
+    --newtab-background-color: #faf4ed !important;
+  }
+
+  body {
+    --newtab-background-color-secondary: #f2e9e1 !important;
+    --newtab-text-primary-color: #575279 !important;
+    --newtab-primary-action-background-pocket: #907aa9 !important;
+  }
+}
+
+/* === DuckDuckGo background === */
+@-moz-document domain("duckduckgo.com") {
+  html, body {
+    background-color: #faf4ed !important;
+    color: #575279 !important;
+  }
+}
+
+/* === Force Nerd Font everywhere except icon elements === */
+@-moz-document regexp(".*") {
+  *:not([data-mat-icon-namespace]):not([class*="icon"]):not([class*="anthropic"]):not([class*="symbol"]):not([class*="material"]):not([class*="glyph"]):not([class*="fa"]):not([class*="feather"]):not([class*="lucide"]):not([class*="heroicon"]):not([class*="tabler"]):not([class*="phosphor"]):not([class*="remix"]):not([class*="codicon"]):not([class*="octicon"]):not([class*="icomoon"]):not([class*="ionicon"]):not([class*="anticon"]):not([class*="mdi"]):not([class*="svg-icon"]):not([class*="sprite"]):not([data-icon]):not([aria-label][role="img"]):not([role="img"]):not([style*="Anthropicons"]) {
+    font-family: "Maple Mono NF CN" !important;
+    font-size: 16px !important;
+  }
+}
+
+/* === Protect icon fonts from Nerd Font override === */
+@-moz-document regexp(".*") {
+  @font-face { font-family: "Font Awesome 5 Free";        src: local("Font Awesome 5 Free"); }
+  @font-face { font-family: "Font Awesome 5 Brands";      src: local("Font Awesome 5 Brands"); }
+  @font-face { font-family: "Font Awesome 6 Free";        src: local("Font Awesome 6 Free"); }
+  @font-face { font-family: "Font Awesome 6 Brands";      src: local("Font Awesome 6 Brands"); }
+  @font-face { font-family: "Material Icons";             src: local("Material Icons"); }
+  @font-face { font-family: "Material Symbols Outlined";  src: local("Material Symbols Outlined"); }
+  @font-face { font-family: "codicon";                    src: local("codicon"); }
+  @font-face { font-family: "icomoon";                    src: local("icomoon"); }
+}
+
+/* === Transparent images (checkerboard background) === */
+@-moz-document regexp(".*\\.(png|jpg|jpeg|gif|webp|svg)$") {
+  body {
+    background-color: #faf4ed !important;
+    background-image:
+      linear-gradient(45deg, #f2e9e1 25%, transparent 25%),
+      linear-gradient(-45deg, #f2e9e1 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #f2e9e1 75%),
+      linear-gradient(-45deg, transparent 75%, #f2e9e1 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+}
+
+/* === Fix ugly border when using firefox default override color === */
+@-moz-document regexp(".*") {
+  * {
+    border-color: rgba(87, 82, 121, 0.2) !important;
+    outline-color: rgba(87, 82, 121, 0.2) !important;
+  }
+
+  *:focus-visible {
+    outline-color: rgba(87, 82, 121, 0.4) !important;
+  }
+
+  svg {
+    color: #286983 !important;
+    fill: #286983 !important;
+  }
+
+  /* === Input fields, search boxes === */
+  input, select,
+  [role="searchbox"],
+  [role="combobox"],
+  [type="search"],
+  [type="text"],
+  [type="email"],
+  [type="password"] {
+    background-color: #fffaf3 !important;
+    color: #575279 !important;
+    border-color: #dfdad9 !important;
+  }
+
+  /* === Tables, infoboxes === */
+  table, tbody, thead, tr, td, th,
+  .infobox, .wikitable,
+  [class*="infobox"],
+  [class*="table"] {
+    background-color: #fffaf3 !important;
+    color: #575279 !important;
+    border-color: #dfdad9 !important;
+  }
+
+  th {
+    background-color: #f2e9e1 !important;
+  }
+}
+
+/* ================================================
+   Rosé Pine Dawn - Universal Syntax Highlighting
+   Covers: GitHub (pl-*), highlight.js, Prism.js
+   ================================================ */
+@-moz-document regexp(".*") {
+  /* --- Code block backgrounds --- */
+  pre, code,
+  .highlight, .blob-wrapper,
+  pre[class*="language-"],
+  code[class*="language-"],
+  .hljs {
+    background-color: #faf4ed !important;
+    color: #575279 !important;
+  }
+  /* === GitHub (pl-*) === */
+  .pl-k                { color: #286983 !important; }  /* keyword - pine */
+  .pl-s, .pl-s1, .pl-pds { color: #ea9d34 !important; } /* string - gold */
+  .pl-en               { color: #d7827e !important; }  /* function - rose */
+  .pl-c1               { color: #ea9d34 !important; }  /* constant - gold */
+  .pl-smi              { color: #56949f !important; }  /* variable - foam */
+  .pl-c                { color: #9893a5 !important; font-style: italic; } /* comment - muted */
+  .pl-ent              { color: #56949f !important; }  /* tag - foam */
+  .pl-v                { color: #d7827e !important; }  /* variable - rose */
+  .pl-kos, .pl-c2      { color: #797593 !important; }  /* operator - subtle */
+  .pl-e                { color: #907aa9 !important; }  /* attribute - iris */
+  .pl-stj              { color: #56949f !important; }  /* type - foam */
+  .blob-num            { color: #9893a5 !important; }  /* line number - muted */
+  /* === GitHub UI text === */
+  .Link--primary,
+  .Link--secondary,
+  .markdown-body a,
+  .commit-message,
+  .js-navigation-open,
+  [class*="color-fg-accent"],
+  [class*="fgColor-accent"] {
+    color: #286983 !important; /* pine */
+  }
+  /* === highlight.js (hljs) === */
+  .hljs-keyword,
+  .hljs-selector-tag,
+  .hljs-built_in,
+  .hljs-tag .hljs-name  { color: #286983 !important; }  /* pine */
+  .hljs-string,
+  .hljs-template-string,
+  .hljs-template-variable,
+  .hljs-attr            { color: #ea9d34 !important; }  /* gold */
+  .hljs-title,
+  .hljs-title.function_ { color: #d7827e !important; }  /* rose */
+  .hljs-number,
+  .hljs-literal         { color: #ea9d34 !important; }  /* gold */
+  .hljs-type,
+  .hljs-class,
+  .hljs-title.class_    { color: #56949f !important; }  /* foam */
+  .hljs-comment,
+  .hljs-quote           { color: #9893a5 !important; font-style: italic; } /* muted */
+  .hljs-variable,
+  .hljs-params          { color: #d7827e !important; }  /* rose */
+  .hljs-operator,
+  .hljs-punctuation     { color: #797593 !important; }  /* subtle */
+  .hljs-decorator,
+  .hljs-meta,
+  .hljs-doctag          { color: #907aa9 !important; }  /* iris */
+  .hljs-property,
+  .hljs-selector-class,
+  .hljs-selector-id     { color: #56949f !important; }  /* foam */
+  .hljs-regexp          { color: #b4637a !important; }  /* love */
+  .hljs-symbol,
+  .hljs-bullet          { color: #d7827e !important; }  /* rose */
+  /* === Prism.js (token) === */
+  .token.keyword        { color: #286983 !important; }  /* pine */
+  .token.string,
+  .token.char           { color: #ea9d34 !important; }  /* gold */
+  .token.function       { color: #d7827e !important; }  /* rose */
+  .token.number,
+  .token.boolean        { color: #ea9d34 !important; }  /* gold */
+  .token.class-name,
+  .token.builtin        { color: #56949f !important; }  /* foam */
+  .token.comment,
+  .token.prolog,
+  .token.doctype        { color: #9893a5 !important; font-style: italic; } /* muted */
+  .token.variable       { color: #d7827e !important; }  /* rose */
+  .token.operator,
+  .token.punctuation    { color: #797593 !important; }  /* subtle */
+  .token.decorator,
+  .token.annotation,
+  .token.attr-name      { color: #907aa9 !important; }  /* iris */
+  .token.tag            { color: #56949f !important; }  /* foam */
+  .token.regex          { color: #b4637a !important; }  /* love */
+  .token.symbol         { color: #d7827e !important; }  /* rose */
+  .token.namespace      { color: #56949f !important; }  /* foam */
+  .token.selector       { color: #907aa9 !important; }  /* iris */
+  .token.property       { color: #56949f !important; }  /* foam */
+  .token.important      { color: #b4637a !important; }  /* love */
+}
+
+@-moz-document domain("github.com") {
+  a { color: #ea9d34 !important; }
+  a:visited { color: #907aa9 !important; }
+  a:hover { color: #56949f !important; }
+}

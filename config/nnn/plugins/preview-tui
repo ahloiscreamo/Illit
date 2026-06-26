@@ -100,7 +100,7 @@
 # Configurable environment variables:
 NNN_SPLIT=${NNN_SPLIT:-}                                   # permanent split direction
 NNN_TERMINAL=${NNN_TERMINAL:-}                             # external terminal to be used
-NNN_SPLITSIZE=${NNN_SPLITSIZE:-50}                         # previewer split size percentage
+NNN_SPLITSIZE=${NNN_SPLITSIZE:-70}                         # previewer split size percentage
 TMPDIR=${TMPDIR:-/tmp}                                     # location of temporary files
 ENVVARS=(
   "NNN_SCOPE=${NNN_SCOPE:-0}"                              # use scope

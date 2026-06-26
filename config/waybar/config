@@ -1,0 +1,96 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 42,
+    "spacing": 0,
+    "modules-left": ["sway/workspaces", "sway/window", "sway/mode"],
+    "modules-center": ["custom/cmus", "custom/mpd-prev", "custom/mpd-toggle", "custom/mpd-next", "custom/mpd-title"],
+    "modules-right": ["pulseaudio", "temperature", "cpu", "memory", "clock", "custom/powermenu"],
+    "sway/workspaces": {
+        "disable-scroll": false,
+        "all-outputs": false,
+        "format": "{name}"
+    },
+    "sway/window": {
+        "max-length": 50,
+        "tooltip": false,
+        "format": "<span color='#eb6f92'></span> {title}"
+    },
+    "sway/mode": {
+        "format": "{}",
+        "tooltip": false
+    },
+    "custom/cmus": {
+    "format": "{}", 
+    "exec": "~/.config/waybar/scripts/cmus.sh",
+    "interval": 1,
+    "on-click": "cmus-remote --pause",
+    "on-scroll-up": "cmus-remote --prev",
+    "on-scroll-down": "cmus-remote --next",
+    "max-length": 100, 
+    "tooltip": false
+    },
+    "custom/mpd-prev": {
+    "format": "<span color='#f6c177'></span>",
+    "on-click": "mpc prev",
+    "tooltip": false,
+    "interval": "once",
+    "signal": 5
+    },
+    "custom/mpd-toggle": {
+        "format": "{}",
+        "exec": "mpc status | grep -q playing && echo '{\"text\": \"\"}' || echo '{\"text\": \"<span color=\\\"#3e8fb0\\\"></span>\"}'",
+        "return-type": "json",
+        "on-click": "mpc toggle && pkill -RTMIN+5 waybar",
+        "interval": 2,
+        "tooltip": false
+    },
+    "custom/mpd-next": {
+        "format": "<span color='#f6c177'></span>",
+        "on-click": "mpc next",
+        "tooltip": false,
+        "interval": "once",
+        "signal": 5
+    },
+    "custom/mpd-title": {
+    "format": "{}",
+    "exec": "~/.config/waybar/scripts/mpd-title.sh",
+    "return-type": "json",
+    "interval": 2,
+    "tooltip": false,
+    "max-length": 60
+    },
+    "pulseaudio": {
+        "format": "<span color='#ea9a97'></span> {volume}%",
+        "format-muted":" MUTE",
+        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+        "tooltip": false
+    },
+    "temperature": {
+        "hwmon-path": "/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon2/temp1_input",
+        "critical-threshold": 65,
+        "format": "<span color='#c4a7e7'></span> {temperatureC}°C",
+        "tooltip": false
+    },
+    "cpu": {
+        "interval": 1,
+        "format": "<span color='#9ccfd8'></span> {usage}%",
+        "tooltip": false
+    },
+    "memory": {
+        "interval": 3,
+        "format": "<span color='#f6c177'></span> {used:0.1f}G",
+        "tooltip": false
+    },
+    "clock": {
+        "interval": 1,
+        "format": "<span color='#3e8fb0'></span> {:%I:%M %p}",
+        "format-alt": "{:%Y-%m-%d}",
+        "tooltip": false
+    },
+    "custom/powermenu": {
+        "format": "",
+        "on-click": "~/.config/waybar/scripts/powermenu.sh",
+        "tooltip": false
+    }
+}

@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =6
+let g:netrw_dirhist_6='/home/ahloi/ia_tmp'
+let g:netrw_dirhist_5='/home/ahloi/.themes/Rosepine-Red-Dark-Moon/gtk-2.0'
+let g:netrw_dirhist_4='/home/ahloi/Downloads'
+let g:netrw_dirhist_3='/home/ahloi/Downloads/PHOTOBOOK'
+let g:netrw_dirhist_2='/home/ahloi/Downloads'
+let g:netrw_dirhist_1='/home/ahloi/.gemini'
+let g:netrw_dirhist_0='/home/ahloi/shot'
+let g:netrw_dirhist_9='/home/ahloi/Scripts/Illit'
+let g:netrw_dirhist_8='/home/ahloi/Documents'
+let g:netrw_dirhist_7='/home/ahloi/gemini_project'

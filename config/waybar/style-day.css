@@ -1,0 +1,135 @@
+* {
+    font-family: "Maple Mono NF CN", "icomoon-feather", "Noto Sans CJK KR", "Noto Sans Arabic";
+    font-size: 13px;
+    font-weight: bold;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+}
+
+window#waybar {
+    background-color: alpha(#232136, 0.99);
+    color: #c8c8e5;
+}
+
+#workspaces {
+    background-color: #c4a7e7;
+    border-radius: 12px;
+    margin: 4px 10px 4px 10px;
+    padding: 0 6px;
+}
+
+#workspaces button {
+    color: #44415a;
+    padding: 0 4px;
+    background: transparent;
+    border-radius: 12px;
+}
+
+#workspaces button.focused,
+#workspaces button.active {
+    color: #232136;
+    background-color: #c4a7e7;
+    font-weight: bold;
+}
+
+#workspaces button:hover {
+    background: rgba(0,0,0,0.1);
+}
+
+#window {
+    background-color: #44415a;
+    color: #c8c8e5;
+    border-radius: 12px;
+    margin: 6px 4px;
+    padding: 0 10px;
+}
+
+#mode {
+    background-color: #44415a;
+    color: #eb6f92;
+    border-radius: 12px;
+    margin: 6px 4px;
+    padding: 0 10px;
+}
+
+#custom-cmus {
+    background-color: #44415a;
+    color: #c8c8e5;
+    border-radius: 12px;
+    margin: 6px 4px;
+    padding: 0 10px;
+}
+
+#custom-mpd-prev,
+#custom-mpd-toggle,
+#custom-mpd-next {
+    background-color: #44415a;
+    color: #eb6f92;
+    border-radius: 12px;
+    margin: 6px 2px;
+    padding: 0 10px;
+}
+#custom-mpd-title {
+    background-color: #44415a;
+    color: #c8c8e5;
+    border-radius: 12px;
+    margin: 6px 2px;
+    padding: 0 10px;
+}
+
+#pulseaudio {
+    background-color: #44415a;
+    color: #c8c8e5;
+    border-radius: 12px;
+    margin: 6px 2px;
+    padding: 0 10px;
+}
+
+#pulseaudio.muted {
+    color: #eb6f92;
+}
+
+#temperature {
+    background-color: #44415a;
+    color: #c8c8e5;
+    border-radius: 12px;
+    margin: 6px 2px;
+    padding: 0 10px;
+}
+
+#temperature.critical {
+    color: #eb6f92;
+}
+
+#cpu {
+    background-color: #44415a;
+    color: #c8c8e5;
+    border-radius: 12px;
+    margin: 6px 2px;
+    padding: 0 10px;
+}
+
+#memory {
+    background-color: #44415a;
+    color: #c8c8e5;
+    border-radius: 12px;
+    margin: 6px 2px;
+    padding: 0 10px;
+}
+
+#clock {
+    background-color: #44415a;
+    color: #c8c8e5;
+    border-radius: 12px;
+    margin: 6px 2px;
+    padding: 0 10px;
+}
+
+#custom-powermenu {
+    background-color: #44415a;
+    color: #eb6f92;
+    border-radius: 12px;
+    margin: 6px 10px 6px 10px;
+    padding: 0 10px;
+}

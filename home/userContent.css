@@ -22,29 +22,7 @@
 
 /* === Force Nerd Font everywhere except icon elements === */
 @-moz-document regexp(".*") {
-  *:not([data-mat-icon-namespace])
-   :not([class*="icon"])
-   :not([class*="symbol"])
-   :not([class*="material"])
-   :not([class*="glyph"])
-   :not([class*="fa"])
-   :not([class*="feather"])
-   :not([class*="lucide"])
-   :not([class*="heroicon"])
-   :not([class*="tabler"])
-   :not([class*="phosphor"])
-   :not([class*="remix"])
-   :not([class*="codicon"])
-   :not([class*="octicon"])
-   :not([class*="icomoon"])
-   :not([class*="ionicon"])
-   :not([class*="anticon"])
-   :not([class*="mdi"])
-   :not([class*="svg-icon"])
-   :not([class*="sprite"])
-   :not([data-icon])
-   :not([aria-label][role="img"])
-   :not([role="img"]) {
+  *:not([data-mat-icon-namespace]):not([class*="icon"]):not([class*="anthropic"]):not([class*="symbol"]):not([class*="material"]):not([class*="glyph"]):not([class*="fa"]):not([class*="feather"]):not([class*="lucide"]):not([class*="heroicon"]):not([class*="tabler"]):not([class*="phosphor"]):not([class*="remix"]):not([class*="codicon"]):not([class*="octicon"]):not([class*="icomoon"]):not([class*="ionicon"]):not([class*="anticon"]):not([class*="mdi"]):not([class*="svg-icon"]):not([class*="sprite"]):not([data-icon]):not([aria-label][role="img"]):not([role="img"]):not([style*="Anthropicons"]) {
     font-family: "Maple Mono NF CN" !important;
     font-size: 16px !important;
   }
