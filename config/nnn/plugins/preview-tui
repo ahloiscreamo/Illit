@@ -107,7 +107,7 @@ ENVVARS=(
   "NNN_PISTOL=${NNN_PISTOL:-0}"                            # use pistol
   "NNN_ICONLOOKUP=${NNN_ICONLOOKUP:-0}"                    # use .iconlookup
   "NNN_PAGER=${NNN_PAGER:-less -P?n -R -C}"                # pager options
-  "NNN_BATTHEME=${NNN_BATTHEME:-Rose-Pine-Moon}"           # bat theme
+  "NNN_BATTHEME=${NNN_BATTHEME}"                           # bat theme
   "NNN_BATSTYLE=${NNN_BATSTYLE:-numbers}"                  # bat style
   "NNN_PREVIEWWIDTH=${NNN_PREVIEWWIDTH:-1920}"             # width of generated preview images
   "NNN_PREVIEWHEIGHT=${NNN_PREVIEWHEIGHT:-1080}"           # height of generated preview images
@@ -470,7 +470,7 @@ video_preview() {
     clear
     exec >/dev/tty
     if [ -n "$NNN_PREVIEWVIDEO" ]; then
-        mpv --no-config --really-quiet --vo="$NNN_PREVIEWVIDEO" --profile=sw-fast --loop-file --no-audio "$4" "$3" &
+        mpv --no-config --really-quiet --vo="$NNN_PREVIEWVIDEO" --profile=sw-fast --no-audio "${@:4}" "$3" &
     else
         ffmpegthumbnailer -m -s0 -i "$3" -o "$NNN_PREVIEWDIR/$3.jpg" || rm -- "$NNN_PREVIEWDIR/$3.jpg" &
     fi

@@ -1,0 +1,42 @@
+QMenuBar::item {
+    background: transparent;
+    color: #797593 !important;
+    padding: 4px 10px;
+}
+QMenuBar::item:selected {
+    background-color: #dfdad9 !important;
+    color: #907aa9 !important;
+}
+QMenu {
+    background-color: #9893a5 !important;
+    color: #575279 !important;
+    border: 1px solid #dfdad9 !important;
+    padding: 5px;
+}
+QMenu::item {
+    padding: 5px 25px 5px 20px;
+    background-color: transparent;
+}
+QMenu::item:selected {
+    background-color: #dfdad9 !important;
+    color: #907aa9 !important;
+}
+QMenu::separator {
+    height: 1px;
+    background: #dfdad9;
+    margin: 5px 10px;
+}
+QScrollBar:vertical, QScrollBar:horizontal {
+    background-color: #f2e9e1 !important;
+}
+
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+    background-color: #9893a5 !important;
+    border-radius: 4px !important;
+    min-height: 20px;
+}
+
+QScrollBar::add-line, QScrollBar::sub-line {
+    background: none !important;
+    border: none !important;
+}

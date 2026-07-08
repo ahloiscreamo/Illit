@@ -2,14 +2,14 @@
 if status is-interactive
     # Removes the initial greeting message
     set -U fish_greeting
+end
 
-    # D-Bus session bus (for agy/gnome-keyring on WMs without a display manager)
-    if not set -q DBUS_SESSION_BUS_ADDRESS
-        if not test -S /run/user/(id -u)/bus
-            set -gx DBUS_SESSION_BUS_ADDRESS (dbus-launch --sh-syntax | grep -oP "(?<=')[^']+(?=')" | head -1)
-        else
-            set -gx DBUS_SESSION_BUS_ADDRESS unix:path=/run/user/(id -u)/bus
-        end
+# D-Bus session bus
+if not set -q DBUS_SESSION_BUS_ADDRESS
+    if test -S /run/user/(id -u)/bus
+        set -gx DBUS_SESSION_BUS_ADDRESS unix:path=/run/user/(id -u)/bus
+    else
+        set -gx DBUS_SESSION_BUS_ADDRESS (dbus-launch --sh-syntax | string match -r "(?<=')[^']+(?=')" | head -1)
     end
 end
 
@@ -17,7 +17,10 @@ end
 
 export NNN_FIFO="/tmp/nnn.fifo"
 export NNN_PREVIEW="/tmp/nnn-preview-tui-fifopid."
-export NNN_OPENER="xdg-open"
+export NNN_PREVIEWIMGPROG="viu -w 90"
+#export NNN_OPENER="xdg-open"
+export NNN_OPENER="/home/ahloi/.config/nnn/plugins/nuke"
+export GUI=1
 export NNN_OPENER_DETACH=1
 export NNN_COLORS="5632"
 export NNN_FCOLORS="0B0405020006060009060B01"
@@ -47,28 +50,7 @@ set -gx QT_QPA_PLATFORMTHEME "qt6ct"
 bind \super-f fex-widget
 
 # fzf
-# Define FZF_DEFAULT_OPTS once
-set -gx FZF_DEFAULT_OPTS '
-  --color=fg:#c8c8e5,fg+:#c8c8e5,bg:#232136,bg+:#393552
-  --color=hl:#3e8fb0,hl+:#9ccfd8,info:#f6c177,marker:#f6c177
-  --color=prompt:#eb6f92,spinner:#c4a7e7,pointer:#c4a7e7,header:#9ccfd8
-  --color=border:#393552,label:#44415a,query:#6e6a86
-  --border="rounded" --border-label="" --preview-window="noborder" --prompt="> "
-  --marker=">" --pointer="◆" --separator="─" --scrollbar="│"
-  --style full'
-
-# yt-x FZF Options (Extends defaults and only overrides specific colours/settings)
-set -gx YT_X_FZF_OPTS $FZF_DEFAULT_OPTS'
-  --color=bg+:#44415a
-  --color=marker:#3e8fb0
-  --color=header:#3e8fb0
-  --color=border:#44415a
-  --color=label:#ea9a97
-  --color=query:#f6c177
-  --preview-window="border-rounded"'
-  
-# Bat
-set -gx BAT_THEME "Rose-Pine-Moon"
+source ~/.config/fish/themes/fzf-dawn.fish
 
 # Firefox
 set -gx MOZ_X11_EGL "1"
@@ -113,11 +95,14 @@ fish_add_path $HOME/.cargo/bin
 alias bat="bat --italic-text always --force-colorization --style full"
 alias chawan="env COLORTERM=truecolor chawan"
 alias clx="clx -n"
+alias chafa="chafa --stretch none"
 alias fex "fex --time-type modified"
+alias mocp="mocp -C ~/.config/moc/config"
 alias magic="magic-tape.sh"
-alias nnn="nnn -r -e -x"
+alias nnn="nnn -c -r -e -x"
 alias icat="kitty +kitten icat"
 alias record='wf-recorder -f ~/Videos/recording-(date +%Y%m%d-%H%M%S).mp4 -c libx264 -r 60 -x yuv420p --filter "scale=out_color_matrix=bt709:out_range=full" -p color_range=jpeg -p colorspace=bt709 -p color_trc=iec61966-2-1 -p color_primaries=bt709'
+alias record-window='wf-recorder -f ~/Videos/recording-$(date +%Y%m%d-%H%M%S).mp4 -c libx264 -r 60 -x yuv420p --filter "scale=out_color_matrix=bt709:out_range=full" -p color_range=jpeg -p colorspace=bt709 -p color_trc=iec61966-2-1 -p color_primaries=bt709 -g "$(slurp)"'
 alias w3m="w3m -o inline_img_protocol=4"
 alias ls="eza --icons --group-directories-first -s=type"
 alias ncdu="ncdu --color dark"
@@ -156,9 +141,9 @@ starship init fish | source
 
 # === Fish Color Settings (Universal) ===
 
-set -U fish_color_command 9ccfd8
-set -U fish_color_match --background=blue
-set -U fish_color_user green
+#set -U fish_color_command 9ccfd8
+#set -U fish_color_match --background=blue
+#set -U fish_color_user green
 
 # === Zoxide  ===
 zoxide init fish | source

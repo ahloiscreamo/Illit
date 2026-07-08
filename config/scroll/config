@@ -22,16 +22,19 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term alacritty
+set $term alacritty msg create-window
 # Your preferred application launcher
 set $menu rofi -show drun
 
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/scroll/)
-output * bg /home/ahloi/Pictures/Bicycle.jpg fill
+#output * bg /home/ahloi/Pictures/Bicycle.jpg fill
 
-# Custom scripts
+# Default cursor
+seat seat0 xcursor_theme BreezeX-RosePineDawn-Linux 24
+
+# Custom scripts 
 bindsym $mod+Shift+p exec yt-mpv-wayland.sh
 bindsym $mod+space exec killall -SIGUSR1 waybar
 
@@ -41,6 +44,7 @@ exec wireplumber
 exec pipewire-pulse
 exec dunst
 exec waybar
+exec gnome-keyring-daemon --start --components=secrets
 exec_always sleep 3 && sudo modprobe -r wacom && sudo modprobe wacom
 exec alacritty --daemon
 exec_always ~/.local/bin/init-theme.sh
@@ -114,13 +118,15 @@ smart_gaps on
 for_window [app_id="alacritty"] border pixel 0
 for_window [app_id="firefox"] border none
 for_window [app_id="ueberzugpp"] border none
-for_window [app_id="mpv"] border none, floating enable, move container to workspace number 4
+for_window [app_id="mpv"] border none, floating enable, move container to workspace number 4, workspace number 4
 for_window [app_id="org.telegram.desktop"] border none
 for_window [app_id="thunar"] border none
 for_window [class="krita"] border none
+for_window [app_id="localsend"] border none
 for_window [app_id="imv"] border none
 for_window [app_id="org.gnome.gThumb"] border none
 for_window [app_id="org.gnome.FileRoller"] border none
+for_window [app_id="xdg-desktop-portal-gtk"] border none
 
 # Idle inhibit for fullscreen windows
 for_window [all] inhibit_idle fullscreen
@@ -193,8 +199,10 @@ animations {
     bindsym $mod+Shift+x exec scrollnag -t warning -m 'You pressed the exit shortcut. Do you really want to exit scroll? This will end your Wayland session.' -B 'Yes, exit scroll' 'scrollmsg exit' -w 500 -e center -y overlay
 
     # Layout mode
-    bindsym $mod+bracketleft set_mode h
-    bindsym $mod+bracketright set_mode v
+    #bindsym $mod+bracketleft set_mode h
+    #bindsym $mod+bracketright set_mode v
+    bindsym $mod+bracketleft set_mode h; exec sh -c 'echo "" > ~/.cache/scroll-mode.txt; pkill -RTMIN+8 waybar'
+    bindsym $mod+bracketright set_mode v; exec sh -c 'echo "" > ~/.cache/scroll-mode.txt; pkill -RTMIN+8 waybar' 
 #
 # Moving around:
 #

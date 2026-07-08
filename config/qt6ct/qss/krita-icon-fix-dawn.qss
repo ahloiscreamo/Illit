@@ -1,0 +1,19 @@
+/* krita-icon-fix-dawn.qss */
+/* Toolbox buttons - inactive */
+KoToolBoxButton {
+    background-color: transparent;
+    border: none;
+}
+/* Active/selected tool - pine highlight */
+KoToolBoxButton:checked {
+    background-color: #286983;
+}
+/* Hover state */
+KoToolBoxButton:hover {
+    background-color: #dfdad9;
+}
+/* Other toolbar buttons */
+QToolButton {
+    background-color: transparent;
+    border: none;
+}

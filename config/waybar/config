@@ -3,7 +3,7 @@
     "position": "top",
     "height": 42,
     "spacing": 0,
-    "modules-left": ["sway/workspaces", "sway/window", "sway/mode"],
+    "modules-left": ["sway/workspaces", "sway/window", "sway/mode", "custom/scroll-mode"],
     "modules-center": ["custom/cmus", "custom/mpd-prev", "custom/mpd-toggle", "custom/mpd-next", "custom/mpd-title"],
     "modules-right": ["pulseaudio", "temperature", "cpu", "memory", "clock", "custom/powermenu"],
     "sway/workspaces": {
@@ -19,6 +19,13 @@
     "sway/mode": {
         "format": "{}",
         "tooltip": false
+    },
+    "custom/scroll-mode": {
+    "exec": "cat ~/.cache/scroll-mode.txt 2>/dev/null || echo ''",
+    "signal": 8,
+    "interval": "once",
+    "format": "<span color='#3e8fb0'>{}</span>",
+    "tooltip": false
     },
     "custom/cmus": {
     "format": "{}", 

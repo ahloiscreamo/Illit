@@ -22,6 +22,11 @@
   background-color: #eb6f92 !important;
 }
 
+/* === Fix stray 'a' label in urlbar dropdown === */
+.urlbar-visually-hidden {
+  font-size: 0 !important;
+}
+
 /* === Tab styling === */
 :root[lwtheme] {
   --tab-selected-outline-color: transparent !important;
