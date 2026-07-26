@@ -22,9 +22,17 @@ filetype plugin indent on    " required
 " (assuming your leader key is '\' - you can check with :echo mapleader)
 nnoremap <leader>mp :silent !quickmd % > /dev/null 2>&1 &<CR>
 
+" Reload vimrc
+nnoremap <leader>r :source ~/.vimrc<CR>
+
 " Optional: A command to manually start quickmd for the current file
 " You can run this by typing :MarkdownQuickPreview in Vim
 command! MarkdownQuickPreview silent !quickmd % > /dev/null 2>&1 &
+
+" Enable True Color for hex codes
+if has('termguicolors')
+  set termguicolors
+endif
 
 " RosePine
 set background=dark
@@ -92,12 +100,7 @@ highlight LineNr ctermfg=60
 
 " Set status line display
 set laststatus=2
-hi StatusLine ctermfg=16 ctermbg=green cterm=NONE
-hi StatusLineNC ctermfg=16 ctermbg=green cterm=NONE
-hi User1 ctermfg=16 ctermbg=magenta
-hi User2 ctermfg=NONE ctermbg=NONE
-hi User3 ctermfg=16 ctermbg=red
-hi User4 ctermfg=16 ctermbg=red
+source ~/.vim/themes/statusline-moon.vim
 set statusline=\                    " Padding
 set statusline+=%f                  " Path to the file
 set statusline+=\ %1*\              " Padding & switch colour

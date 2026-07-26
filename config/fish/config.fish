@@ -98,7 +98,6 @@ alias clx="clx -n"
 alias chafa="chafa --stretch none"
 alias fex "fex --time-type modified"
 alias mocp="mocp -C ~/.config/moc/config"
-alias magic="magic-tape.sh"
 alias nnn="nnn -c -r -e -x"
 alias icat="kitty +kitten icat"
 alias record='wf-recorder -f ~/Videos/recording-(date +%Y%m%d-%H%M%S).mp4 -c libx264 -r 60 -x yuv420p --filter "scale=out_color_matrix=bt709:out_range=full" -p color_range=jpeg -p colorspace=bt709 -p color_trc=iec61966-2-1 -p color_primaries=bt709'

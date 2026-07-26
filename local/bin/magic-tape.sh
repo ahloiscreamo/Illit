@@ -63,10 +63,17 @@ function notify() {
     return 1
 }
 function copy_to_clipboard() {
-    command -v xclip >/dev/null && { echo "$1" | xclip -sel clip; return 0; }
+    if [[ -n "$WAYLAND_DISPLAY" ]]; then
+        command -v wl-copy >/dev/null && { echo "$1" | wl-copy; return 0; }
+    fi
+    if [[ -n "$DISPLAY" ]]; then
+        command -v xclip >/dev/null && { echo "$1" | xclip -sel clip; return 0; }
+        command -v xsel >/dev/null && { echo "$1" | xsel --clipboard --input; return 0; }
+    fi
     command -v pbcopy >/dev/null && { echo "$1" | pbcopy; return 0; }
     return 1
 }
+
 function setup_cache_directories() {
     mkdir -p "$HOME/.cache/magic-tape/history"
     mkdir -p "$HOME/.cache/magic-tape/json"
@@ -81,6 +88,10 @@ function setup_cache_directories() {
     touch "$HOME/.cache/magic-tape/history/search_history.txt"
     touch "$HOME/.cache/magic-tape/history/liked.txt"
     touch "$HOME/.cache/magic-tape/playlists/saved_playlists.txt"
+    # Auto-delete search caches older than 7 day 
+    find "$HOME/.cache/magic-tape/json" -maxdepth 1 -name "search-*.json" -mtime +7 -delete 2>/dev/null
+    # Auto-delete feed caches older than 6 hours
+    find "$HOME/.cache/magic-tape/json" -maxdepth 1 -name "feed-*.json" -mmin +360 -delete 2>/dev/null   
 }
 
 function load_config() {
@@ -95,15 +106,15 @@ function load_config() {
   if [[ -z "$USE_NERD_FONTS" ]]; then USE_NERD_FONTS="yes"; fi
   if [ "$USE_NERD_FONTS" = "yes" ]; then
     # Nerd Font Icons
-    ICON_FEED="󰗃"; ICON_ALGORITHM="󰌶"; ICON_TRENDING=""; ICON_SEARCH=""; ICON_REPEAT=""; ICON_CHANNEL="󰑈"; ICON_LIKED=""; ICON_HISTORY=""; ICON_SEARCH_HISTORY="󱘢"; ICON_MISC=""; ICON_QUIT="󰈆"; ICON_PREFERENCES=""; ICON_UPDATE=""; ICON_LIKE=""; ICON_UNLIKE=""; ICON_IMPORT=""; ICON_SUBSCRIBE="󰗃"; ICON_UNSUBSCRIBE="󰗼"; ICON_CLEAR=""; ICON_BACK="󰌍"; ICON_PLAY="󰎁"; ICON_PLAY_AUDIO="󰎄"; ICON_DOWNLOAD=""; ICON_BROWSER="爵"; ICON_LINK=""; ICON_MAIN_MENU="󰋞"; ICON_NO_FILTER="󰗢"; ICON_DUR_S="󰔟"; ICON_DUR_M="󰔣"; ICON_DUR_L="󰔞"; ICON_PLAYLIST="󰥴"; ICON_SELECT_VIDEO=""; ICON_INFO=""; ICON_SAVE="";
+    ICON_FEED="󰗃 "; ICON_ALGORITHM="󰌶 "; ICON_TRENDING=" "; ICON_SEARCH=" "; ICON_REPEAT=" "; ICON_CHANNEL="󰑈 "; ICON_LIKED=" "; ICON_HISTORY=" "; ICON_SEARCH_HISTORY="󱘢 "; ICON_MISC=" "; ICON_QUIT="󰈆 "; ICON_PREFERENCES=" "; ICON_UPDATE=" "; ICON_LIKE=" "; ICON_UNLIKE=" "; ICON_IMPORT=" "; ICON_SUBSCRIBE="󰗃 "; ICON_UNSUBSCRIBE="󰗼 "; ICON_CLEAR=" "; ICON_BACK="󰌍 "; ICON_PLAY="󰎁 "; ICON_PLAY_AUDIO="󰎄 "; ICON_DOWNLOAD=" "; ICON_BROWSER="󰖟 "; ICON_LINK=" "; ICON_MAIN_MENU="󰋞 "; ICON_NO_FILTER="󰗢 "; ICON_DUR_S="󰔟 "; ICON_DUR_M="󰔣 "; ICON_DUR_L="󰔞 "; ICON_PLAYLIST="󰥴 "; ICON_SELECT_VIDEO=" "; ICON_INFO=" "; ICON_SAVE=" ";
   else
     # Emoji Fallbacks
-    ICON_FEED="📡"; ICON_ALGORITHM="🔥"; ICON_TRENDING="📈"; ICON_SEARCH="🔎"; ICON_REPEAT="🔁"; ICON_CHANNEL="📺"; ICON_LIKED="👍"; ICON_HISTORY="🕒"; ICON_SEARCH_HISTORY="📋"; ICON_MISC="⚙️"; ICON_QUIT="❌"; ICON_PREFERENCES="⚙️"; ICON_UPDATE="⬇️"; ICON_LIKE="👍"; ICON_UNLIKE="👎"; ICON_IMPORT="📥"; ICON_SUBSCRIBE="➕"; ICON_UNSUBSCRIBE="➖"; ICON_CLEAR="🗑️"; ICON_BACK="⬅️"; ICON_PLAY="▶️"; ICON_PLAY_AUDIO="🎵"; ICON_DOWNLOAD="⬇️"; ICON_BROWSER="🌐"; ICON_LINK="🔗"; ICON_MAIN_MENU="🏠"; ICON_NO_FILTER="🚫"; ICON_DUR_S="🕒"; ICON_DUR_M="🕔"; ICON_DUR_L="🕤"; ICON_PLAYLIST="🎶"; ICON_SELECT_VIDEO="🎬"; ICON_INFO="ℹ️"; ICON_SAVE="💾";
+    ICON_FEED="📡 "; ICON_ALGORITHM="🧠 "; ICON_TRENDING="🔥 "; ICON_SEARCH="🔎 "; ICON_REPEAT="🔁 "; ICON_CHANNEL="📺 "; ICON_LIKED="👍 "; ICON_HISTORY="🕰  "; ICON_SEARCH_HISTORY="📜 "; ICON_MISC="🛠  "; ICON_QUIT="🚪 "; ICON_PREFERENCES="🔧 "; ICON_UPDATE="🔄 "; ICON_LIKE="👍 "; ICON_UNLIKE="👎 "; ICON_IMPORT="📥 "; ICON_SUBSCRIBE="➕ "; ICON_UNSUBSCRIBE="➖ "; ICON_CLEAR="🗑  "; ICON_BACK="🔙 "; ICON_PLAY="▶️  "; ICON_PLAY_AUDIO="🎵 "; ICON_DOWNLOAD="📥 "; ICON_BROWSER="🌐 "; ICON_LINK="🔗 "; ICON_MAIN_MENU="🏠 "; ICON_NO_FILTER="🚫 "; ICON_DUR_S="🍬 "; ICON_DUR_M="🍿 "; ICON_DUR_L="🍕 "; ICON_PLAYLIST="📼 "; ICON_SELECT_VIDEO="🎬 "; ICON_INFO="💡 "; ICON_SAVE="💾 ";
   fi
 
   if [[ $LIST_LENGTH -gt 99 ]];then LIST_LENGTH=99;fi;
   ROFI_FORMAT='rofi -dmenu -l 20 -width 40 -i -p ';
-  FZF_FORMAT="fzf --ansi --cycle --print-query --preview-window=0 --color='gutter:-1,prompt:magenta' --reverse --tiebreak=begin --border=rounded +m --info=hidden --header-first --prompt=";
+  FZF_FORMAT="fzf --ansi --cycle --print-query --preview-window=0 --reverse --tiebreak=begin --border=rounded +m --info=hidden --header-first --prompt=";
   DMENU_FORMAT="dmenu -fn 13 -nb '#2E3546' -sb '#434C5E' -l 20sc -i -p "
   if [[ $PREF_SELECTOR == "rofi" ]]
   then PREF_SELECTOR=$ROFI_FORMAT
@@ -244,7 +255,7 @@ function new_subscription ()
    echo -e " ${Green}You will subscribe to this channel:\n${Yellow}$NAME${normal}\nProceed?(Y/y)"; read -N 1 pr;echo -e "\n";
    if [[ $pr == Y ]] || [[ $pr == y ]];
    then  notification_img="$HOME/.cache/magic-tape/jpg/""$(sed -n "${i}p" $HOME/.cache/magic-tape/search/channels/ids.txt)"".jpg";
-    if [ -n "$(grep -i $SUB_URL $HOME/.cache/magic-tape/subscriptions/subscriptions.txt)" ];
+    if [ -n "$(grep -iF "$SUB_URL" $HOME/.cache/magic-tape/subscriptions/subscriptions.txt)" ];
     then notify $NOTIFICATION_DURATION "$notification_img" "You are already subscribed to $NAME ";
     else echo "$SUB_URL"" ""$NAME">>$HOME/.cache/magic-tape/subscriptions/subscriptions.txt;
      notify $NOTIFICATION_DURATION "$notification_img" "You have subscribed to $NAME ";
@@ -354,10 +365,64 @@ function print_mpv_video_shortcuts()
  fi
 }
 
+function search_filter ()
+{
+  duration_choice=$(select_duration_filter)
+  if [[ "$duration_choice" == "back" ]]; then
+    FILTER=""
+    FILT_PROMPT="Search"
+    YTDLP_SORT_ARG=""
+    return
+  fi
+
+  sort_choice=$(select_sort_order)
+  if [[ "$sort_choice" == "back" ]]; then
+    FILTER=""
+    FILT_PROMPT="Search"
+    YTDLP_SORT_ARG=""
+    return
+  fi
+
+  case "$duration_choice" in
+    "any")
+      case "$sort_choice" in
+        "relevance") FILTER="&sp=EgQQARgE"; YTDLP_SORT_ARG="";;
+        "date")      FILTER="&sp=CAISAhAB"; YTDLP_SORT_ARG="date";;
+        "views")     FILTER="&sp=CAMSAhAB"; YTDLP_SORT_ARG="";;
+        "rating")    FILTER="&sp=CAESAhAB"; YTDLP_SORT_ARG="";;
+      esac ;;
+    "short")
+      YTDLP_MATCH_FILTER_ARG="duration <= 240"
+      case "$sort_choice" in
+        "relevance") FILTER="&sp=EgQQARgB"; YTDLP_SORT_ARG="";;
+        "date")      FILTER="&sp=CAISBEgQQARgB"; YTDLP_SORT_ARG="date";;
+        "views")     FILTER="&sp=CAMSBEgQQARgB"; YTDLP_SORT_ARG="";;
+        "rating")    FILTER="&sp=CAESBEgQQARgB"; YTDLP_SORT_ARG="";;
+      esac ;;
+    "medium")
+      YTDLP_MATCH_FILTER_ARG="duration >= 240 & duration <= 1200"
+      case "$sort_choice" in
+        "relevance") FILTER="&sp=EgQQARgD"; YTDLP_SORT_ARG="";;
+        "date")      FILTER="&sp=CAISBEgQQARgD"; YTDLP_SORT_ARG="date";;
+        "views")     FILTER="&sp=CAMSBEgQQARgD"; YTDLP_SORT_ARG="";;
+        "rating")    FILTER="&sp=CAESBEgQQARgD"; YTDLP_SORT_ARG="";;
+      esac ;;
+    "long")
+      YTDLP_MATCH_FILTER_ARG="duration > 1200"
+      case "$sort_choice" in
+        "relevance") FILTER="&sp=EgQQARgC"; YTDLP_SORT_ARG="";;
+        "date")      FILTER="&sp=CAISBEgQQARgC"; YTDLP_SORT_ARG="date";;
+        "views")     FILTER="&sp=CAMSBEgQQARgC"; YTDLP_SORT_ARG="";;
+        "rating")    FILTER="&sp=CAESBEgQQARgC"; YTDLP_SORT_ARG="";;
+      esac ;;
+  esac
+  FILT_PROMPT="Search"
+}
+
 function misc_menu ()
 {
  while [ "$db2" != "q" ] ;
- do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓╻┏━┓┏━╸   ┏┳┓┏━╸┏┓╻╻ ╻${normal}\n${Yellow}${bold}┃┃┃┃┗━┓┃     ┃┃┃┣╸ ┃┗┫┃ ┃${normal}\n${Yellow}${bold}╹ ╹╹┗━┛┗━╸   ╹ ╹┗━╸╹ ╹┗━┛${normal}\n${Cyan}${ICON_PREFERENCES}${normal}  ${Yellow}${bold}P${normal} ${Cyan}SET UP PREFERENCES\n${Cyan}${ICON_UPDATE}${normal}  ${Yellow}${bold}Y${normal} ${Cyan}UPDATE yt-dlp\n${Red}${ICON_LIKE}${normal}  ${Yellow}${bold}l${normal} ${Red}LIKE a video\n${Red}${ICON_UNLIKE}${normal}  ${Yellow}${bold}L${normal} ${Red}UNLIKE a video\n${Green}${ICON_IMPORT}${normal}  ${Yellow}${bold}I${normal} ${Green}Import subscriptions from YouTube\n${Green}${ICON_SUBSCRIBE}${normal}  ${Yellow}${bold}n${normal} ${Green}Subscribe to a new channel\n${Green}${ICON_UNSUBSCRIBE}${normal}  ${Yellow}${bold}u${normal} ${Green}Unsubscribe from a channel\n${Magenta}${ICON_CLEAR}${normal}  ${Yellow}${bold}H${normal} ${Magenta}Clear watch history\n${Magenta}${ICON_CLEAR}${normal}  ${Yellow}${bold}S${normal} ${Magenta}Clear search history\n${Magenta}${ICON_CLEAR}${normal}  ${Yellow}${bold}T${normal} ${Magenta}Clear thumbnail cache\n${Cyan}${ICON_BACK}${normal}  ${Yellow}${bold}q${normal} ${Cyan}Back to Main Menu"|fzf \
+ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓╻┏━┓┏━╸   ┏┳┓┏━╸┏┓╻╻ ╻${normal}\n${Yellow}${bold}┃┃┃┃┗━┓┃     ┃┃┃┣╸ ┃┗┫┃ ┃${normal}\n${Yellow}${bold}╹ ╹╹┗━┛┗━╸   ╹ ╹┗━╸╹ ╹┗━┛${normal}\n${Cyan}${ICON_PREFERENCES}${normal}  ${Yellow}${bold}P${normal} ${Cyan}SET UP PREFERENCES\n${Cyan}${ICON_UPDATE}${normal}  ${Yellow}${bold}Y${normal} ${Cyan}UPDATE yt-dlp\n${Red}${ICON_LIKE}${normal}  ${Yellow}${bold}l${normal} ${Red}LIKE a video\n${Red}${ICON_UNLIKE}${normal}  ${Yellow}${bold}L${normal} ${Red}UNLIKE a video\n${Green}${ICON_IMPORT}${normal}  ${Yellow}${bold}I${normal} ${Green}Import subscriptions from YouTube\n${Green}${ICON_SUBSCRIBE}${normal}  ${Yellow}${bold}n${normal} ${Green}Subscribe to a new channel\n${Green}${ICON_UNSUBSCRIBE}${normal}  ${Yellow}${bold}u${normal} ${Green}Unsubscribe from a channel\n${Magenta}${ICON_CLEAR}${normal}  ${Yellow}${bold}H${normal} ${Magenta}Clear watch history\n${Magenta}${ICON_CLEAR}${normal}  ${Yellow}${bold}S${normal} ${Magenta}Clear search history\n${Magenta}${ICON_CLEAR}${normal}  ${Yellow}${bold}T${normal} ${Magenta}Clear thumbnail cache\n${Cyan}${ICON_REPEAT}${normal}  ${Yellow}${bold}f${normal} ${Cyan}Refresh Subscription Feed Cache\n${Cyan}${ICON_REPEAT}${normal}  ${Yellow}${bold}y${normal} ${Cyan}Refresh Algorithm Feed Cache\n${Cyan}${ICON_REPEAT}${normal}  ${Yellow}${bold}t${normal} ${Cyan}Refresh Playlist Cache\n${Cyan}${ICON_REPEAT}${normal}  ${Yellow}${bold}s${normal} ${Cyan}Refresh Search Cache\n${Cyan}${ICON_BACK}${normal}  ${Yellow}${bold}q${normal} ${Cyan}Back to Main Menu"|fzf \
 --preview-window=0 \
 --disabled \
 --reverse \
@@ -366,7 +431,6 @@ function misc_menu ()
  --border=rounded \
  +i \
  +m \
- --color='gutter:-1' \
  --nth=2.. \
  --info=hidden \
  --header-lines=3 \
@@ -444,9 +508,58 @@ function misc_menu ()
    "T") clear;echo -e "${Green}Clear ${Yellow}${bold}thumbnail cache?${normal}(Y/y))";
        read -N 1 ctc;echo -e "\n";
        if [[ $ctc == Y ]] || [[ $ctc == y ]];
-       then mv $HOME/.cache/magic-tape/jpg/* $HOME/.local/share/Trash/files/
+       then gio trash $HOME/.cache/magic-tape/jpg/*.jpg 2>/dev/null || mv $HOME/.cache/magic-tape/jpg/* $HOME/.local/share/Trash/files/
        notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "Thumbnail cache cleared.";
        fi;ctc="";
+   ;;
+   "f") clear;
+       # clear sub feed cache
+       feed_cache="$HOME/.cache/magic-tape/json/feed-_feed_subscriptions.json"
+       if [ -f "$feed_cache" ]; then
+           rm "$feed_cache"
+           notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "Subscription feed cache cleared."
+       else
+           notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "No subscription feed cache found."
+       fi
+   ;;
+   "y") clear;
+       # delete the feed suggestions from algorithm
+       algorithm_cache="$HOME/.cache/magic-tape/json/feed-algorithm.json"
+       if [ -f "$algorithm_cache" ]; then
+           rm "$algorithm_cache"
+           notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "Algorithm feed cache cleared."
+       else
+           notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "No algorithm feed cache found."
+       fi
+   ;;
+   "t") clear;
+       # get rid of all cached playlists
+       cache_files_pattern="$HOME/.cache/magic-tape/json/playlist-*-p*.json"
+       list_cache="$HOME/.cache/magic-tape/json/playlist_list.json"
+       cleared=0
+       if ls $cache_files_pattern 1> /dev/null 2>&1; then
+           rm $cache_files_pattern
+           cleared=1
+       fi
+       if [ -f "$list_cache" ]; then
+           rm "$list_cache"
+           cleared=1
+       fi
+       if [ $cleared -eq 1 ]; then
+           notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "Playlist caches cleared."
+       else
+           notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "No playlist caches found."
+       fi
+   ;;
+   "s") clear;
+       # clear all search files so we get fresh queries
+       search_cache_pattern="$HOME/.cache/magic-tape/json/search-*.json"
+       if ls $search_cache_pattern 1> /dev/null 2>&1; then
+           rm $search_cache_pattern
+           notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "Search caches cleared."
+       else
+           notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "No search caches found."
+       fi
    ;;
    "l") clear;like_video;
    ;;
@@ -581,18 +694,30 @@ fi;
  if [[ "$IMAGE_SUPPORT" == "chafa" ]];then chafa --format=symbols -c full -s  $3 $5;fi;
 }
 
+function get_search_cache_path ()
+{
+    # Build a safe filename from the feed url + filter
+    local cache_key
+    cache_key=$(echo "${FEED}${YTDLP_MATCH_FILTER_ARG}" | sed 's/[^a-zA-Z0-9]/_/g')
+    echo "$HOME/.cache/magic-tape/json/search-${cache_key}.json"
+}
+
+function get_feed_cache_path ()
+{
+    local cache_key
+    cache_key=$(echo "${FEED}" | sed 's/[^a-zA-Z0-9]/_/g')
+    echo "$HOME/.cache/magic-tape/json/feed-${cache_key}.json"
+}
+
+function get_algorithm_cache_path ()
+{
+    echo "$HOME/.cache/magic-tape/json/feed-algorithm.json"
+}
+
 function get_feed_json ()
 {
  echo -e "${Gray}Downloading $FEED...${normal}";
  echo -e "$db\n$ITEM\n$ITEM0\n$FEED\n$fzf_header">$HOME/.cache/magic-tape/history/last_action.txt;
- #if statement added to fix json problem. If the problem re-appears, uncomment the if statement, and comment  following line
- #if [ $db == "f" ]||[ $db == "t" ]||[ $db == "y" ];then LIST_LENGTH=$(($LIST_LENGTH * 2 ));else LIST_LENGTH="$(grep 'LIST_LENGTH:' $HOME/.config/magic-tape/magic-tape.conf|sed 's/^#.*//g;s/^.*: //')";fi;
-###LIST_LENGTH="$(grep 'LIST_LENGTH:' $HOME/.config/magic-tape/magic-tape.conf|sed 's/^#.*//g;s/^.*: //')";
-
- local local_ytdlp_filter_args=""
- if [[ -n "$YTDLP_MATCH_FILTER_ARG" ]]; then
-     local_ytdlp_filter_args="--match-filter \"$YTDLP_MATCH_FILTER_ARG\""
- fi
 
  local ytdlp_url
  if [[ "$FEED" == "TRENDING_PAGE" ]]; then
@@ -601,12 +726,57 @@ function get_feed_json ()
     ytdlp_url="https://www.youtube.com$FEED"
  fi
 
- local ytdlp_cmd="yt-dlp --cookies-from-browser \"$PREF_BROWSER\" --flat-playlist --extractor-args youtubetab:approximate_date --playlist-start \"$ITEM0\" --playlist-end \"$(($ITEM0 + $(($LIST_LENGTH - 1))))\" -j \"$ytdlp_url\" $local_ytdlp_filter_args"
- eval "$ytdlp_cmd" > "$HOME/.cache/magic-tape/json/video_search.json"
+ # Only use caching for filtered searches
+ if [[ -n "$YTDLP_MATCH_FILTER_ARG" ]] || [[ "$YTDLP_SORT_ARG" == "date" ]]; then
+     local search_cache
+     search_cache=$(get_search_cache_path)
+
+     if [ ! -f "$search_cache" ]; then
+         echo -e "${Gray}Fetching search results, building cache...${normal}";
+         local -a ytdlp_args=(
+           --cookies-from-browser "$PREF_BROWSER"
+           --flat-playlist
+           --extractor-args "youtubetab:approximate_date"
+           --playlist-start 1
+           --playlist-end 200
+           -j "$ytdlp_url"
+         )
+         if [[ -n "$YTDLP_MATCH_FILTER_ARG" ]]; then
+             ytdlp_args+=(--match-filter "$YTDLP_MATCH_FILTER_ARG")
+         fi
+         yt-dlp "${ytdlp_args[@]}" > "$search_cache"
+
+         # Sort by timestamp if date sort requested
+         if [[ "$YTDLP_SORT_ARG" == "date" ]]; then
+             jq -s 'sort_by(.timestamp // 0) | reverse | .[]' \
+                 "$search_cache" \
+                 > "${search_cache}.tmp" 2>/dev/null \
+                 && mv "${search_cache}.tmp" "$search_cache"
+         fi
+     else
+         echo -e "${Gray}Loading from search cache...${normal}";
+     fi
+
+     # Slice the right page from cache
+     slice_start=$(($ITEM0 - 1))
+     jq -s ".[${slice_start}:${slice_start}+${LIST_LENGTH}] | .[]" \
+         "$search_cache" \
+         > "$HOME/.cache/magic-tape/json/video_search.json"
+ else
+     # Normal fetch without caching
+     local fetch_end=$(($ITEM0 + $LIST_LENGTH - 1))
+     local -a ytdlp_args=(
+       --cookies-from-browser "$PREF_BROWSER"
+       --flat-playlist
+       --extractor-args "youtubetab:approximate_date"
+       --playlist-start "$ITEM0"
+       --playlist-end "$fetch_end"
+       -j "$ytdlp_url"
+     )
+     yt-dlp "${ytdlp_args[@]}" > "$HOME/.cache/magic-tape/json/video_search.json"
+ fi
 
  echo -e "${Gray}Completed $FEED.${normal}";
- #correct back LIST_LENGTH value(fix json problem);
- #if [ $db == "f" ]||[ $db == "t" ];then LIST_LENGTH=$(($LIST_LENGTH / 2 ));fi;
 }
 
 function get_playlist_videos_json ()
@@ -650,7 +820,7 @@ function get_data ()
  jq '.view_count' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/views.txt;
  jq '.channel_id // .uploader_id' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/channel_ids.txt;
  jq '.channel // .uploader' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/channel_names.txt;
- jq '((.thumbnails | map(select(.height == 480)) | .[0].url) // (.thumbnails | map(select(.height == 320)) | .[0].url)) // .thumbnails[-1].url // .thumbnail // .thumbnails[0].url' $HOME/.cache/magic-tape/json/video_search.json|sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g'>$HOME/.cache/magic-tape/search/video/image_urls.txt;
+ jq '([.thumbnails[] | select(.height != null)] | (map(select(.height >= 360 and .height <= 480)) | sort_by(.height) | last.url) // last.url // .[0].url)' $HOME/.cache/magic-tape/json/video_search.json | sed 's/\\"/⁆/g;s/"//g;s/⁆/"/g' > $HOME/.cache/magic-tape/search/video/image_urls.txt;
  jq '.live_status' $HOME/.cache/magic-tape/json/video_search.json>$HOME/.cache/magic-tape/search/video/live_status.txt;
  if [[ $db == "c" ]];
  then jq '.playlist_uploader' $HOME/.cache/magic-tape/json/video_search.json|sed 's/"//g'>$HOME/.cache/magic-tape/search/video/channel_names.txt;
@@ -965,15 +1135,28 @@ function select_action ()
     menu_options+="\n${Yellow}${ICON_CHANNEL}${normal} Browse Feed of channel \"$channel_name\"\n${Yellow}${ICON_SUBSCRIBE}${normal} Subscribe to channel \"$channel_name\""
  fi
 
- # Conditionally add the Refresh option if browsing a playlist
+# Conditionally add the Refresh option if browsing a playlist
  if [[ "$FEED" == *"/playlist?list="* ]]; then
-    menu_options+="\n${Cyan}${normal} Refresh Playlist Cache"
+    menu_options+="\n${Cyan}${ICON_REPEAT}${normal} Refresh Playlist Cache"
     menu_options+="\n${Green}${ICON_SAVE}${normal} Save Playlist to 'Your Playlists'"
     menu_options+="\n${Green}${ICON_PLAY}${normal} Play Playlist (from here)"
     menu_options+="\n${Green}${ICON_PLAY_AUDIO}${normal} Play Playlist Audio (from here)"
  fi
- 
- menu_options+="\n${Magenta}${ICON_BROWSER}${normal}Open in browser\n${Magenta}${ICON_LINK}${normal} Copy link\n${Cyan}${ICON_BACK}${normal} Back\n${Cyan}${ICON_MAIN_MENU}${normal} Back to Main Menu"
+
+# Add refresh option if browsing a cached search
+ if [[ -n "$YTDLP_MATCH_FILTER_ARG" ]] || [[ "$YTDLP_SORT_ARG" == "date" ]]; then
+    menu_options+="\n${Cyan}${ICON_REPEAT}${normal} Refresh Search Cache"
+ fi
+
+ # Add refresh option if browsing subscription or algorithm feed
+ if [[ "$FEED" == "/feed/subscriptions" ]]; then
+    menu_options+="\n${Cyan}${ICON_REPEAT}${normal} Refresh Subscription Feed Cache"
+ fi
+ if [[ "$FEED" == "" ]]; then
+    menu_options+="\n${Cyan}${ICON_REPEAT}${normal} Refresh Algorithm Feed Cache"
+ fi
+
+ menu_options+="\n${Magenta}${ICON_BROWSER}${normal} Open in browser\n${Magenta}${ICON_LINK}${normal} Copy link\n${Cyan}${ICON_BACK}${normal} Back\n${Cyan}${ICON_MAIN_MENU}${normal} Back to Main Menu"
 
 ACTION="$(echo -e "$menu_options"|eval "$PREF_SELECTOR"\"Select action \")";
  case $ACTION in
@@ -1010,6 +1193,34 @@ ACTION="$(echo -e "$menu_options"|eval "$PREF_SELECTOR"\"Select action \")";
         notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "Cache cleared. Re-open playlist to refresh."
       else
         notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "No cache found for this playlist."
+      fi
+      ;;
+  *"Refresh Search Cache"*)
+      local search_cache
+      search_cache=$(get_search_cache_path)
+      if [ -f "$search_cache" ]; then
+          rm "$search_cache"
+          notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "Search cache cleared. Re-search to refresh."
+      else
+          notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "No search cache found."
+      fi
+      ;;
+  *"Refresh Subscription Feed Cache"*) 
+      feed_cache=$(get_feed_cache_path)
+      if [ -f "$feed_cache" ]; then
+          rm "$feed_cache"
+          notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "Subscription feed cache cleared. Re-open feed to refresh."
+      else
+          notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "No subscription feed cache found."
+      fi
+      ;;
+  *"Refresh Algorithm Feed Cache"*)
+      algorithm_cache=$(get_algorithm_cache_path)
+      if [ -f "$algorithm_cache" ]; then
+          rm "$algorithm_cache"
+          notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "Algorithm feed cache cleared. Re-open feed to refresh."
+      else
+          notify $NOTIFICATION_DURATION "$SHARE_DIR"/magic-tape.png "No algorithm feed cache found."
       fi
       ;;
   *"Play Playlist (from here)"*)
@@ -1105,21 +1316,47 @@ function empty_query ()
 }
 ###############################################################################
 SHARE_DIR=$HOME/.local/share/magic-tape/png
-magic_tape_pid==$(ps -e|grep magic-tape.sh|tail -2|head -1|awk '{print $1}')
+magic_tape_pid=$(ps -e|grep magic-tape.sh|tail -2|head -1|awk '{print $1}')
 kitty_version=$(kitty -v|awk '{print $2}'|sed 's/0.//;s/\..*//')
 export -f draw_preview draw_uber clear_image start_ueberzug finalise clean_upp draw_upp
 load_config
 export IMAGE_SUPPORT UEBERZUG_FIFO_MAGIC_TAPE SOCKET Green Yellow Red Magenta Cyan bold normal $FZF_PREVIEW_COLUMNS $FZF_PREVIEW_LINES SHARE_DIR kitty_version
 #trap exit_upp HUP INT QUIT TERM EXIT ERR ABRT
 db=""
-load_config
 if [[ $IMAGE_SUPPORT == "ueberzugpp" ]];then trap exit_upp  HUP INT QUIT TERM EXIT ERR ABRT ;clean_upp; fi
 clear_image
 while [ "$db" != "q" ]
-do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━╸   ╺┳╸┏━┓┏━┓┏━╸${normal}\n${Yellow}${bold}┃┃┃┣━┫┃╺┓┃┃  ╺━╸ ┃ ┣━┫┣━┛┣╸ ${normal}\n${Yellow}${bold}╹ ╹╹ ╹┗━┛╹┗━╸    ╹ ╹ ╹╹  ┗━╸${normal} \n ${Red}${ICON_FEED}${normal}  ${Yellow}${bold}f${normal} ${Red}to browse Subscriptions Feed${normal}\n ${Red}${ICON_ALGORITHM}${normal}  ${Yellow}${bold}y${normal} ${Red}to browse YT Algorithm Feed${normal}\n ${Red}${ICON_PLAYLIST}${normal}  ${Yellow}${bold}t${normal} ${Red}to browse Your Playlists${normal}\n ${Green}${ICON_SEARCH}${normal}  ${Yellow}${bold}s${normal} ${Green}to Search for a key word/phrase${normal}\n ${Green}${ICON_REPEAT}${normal}  ${Yellow}${bold}r${normal} ${Green}to Repeat previous action${normal}\n ${Green}${ICON_CHANNEL}${normal}  ${Yellow}${bold}c${normal} ${Green}to select a Channel Feed${normal}\n ${Magenta}${ICON_LIKED}${normal}  ${Yellow}${bold}l${normal} ${Magenta}to browse your Liked Videos${normal}\n ${Magenta}${ICON_HISTORY}${normal}  ${Yellow}${bold}h${normal} ${Magenta}to browse your Watch History${normal}\n ${Magenta}${ICON_SEARCH_HISTORY}${normal}  ${Yellow}${bold}j${normal} ${Magenta}to browse your Search History${normal}\n ${Cyan}${ICON_MISC}${normal}  ${Yellow}${bold}m${normal} ${Cyan}for Miscellaneous Menu${normal}\n ${Cyan}${ICON_QUIT}${normal}  ${Yellow}${bold}q${normal} ${Cyan}to Quit${normal}"|fzf \
---preview-window=0 \
+do fzf_output=$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━╸   ╺┳╸┏━┓┏━┓┏━╸${normal}\n${Yellow}${bold}┃┃┃┣━┫┃╺┓┃┃  ╺━╸ ┃ ┣━┫┣━┛┣╸ ${normal}\n${Yellow}${bold}╹ ╹╹ ╹┗━┛╹┗━╸    ╹ ╹ ╹╹  ┗━╸${normal} \n ${Red}${ICON_FEED}${normal}  ${Yellow}${bold}f${normal} ${Red}to browse Subscriptions Feed${normal}\n ${Red}${ICON_ALGORITHM}${normal}  ${Yellow}${bold}y${normal} ${Red}to browse YT Algorithm Feed${normal}\n ${Red}${ICON_PLAYLIST}${normal}  ${Yellow}${bold}t${normal} ${Red}to browse Your Playlists${normal}\n ${Green}${ICON_SEARCH}${normal}  ${Yellow}${bold}s${normal} ${Green}to Search for a key word/phrase${normal}\n ${Green}${ICON_REPEAT}${normal}  ${Yellow}${bold}r${normal} ${Green}to Repeat previous action${normal}\n ${Green}${ICON_CHANNEL}${normal}  ${Yellow}${bold}c${normal} ${Green}to select a Channel Feed${normal}\n ${Magenta}${ICON_LIKED}${normal}  ${Yellow}${bold}l${normal} ${Magenta}to browse your Liked Videos${normal}\n ${Magenta}${ICON_HISTORY}${normal}  ${Yellow}${bold}h${normal} ${Magenta}to browse your Watch History${normal}\n ${Magenta}${ICON_SEARCH_HISTORY}${normal}  ${Yellow}${bold}j${normal} ${Magenta}to browse your Search History${normal}\n ${Cyan}${ICON_MISC}${normal}  ${Yellow}${bold}m${normal} ${Cyan}for Miscellaneous Menu${normal}\n ${Cyan}${ICON_QUIT}${normal}  ${Yellow}${bold}q${normal} ${Cyan}to Quit${normal}"|fzf \
+--preview-window=left,40% \
+--preview='
+    # figure out how much space we have for the picture
+    hght=$(($FZF_PREVIEW_COLUMNS / 3));
+    line="{}";
+    # strip the ANSI colors so we can read the letter
+    clean_line=$(echo "$line" | sed "s/\x1b\[[0-9;]*m//g");
+    char="";
+    # grab the menu key (like f, y, t)
+    for word in $clean_line; do
+        if [[ "$word" =~ ^[fytserclhjmq]$ ]]; then
+            char="$word";
+            break;
+        fi;
+    done;
+    img_path="$HOME/.local/share/magic-tape/menu/${char}.png";
+
+    if [[ "$IMAGE_SUPPORT" == "kitty" ]]; then clear_image; fi;
+    if [[ "$IMAGE_SUPPORT" == "ueberz"* ]];then ll=0; while [ $ll -le $hght ];do echo "";((ll++));done;fi;
+    if [[ "$IMAGE_SUPPORT" == "kitty" ]]&&[[ $kitty_version -le 21 ]];then ll=0; while [ $ll -le $hght ];do echo "";((ll++));done;fi;
+
+    # draw the picture if we find one
+    if [[ -n "$char" ]] && [[ -f "$img_path" ]]; then
+        draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght "$img_path";
+    fi;
+    # line separator and menu label
+    ll=1; echo -ne "\e[30m"; while [ $ll -le $FZF_PREVIEW_COLUMNS ];do echo -n -e "─";((ll++));done;echo -e "\e[m";
+    echo -e "\n$line" | fold -w $FZF_PREVIEW_COLUMNS -s;
+' \
 --disabled \
---color='gutter:-1' \
 --reverse \
 --ansi \
 --tiebreak=begin \
@@ -1131,7 +1368,7 @@ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━�
 --header-lines=3 \
 --prompt="Enter:" \
 --header-first --cycle \
---expect=A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,1,2,3,4,5,6,7,8,9,0,enter )"
+--expect=A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,1,2,3,4,5,6,7,8,9,0,enter )
    key_press=$(echo "$fzf_output" | head -n 1)
    if [[ "$key_press" == "enter" ]]; then
      db=$(echo "$fzf_output" | sed -n '2p' | awk '{print $2}')
@@ -1139,15 +1376,38 @@ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━�
      db=$key_press
    fi
  YTDLP_MATCH_FILTER_ARG=""
+ YTDLP_SORT_ARG=""
  case $db in
   "f") clear;
      big_loop=1;
      ITEM=1;
      ITEM0=1;
      FEED="/feed/subscriptions";
+     feed_cache=$(get_feed_cache_path)
      while [ $big_loop -eq 1 ];
      do fzf_header="${ICON_FEED} $(echo ${FEED^^}|sed 's/[\/\?=]/ /g') videos $ITEM to $(($ITEM + $(($LIST_LENGTH - 1))))";
-      get_feed_json;
+
+      if [ ! -f "$feed_cache" ]; then
+          echo -e "${Gray}Fetching subscription feed, building cache...${normal}";
+          declare -a feed_args=(
+            --cookies-from-browser "$PREF_BROWSER"
+            --flat-playlist
+            --extractor-args "youtubetab:approximate_date"
+            --playlist-start 1
+            --playlist-end 200
+            -j "https://www.youtube.com$FEED"
+          )
+          yt-dlp "${feed_args[@]}" > "$feed_cache"
+      else
+          echo -e "${Gray}Loading subscription feed from cache...${normal}";
+      fi
+
+      # Slice the right page from cache
+      slice_start=$(($ITEM0 - 1))
+      jq -s ".[${slice_start}:${slice_start}+${LIST_LENGTH}] | .[]" \
+          "$feed_cache" \
+          > "$HOME/.cache/magic-tape/json/video_search.json"
+
       get_data;
       small_loop=1;
       while [ $small_loop -eq 1 ];
@@ -1164,9 +1424,31 @@ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━�
      ITEM=1;
      ITEM0=1;
      FEED="";
+     algorithm_cache=$(get_algorithm_cache_path)
      while [ $big_loop -eq 1 ];
      do fzf_header="${ICON_ALGORITHM} YT algorithm suggestions, videos $ITEM to $(($ITEM + $(($LIST_LENGTH - 1))))";
-      get_feed_json;
+
+      if [ ! -f "$algorithm_cache" ]; then
+          echo -e "${Gray}Fetching algorithm feed, building cache...${normal}";
+          declare -a algo_args=(
+            --cookies-from-browser "$PREF_BROWSER"
+            --flat-playlist
+            --extractor-args "youtubetab:approximate_date"
+            --playlist-start 1
+            --playlist-end 200
+            -j "https://www.youtube.com"
+          )
+          yt-dlp "${algo_args[@]}" > "$algorithm_cache"
+      else
+          echo -e "${Gray}Loading algorithm feed from cache...${normal}";
+      fi
+
+      # Slice the right page from cache
+      slice_start=$(($ITEM0 - 1))
+      jq -s ".[${slice_start}:${slice_start}+${LIST_LENGTH}] | .[]" \
+          "$algorithm_cache" \
+          > "$HOME/.cache/magic-tape/json/video_search.json"
+
       get_data;
       small_loop=1;
       while [ $small_loop -eq 1 ];
@@ -1236,12 +1518,13 @@ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━�
         --cycle \
         --preview='\
             hght=$(($FZF_PREVIEW_COLUMNS /3));\
+            if [[ "$IMAGE_SUPPORT" == "ueberz"* ]];then ll=0; while [ $ll -le $hght ];do echo "";((ll++));done;fi;\
+            if [[ "$IMAGE_SUPPORT" == "kitty" ]]&&[[ $kitty_version -le 21 ]];then ll=0; while [ $ll -le $hght ];do echo "";((ll++));done;fi;\
             i=$(echo {} | awk "{print \$1}");\
-            if [[ $i -eq 1 ]]; then # Abort option\
+            if [[ $i -eq 1 ]]; then\
                 draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght "$SHARE_DIR"/abort.png;\
                 echo -e "\nReturn to the main menu.";\
             else\
-                # Adjust index to match original file (since we added "Abort" at the top)\
                 preview_i=$((i - 1));\
                 playlist_id=$(sed -n "${preview_i}p" "$HOME/.cache/magic-tape/search/video/playlist_ids.txt");\
                 img_path="$HOME/.cache/magic-tape/jpg/playlist-${playlist_id}.jpg";\
@@ -1249,7 +1532,6 @@ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━�
                 if [ -f "$img_path" ]; then\
                     draw_preview 1 1 $FZF_PREVIEW_COLUMNS $hght "$img_path";\
                 fi;\
-\
                 TITLE=$(sed -n "${preview_i}p" "$HOME/.cache/magic-tape/search/video/playlist_titles.txt");\
                 COUNT=$(sed -n "${preview_i}p" "$HOME/.cache/magic-tape/search/video/playlist_counts.txt");\
                 echo -e "\n\e[33m$TITLE\e[m\n\nVideo Count: $COUNT";\
@@ -1343,7 +1625,7 @@ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━�
           continue
       fi
 
-      if [[ "$search_type_prompt" == *"Search for Playlists"* ]]; then
+if [[ "$search_type_prompt" == *"Search for Playlists"* ]]; then
           FILTER="&sp=EgIQAw%3D%3D"
           FILT_PROMPT="Search for playlist"
       else
@@ -1360,46 +1642,46 @@ do fzf_output="$(echo -e "${Yellow}${bold}┏┳┓┏━┓┏━╸╻┏━�
               clear
               continue
           fi
-          
+
           # Step 3: Determine the final SP code based on the two choices
           case "$duration_choice" in
               "any")
                   case "$sort_choice" in
-                      "relevance") FILTER="&sp=EgQQARgE";;
-                      "date") FILTER="&sp=CAISAhAB";;
-                      "views") FILTER="&sp=CAMSAhAB";;
-                      "rating") FILTER="&sp=CAESAhAB";;
+                      "relevance") FILTER="&sp=EgQQARgE"; YTDLP_SORT_ARG="";;
+                      "date")      FILTER="&sp=CAISAhAB"; YTDLP_SORT_ARG="date";;
+                      "views")     FILTER="&sp=CAMSAhAB"; YTDLP_SORT_ARG="";;
+                      "rating")    FILTER="&sp=CAESAhAB"; YTDLP_SORT_ARG="";;
                   esac
                   ;;
               "short")
                   YTDLP_MATCH_FILTER_ARG="duration <= 240"
                   case "$sort_choice" in
-                      "relevance") FILTER="&sp=EgQQARgB";;
-                      "date") FILTER="&sp=CAISBEgQQARgB";;
-                      "views") FILTER="&sp=CAMSBEgQQARgB";;
-                      "rating") FILTER="&sp=CAESBEgQQARgB";;
+                      "relevance") FILTER="&sp=EgQQARgB"; YTDLP_SORT_ARG="";;
+                      "date")      FILTER="&sp=CAISBEgQQARgB"; YTDLP_SORT_ARG="date";;
+                      "views")     FILTER="&sp=CAMSBEgQQARgB"; YTDLP_SORT_ARG="";;
+                      "rating")    FILTER="&sp=CAESBEgQQARgB"; YTDLP_SORT_ARG="";;
                   esac
                   ;;
               "medium")
                   YTDLP_MATCH_FILTER_ARG="duration >= 240 & duration <= 1200"
                   case "$sort_choice" in
-                      "relevance") FILTER="&sp=EgQQARgD";;
-                      "date") FILTER="&sp=CAISBEgQQARgD";;
-                      "views") FILTER="&sp=CAMSBEgQQARgD";;
-                      "rating") FILTER="&sp=CAESBEgQQARgD";;
+                      "relevance") FILTER="&sp=EgQQARgD"; YTDLP_SORT_ARG="";;
+                      "date")      FILTER="&sp=CAISBEgQQARgD"; YTDLP_SORT_ARG="date";;
+                      "views")     FILTER="&sp=CAMSBEgQQARgD"; YTDLP_SORT_ARG="";;
+                      "rating")    FILTER="&sp=CAESBEgQQARgD"; YTDLP_SORT_ARG="";;
                   esac
                   ;;
               "long")
                   YTDLP_MATCH_FILTER_ARG="duration > 1200"
                   case "$sort_choice" in
-                      "relevance") FILTER="&sp=EgQQARgC";;
-                      "date") FILTER="&sp=CAISBEgQQARgC";;
-                      "views") FILTER="&sp=CAMSBEgQQARgC";;
-                      "rating") FILTER="&sp=CAESBEgQQARgC";;
+                      "relevance") FILTER="&sp=EgQQARgC"; YTDLP_SORT_ARG="";;
+                      "date")      FILTER="&sp=CAISBEgQQARgC"; YTDLP_SORT_ARG="date";;
+                      "views")     FILTER="&sp=CAMSBEgQQARgC"; YTDLP_SORT_ARG="";;
+                      "rating")    FILTER="&sp=CAESBEgQQARgC"; YTDLP_SORT_ARG="";;
                   esac
                   ;;
           esac
-          FILT_PROMPT="Search" # This variable seems to be used for the fzf header.
+          FILT_PROMPT="Search"
       fi
 
       if [[ "$FILT_PROMPT" == *"Search for playlist"* ]]; then

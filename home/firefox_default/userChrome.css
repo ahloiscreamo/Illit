@@ -1,0 +1,52 @@
+/* === Font === */
+* {
+   font-family: "Maple Mono NF CN" !important;
+   font-size: 16px !important;  
+   font-weight: 500 !important;
+}
+
+/* === Toolbar button === */
+.toolbarbutton-badge {
+    /* Change 10px to any smaller font size you prefer */
+    font-size: 10px !important; 
+    
+    /* Optional adjustments if the badge box looks too big/tall */
+    line-height: 10px !important;
+    padding-block: 0 !important;
+    min-width: 14px !important;
+}
+
+/* === URL bar dropdown highlight === */
+.urlbarView-row[selected],
+.urlbarView-row:hover {
+  background-color: #eb6f92 !important;
+}
+
+/* === Fix stray 'a' label in urlbar dropdown === */
+.urlbar-visually-hidden {
+  font-size: 0 !important;
+}
+
+/* === Tab styling === */
+:root[lwtheme] {
+  --tab-selected-outline-color: transparent !important;
+}
+
+/* === Fix page load background (replace default #2b2a33) === */
+@namespace xul url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+browser,
+#tabbrowser-tabpanels,
+.browserStack,
+.browserContainer {
+  background-color: #232136 !important;  /* Rose Pine Moon */
+}
+
+/* === Kill Firefox’s extra vertical tab splitter border === */
+#sidebar-launcher-splitter,
+splitter {
+  border: none !important;
+  background: transparent !important;
+  min-width: 0 !important;
+  width: 0 !important;
+}

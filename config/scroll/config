@@ -39,12 +39,15 @@ bindsym $mod+Shift+p exec yt-mpv-wayland.sh
 bindsym $mod+space exec killall -SIGUSR1 waybar
 
 # Startup
+exec dbus-update-activation-environment --all
+exec at-spi-bus-launcher --launch-immediately
 exec pipewire
 exec wireplumber
 exec pipewire-pulse
 exec dunst
 exec waybar
 exec gnome-keyring-daemon --start --components=secrets
+exec hintsd &
 exec_always sleep 3 && sudo modprobe -r wacom && sudo modprobe wacom
 exec alacritty --daemon
 exec_always ~/.local/bin/init-theme.sh
@@ -737,6 +740,12 @@ mode Mouse {
 bindsym $mod+q exec wl-kbptr-scroll-active-win
 # Press $mod+Shift+q to enter the interactive Mouse submode
 bindsym $mod+Shift+q mode Mouse
+
+#
+# Hints
+#
+bindsym Mod1+i exec fish -c 'hints -v'
+bindsym Mod1+o exec fish -c 'hints --mode scroll'
 
 #
 # Utilities:

@@ -1,21 +1,23 @@
 {
+  "window_system": "sway",
+  "overlay_y_offset": 0,
   "hints": {
-    "hint_height": 30, 
+    "hint_height": 30,
     "hint_width_padding": 10,
     "hint_font_size": 15,
     "hint_font_face": "Maple Mono NF",
-    "hint_font_r": 0,
-    "hint_font_g": 0,
-    "hint_font_b": 0,
+    "hint_font_r": 0.137,
+    "hint_font_g": 0.129,
+    "hint_font_b": 0.212,
     "hint_font_a": 1,
-    "hint_pressed_font_r": 1,
-    "hint_pressed_font_g": 0.5,
-    "hint_pressed_font_b": 0.2,
+    "hint_pressed_font_r": 0.965,
+    "hint_pressed_font_g": 0.757,
+    "hint_pressed_font_b": 0.467,
     "hint_pressed_font_a": 1,
     "hint_upercase": true,
-    "hint_background_r": 1,
-    "hint_background_g": 1,
-    "hint_background_b": 0.5,
+    "hint_background_r": 0.918,
+    "hint_background_g": 0.604,
+    "hint_background_b": 0.592,
     "hint_background_a": 1
   }
 }

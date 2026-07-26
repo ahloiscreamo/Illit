@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# 1. Remove carriage returns (^M)
+# 2. Strip OSC escape sequences (e.g. ]133;A\ shell integration markers)
+# 3. Strip CSI escape sequences (including 24-bit TrueColor colons)
+tr -d '\r' | sed -E \
+  -e 's/\x1b\][^\x1b\x07]*(\x1b\\|\x07)//g' \
+  -e 's/\x1b\[[0-9:;?<=>]*[a-zA-Z]//g' | \
+  vim -c "set nonumber nolist nomodifiable clipboard+=unnamedplus" -

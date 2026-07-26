@@ -30,6 +30,16 @@ if [ "$USE_NERD_ICONS" = "true" ]; then
     ICON_PROMPT_FILE=""
     ICON_PROMPT_ACTION=""
     ICON_INFO="" # Info icon for help
+    ICON_ERROR="" # oops something broke
+    ICON_WAIT="" # hang on a sec
+    ICON_IMAGE="" # standard picture icon
+    ICON_SUCCESS="" # green check mark equivalent
+    ICON_GOODBYE="" # friendly smile for exit
+    ICON_WARNING="" # no entry sign
+    ICON_VIDEO="" # film roll
+    ICON_AUDIO="" # headphones
+    ICON_SUBTITLE="" # book icon for captions
+    ICON_LAUNCH="" # rocket
 else
     # Emoji Fallbacks
     ICON_SEARCH="🔍"
@@ -45,6 +55,16 @@ else
     ICON_PROMPT_FILE="📁"
     ICON_PROMPT_ACTION="🎬"
     ICON_INFO="ℹ️" # Info emoji for help
+    ICON_ERROR="❌"
+    ICON_WAIT="⏳"
+    ICON_IMAGE="🖼️"
+    ICON_SUCCESS="✅"
+    ICON_GOODBYE="👋"
+    ICON_WARNING="🚫"
+    ICON_VIDEO="🎞️"
+    ICON_AUDIO="🎧"
+    ICON_SUBTITLE="📖"
+    ICON_LAUNCH="🚀"
 fi
 
 # --- Color Config ---
@@ -90,7 +110,7 @@ check_deps() {
     local missing=0
     for cmd in fzf jq curl ia pv mpv nsxiv zathura yt-dlp python3 vim; do
         if ! command -v "$cmd" &> /dev/null; then
-            echo "❌ Error: Required command '$cmd' is not installed."
+            echo "${ICON_ERROR} Error: Required command '$cmd' is not installed."
             missing=1
         fi
     done
@@ -167,14 +187,14 @@ download_and_view() {
         temp_file=$(mktemp)
         trap 'rm -f "$temp_file"' INT TERM EXIT
 
-        echo "⏳ Downloading to view..."
+        echo "${ICON_WAIT} Downloading to view..."
         curl -sL "$url" | pv > "$temp_file"
 
         if [ -s "$temp_file" ]; then
             "$viewer" "$temp_file" >/dev/null 2>&1
             rm -f "$temp_file"
         else
-            echo "🚫 Failed to download file for viewing."
+            echo "${ICON_WARNING} Failed to download file for viewing."
             rm -f "$temp_file"
         fi
     )
@@ -187,11 +207,11 @@ open_all_images() {
     # Filter images, exclude thumbs
     mapfile -t image_files < <(echo "$file_list" | grep -iE '\.(jpg|jpeg|png)$' | grep -iv 'thumb')
     if [ "${#image_files[@]}" -eq 0 ]; then
-        echo "🚫 No images found for this item."
+        echo "${ICON_WARNING} No images found for this item."
         sleep 2
         return
     fi
-    echo "🖼️  Found ${#image_files[@]} images. Downloading..."
+    echo "${ICON_IMAGE} Found ${#image_files[@]} images. Downloading..."
     local temp_dir
     temp_dir="$HOME/Downloads/ia-downloads/$identifier"
     mkdir -p "$temp_dir"
@@ -204,7 +224,7 @@ open_all_images() {
     while kill -0 "$dl_pid" 2>/dev/null; do
         local count
         count=$(find "$temp_dir" -type f | wc -l)
-        echo -ne "\r⏳ Downloaded $count/${#image_files[@]} files..."
+        echo -ne "\r${ICON_WAIT} Downloaded $count/${#image_files[@]} files..."
         sleep 0.5
     done
     wait "$dl_pid"
@@ -215,21 +235,21 @@ open_all_images() {
     local downloaded
     downloaded=$(find "$temp_dir" -type f | wc -l)
     if [ "$downloaded" -eq 0 ]; then
-        echo "🚫 Failed to download images."
+        echo "${ICON_WARNING} Failed to download images."
         rm -rf "$temp_dir"
         sleep 2
         return
     fi
-    echo "✅ Downloaded $downloaded images. Opening with $IMAGE_VIEWER..."
+    echo "${ICON_SUCCESS} Downloaded $downloaded images. Opening with $IMAGE_VIEWER..."
     "$IMAGE_VIEWER" "$temp_dir" >/dev/null 2>&1
     # After viewer closes, prompt keep or delete
     echo ""
     read -r -p "Keep downloaded files? [y/N] " response
     if [[ "$response" =~ ^[Yy]$ ]]; then
-        echo "✅ Files kept at: $temp_dir"
+        echo "${ICON_SUCCESS} Files kept at: $temp_dir"
     else
         rm -rf "$temp_dir"
-        echo "✅ Cleaned up."
+        echo "${ICON_SUCCESS} Cleaned up."
     fi
 }
 
@@ -357,12 +377,12 @@ show_collections() {
             --data-urlencode "output=json")
         
         if [ $? -ne 0 ] || [ -z "$fetched_json" ]; then
-            echo "❌ Error: Failed to fetch collections from the Internet Archive."
+            echo "${ICON_ERROR} Error: Failed to fetch collections from the Internet Archive."
             return 1
         fi
 
         if ! echo "$fetched_json" | jq -e . >/dev/null 2>&1; then
-            echo "❌ Error: Corrupt response received from the API."
+            echo "${ICON_ERROR} Error: Corrupt response received from the API."
             return 1
         fi
         
@@ -376,7 +396,7 @@ show_collections() {
         json=$(cat "$TOP_COLLECTIONS_CACHE_FILE")
     else
         if ! fetch_collections; then
-            echo "👋 Exiting due to network error."
+            echo "${ICON_GOODBYE} Exiting due to network error."
             exit 1
         fi
     fi
@@ -415,7 +435,7 @@ show_collections() {
                 mapfile -t all_entries < <(echo "$json" | jq -r '.response.docs[] | "\(.title) [\(.identifier)]"')
                 total_pages=$(( (${#all_entries[@]} + PAGE_SIZE - 1) / PAGE_SIZE ))
                 page=0
-                echo "✅ Cache refreshed."
+                echo "${ICON_SUCCESS} Cache refreshed."
                 ;;
             "[${ICON_SEARCH} Search all collections]")
                 search_mode
@@ -433,14 +453,14 @@ show_collections() {
                 fi
                 ;;
             "[${ICON_EXIT} Exit]")
-                echo "👋 Exiting."
+                echo "${ICON_GOODBYE} Exiting."
                 exit 0
                 ;;
             "")
                 if [ "$page" -gt 0 ]; then
                     ((page--))
                 else
-                    echo "👋 Exiting."
+                    echo "${ICON_GOODBYE} Exiting."
                     exit 0
                 fi
                 ;;
@@ -467,12 +487,15 @@ search_mode() {
         fi
 
         local examples='collection:anime_miscellaneous
-subject:japanese cinema
+title:irezumi
+title:"typhoon club"
+subject:"japanese cinema"
 mediatype:movies AND language:jpn
 mediatype:movies AND language:chi
 mediatype:movies AND creator:"wong kar wai"
 mediatype:movies AND creator:"edward yang"
 mediatype:movies AND creator:"yasujiro ozu"
+mediatype:movies AND title:"blind beast"
 mediatype:audio AND subject:album
 mediatype:image AND subject:magazine
 mediatype:texts AND subject:linux
@@ -526,7 +549,7 @@ uploader:some_username'
                 item_json=$(cat "$cache_file")
             else
                 if ! item_json=$(ia search "$final_query" --field identifier --field title --sort "downloads desc" -p "page:$page" -p "rows:$rows"); then
-                    echo "❌ Error: 'ia search' command failed for query: $final_query. Check connection or command."
+                    echo "${ICON_ERROR} Error: 'ia search' command failed for query: $final_query. Check connection or command."
                     sleep 3
                     break
                 fi
@@ -534,7 +557,7 @@ uploader:some_username'
 
             fi
             if [ -z "$item_json" ]; then
-                echo "🚫 No results found for page $page."
+                echo "${ICON_WARNING} No results found for page $page."
                 if [ "$page" -eq 1 ]; then break; fi
             fi
             
@@ -584,7 +607,7 @@ uploader:some_username'
                 "action_refresh")
                     if [ -f "$cache_file" ]; then
                         rm "$cache_file"
-                        echo "✅ Page cache cleared. Refreshing..."
+                        echo "${ICON_SUCCESS} Page cache cleared. Refreshing..."
                     fi
                     continue
                     ;;
@@ -614,17 +637,17 @@ uploader:some_username'
                         sub_query_fragment="$sub_query_text"
                     fi
 
-                    echo "🔎 Searching for \"$query AND $sub_query_text\"..."
+                    echo "${ICON_SEARCH} Searching for \"$query AND $sub_query_text\"..."
                     local combined_query="$final_query AND $sub_query_fragment"
                     local total_combined_hits
                     total_combined_hits=$(ia search "$combined_query" --num-found)
 
                     if [ -z "$total_combined_hits" ] || [ "$total_combined_hits" -eq 0 ]; then
-                        echo "🚫 No results found for \"$combined_query\"."
+                        echo "${ICON_WARNING} No results found for \"$combined_query\"."
                         continue
                     fi
 
-                    echo "🔎 Loading all $total_combined_hits results for \"$combined_query\"..."
+                    echo "${ICON_SEARCH} Loading all $total_combined_hits results for \"$combined_query\"..."
                     
                     local temp_combined_file
                     temp_combined_file=$(mktemp)
@@ -694,7 +717,7 @@ browse_collection() {
            item_json=$(cat "$cache_file")
        else
            if ! item_json=$(ia search "collection:$coll" --field identifier --field title --sort "downloads desc" -p "page:$page" -p "rows:$rows"); then
-               echo "❌ Error: 'ia search' command failed for collection: $coll. Check connection or command."
+               echo "${ICON_ERROR} Error: 'ia search' command failed for collection: $coll. Check connection or command."
                sleep 3
                break
            fi
@@ -702,7 +725,7 @@ browse_collection() {
        fi 
 
        if [ -z "$item_json" ]; then
-            echo "🚫 No results found for page $page."
+            echo "${ICON_WARNING} No results found for page $page."
             if [ "$page" -eq 1 ]; then break; fi
         fi
 
@@ -751,7 +774,7 @@ browse_collection() {
             "action_refresh")
                 if [ -f "$cache_file" ]; then
                     rm "$cache_file"
-                    echo "✅ Page cache cleared. Refreshing..."
+                    echo "${ICON_SUCCESS} Page cache cleared. Refreshing..."
                 fi
                 continue
                 ;;
@@ -781,17 +804,17 @@ browse_collection() {
                     sub_query_fragment="$sub_query_text"
                 fi
 
-                echo "🔎 Searching for \"collection:$coll AND $sub_query_text\"..."
+                echo "${ICON_SEARCH} Searching for \"collection:$coll AND $sub_query_text\"..."
                 local combined_query="collection:$coll AND $sub_query_fragment"
                 local total_combined_hits
                 total_combined_hits=$(ia search "$combined_query" --num-found)
 
                 if [ -z "$total_combined_hits" ] || [ "$total_combined_hits" -eq 0 ]; then
-                    echo "🚫 No results found for \"$combined_query\"."
+                    echo "${ICON_WARNING} No results found for \"$combined_query\"."
                     continue
                 fi
 
-                echo "🔎 Loading all $total_combined_hits results for \"$combined_query\"..."
+                echo "${ICON_SEARCH} Loading all $total_combined_hits results for \"$combined_query\"..."
                 
                 local temp_combined_file
                 temp_combined_file=$(mktemp)
@@ -851,7 +874,7 @@ open_item() {
     metadata=$(curl -s "https://archive.org/metadata/$identifier/files" 2>/dev/null)
 
     if [ -z "$metadata" ]; then
-        echo "🚫 No files found for this item or failed to fetch."
+        echo "${ICON_WARNING} No files found for this item or failed to fetch."
         sleep 2
         return
     fi
@@ -861,7 +884,7 @@ open_item() {
     file_list=$(echo "$metadata" | jq -r '.result[].name' 2>/dev/null)
 
     if [ -z "$file_list" ]; then
-        echo "🚫 No files found for this item or failed to fetch."
+        echo "${ICON_WARNING} No files found for this item or failed to fetch."
         sleep 2
         return
     fi
@@ -957,7 +980,7 @@ open_item() {
         if [ "$sanitized_action" == "${ICON_PLAY} Play" ] || [ "$sanitized_action" == "${ICON_OPEN} Open" ]; then
             case "$filename" in
                 *.mp4|*.mkv|*.avi|*.webm|*.flv|*.ogv)
-                    echo "🎞️ Playing video..."
+                    echo "${ICON_VIDEO} Playing video..."
                     
                   # --- Subtitle Matching Logic ---
                   local sub_file=""
@@ -1005,13 +1028,13 @@ open_item() {
                     mpv_log=$(mktemp)
 
                     if [ -n "$sub_file" ]; then
-                        echo "📖 Found matching subtitle: $sub_file"
+                        echo "${ICON_SUBTITLE} Found matching subtitle: $sub_file"
                         local sub_encoded
                         sub_encoded=$(urlencode "$sub_file")
                         local sub_url="https://archive.org/download/$identifier/$sub_encoded"
                         $VIDEO_PLAYER --ytdl=no "$url" --sub-file="$sub_url" > "$mpv_log" 2>&1 &
                     else
-                        echo "🚫 No matching subtitle found."
+                        echo "${ICON_WARNING} No matching subtitle found."
                         $VIDEO_PLAYER --ytdl=no "$url" > "$mpv_log" 2>&1 &
                     fi 
                     
@@ -1024,10 +1047,10 @@ open_item() {
                             echo -n "."
                             sleep 0.1
                         done
-                    ) | pv -p -t -e -N "🚀 Launching mpv" -s 200 > /dev/null
+                    ) | pv -p -t -e -N "${ICON_LAUNCH} Launching mpv" -s 200 > /dev/null
 
                     if ! kill -0 "$pid" 2>/dev/null; then
-                        echo "🚫 mpv failed to launch. Error log:"
+                        echo "${ICON_WARNING} mpv failed to launch. Error log:"
                         echo "-------------------------------------"
                         cat "$mpv_log"
                         echo "-------------------------------------"
@@ -1039,7 +1062,7 @@ open_item() {
                     ;;
 
                 *.mp3|*.ogg|*.flac|*.wav|*.m4a)
-                    echo "🎧 Playing audio..."
+                    echo "${ICON_AUDIO} Playing audio..."
                     $AUDIO_PLAYER "$url" >/dev/null 2>&1 &
                     ;;
                 *.png|*.jpg|*.jpeg|*.gif|*.bmp)
@@ -1056,7 +1079,7 @@ open_item() {
                         $TEXT_VIEWER "$temp_file"
                         rm -f "$temp_file"
                     else
-                        echo "🚫 Failed to fetch $filename"
+                        echo "${ICON_WARNING} Failed to fetch $filename"
                     fi ;; 
                 *)
                     xdg-open "$url" >/dev/null 2>&1 &
@@ -1069,7 +1092,7 @@ open_item() {
                 *)
                     curl -L -o "$filename" "$url" ;; 
             esac
-            echo "✅ Done. Press Enter to continue."
+            echo "${ICON_SUCCESS} Done. Press Enter to continue."
             read -r
         elif [ "$sanitized_action" == "${ICON_OPEN} Open all images" ]; then
             open_all_images "$identifier" "$file_list"
@@ -1085,5 +1108,5 @@ fi
 # --- Main ---
 check_deps
 show_collections
-echo "👋 Goodbye."
+echo "${ICON_GOODBYE} Goodbye."
 exit 0
