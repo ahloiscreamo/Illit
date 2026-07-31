@@ -41,6 +41,7 @@ if [ "$current" = "day" ]; then
     sed -i "s/@rose_pine_variant '.*/@rose_pine_variant 'moon'/" "$TMUX_CONF"
     sed -i "s/theme = '.*/theme = 'moon'/" ~/.config/cava/config
     tmux source "$TMUX_CONF" 2>/dev/null
+    sed -i 's/icon_theme = .*/icon_theme = Papirus-Dark/' "$DUNSTRC"
     sed -i 's/frame_color = "#.*"/frame_color = "#eb6f92"/' "$DUNSTRC"
     sed -i '/^\[urgency_low\]/,/^\[/ s/background = "#.*"/background = "#232136"/' "$DUNSTRC"
     sed -i '/^\[urgency_low\]/,/^\[/ s/foreground = "#.*"/foreground = "#c8c8e5"/' "$DUNSTRC"
@@ -49,7 +50,7 @@ if [ "$current" = "day" ]; then
     sed -i '/^\[urgency_critical\]/,/^\[/ s/background = "#.*"/background = "#eb6f92"/' "$DUNSTRC"
     sed -i '/^\[urgency_critical\]/,/^\[/ s/foreground = "#.*"/foreground = "#c8c8e5"/' "$DUNSTRC"
     sed -i '/^\[urgency_critical\]/,/^\[/ s/frame_color = "#.*"/frame_color = "#232136"/' "$DUNSTRC"
-    dunstctl reload
+    killall dunst; dunst &disown
     scrollmsg reload
     sleep 0.3
     wallpaper "$HOME/Pictures/thinkpad.png"
@@ -84,6 +85,7 @@ elif [ "$current" = "night" ]; then
     sed -i "s/@rose_pine_variant '.*/@rose_pine_variant 'dawn'/" "$TMUX_CONF"
     sed -i "s/theme = '.*/theme = 'dawn'/" ~/.config/cava/config
     tmux source "$TMUX_CONF" 2>/dev/null
+    sed -i 's/icon_theme = .*/icon_theme = Papirus-Light/' "$DUNSTRC"
     sed -i 's/frame_color = "#.*"/frame_color = "#907aa9"/' "$DUNSTRC"
     sed -i '/^\[urgency_low\]/,/^\[/ s/background = "#.*"/background = "#faf4ed"/' "$DUNSTRC"
     sed -i '/^\[urgency_low\]/,/^\[/ s/foreground = "#.*"/foreground = "#575279"/' "$DUNSTRC"
@@ -92,13 +94,13 @@ elif [ "$current" = "night" ]; then
     sed -i '/^\[urgency_critical\]/,/^\[/ s/background = "#.*"/background = "#b4637a"/' "$DUNSTRC"
     sed -i '/^\[urgency_critical\]/,/^\[/ s/foreground = "#.*"/foreground = "#faf4ed"/' "$DUNSTRC"
     sed -i '/^\[urgency_critical\]/,/^\[/ s/frame_color = "#.*"/frame_color = "#faf4ed"/' "$DUNSTRC"
-    dunstctl reload
+    killall dunst; dunst &disown
     scrollmsg reload
     sleep 0.3
     wallpaper "$HOME/Pictures/Bicycle.jpg"
-    scrollmsg "client.focused #faf4ed #907aa9 #5a3e8a #cecacd #faf4ed"
-    scrollmsg "client.focused_inactive #faf4ed #d7827e #8f4f4c #faf4ed #faf4ed"
-    scrollmsg "client.unfocused #faf4ed #d7827e #8f4f4c #faf4ed #faf4ed"
+    scrollmsg "client.focused #dfdad9 #907aa9 #5a3e8a #cecacd #dfdad9"
+    scrollmsg "client.focused_inactive #dfdad9 #d7827e #8f4f4c #dfdad9 #dfdad9"
+    scrollmsg "client.unfocused #dfdad9 #d7827e #8f4f4c #dfdad9 #dfdad9"
     scrollmsg "client.background #faf4ed"
     notify-send -t 1500 "Waybar" "Dawn mode on" 2>/dev/null
 else
@@ -127,6 +129,7 @@ else
     sed -i "s/@rose_pine_variant '.*/@rose_pine_variant 'moon'/" "$TMUX_CONF"
     sed -i "s/theme = '.*/theme = 'moon'/" ~/.config/cava/config
     tmux source "$TMUX_CONF" 2>/dev/null
+    sed -i 's/icon_theme = .*/icon_theme = Papirus/' "$DUNSTRC"
     sed -i 's/frame_color = "#.*"/frame_color = "#eb6f92"/' "$DUNSTRC"
     sed -i '/^\[urgency_low\]/,/^\[/ s/background = "#.*"/background = "#232136"/' "$DUNSTRC"
     sed -i '/^\[urgency_low\]/,/^\[/ s/foreground = "#.*"/foreground = "#c8c8e5"/' "$DUNSTRC"
@@ -135,7 +138,7 @@ else
     sed -i '/^\[urgency_critical\]/,/^\[/ s/background = "#.*"/background = "#eb6f92"/' "$DUNSTRC"
     sed -i '/^\[urgency_critical\]/,/^\[/ s/foreground = "#.*"/foreground = "#c8c8e5"/' "$DUNSTRC"
     sed -i '/^\[urgency_critical\]/,/^\[/ s/frame_color = "#.*"/frame_color = "#232136"/' "$DUNSTRC"
-    dunstctl reload
+    killall dunst; dunst &disown
     scrollmsg reload
     sleep 0.3
     wallpaper "$HOME/Pictures/Bicycle.jpg"

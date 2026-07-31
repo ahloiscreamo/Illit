@@ -10,9 +10,9 @@ if [ "$current" = "night" ]; then
     gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
     wallpaper "$HOME/Pictures/thinkpad.png"
 elif [ "$current" = "dawn" ]; then
-    scrollmsg "client.focused #faf4ed #907aa9 #5a3e8a #cecacd #faf4ed"
-    scrollmsg "client.focused_inactive #faf4ed #d7827e #8f4f4c #faf4ed #faf4ed"
-    scrollmsg "client.unfocused #faf4ed #d7827e #8f4f4c #faf4ed #faf4ed"
+    scrollmsg "client.focused #dfdad9 #907aa9 #5a3e8a #cecacd #dfdad9"
+    scrollmsg "client.focused_inactive #dfdad9 #d7827e #8f4f4c #dfdad9 #dfdad9"
+    scrollmsg "client.unfocused #dfdad9 #d7827e #8f4f4c #dfdad9 #dfdad9"
     scrollmsg "client.background #faf4ed"
     gsettings set org.gnome.desktop.interface gtk-theme "Rosepine-Pink-Light"
     gsettings set org.gnome.desktop.interface icon-theme "Papirus-Light"

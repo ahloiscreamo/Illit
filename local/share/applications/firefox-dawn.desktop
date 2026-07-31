@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Firefox Dawn
+Exec=firefox -P Dawn --no-remote %u
+Icon=firefox
+Type=Application
+Categories=Network;WebBrowser;

@@ -50,7 +50,7 @@ set -gx QT_QPA_PLATFORMTHEME "qt6ct"
 bind \super-f fex-widget
 
 # fzf
-source ~/.config/fish/themes/fzf-dawn.fish
+source ~/.config/fish/themes/fzf-moon.fish
 
 # Firefox
 set -gx MOZ_X11_EGL "1"
@@ -95,6 +95,7 @@ fish_add_path $HOME/.cargo/bin
 alias bat="bat --italic-text always --force-colorization --style full"
 alias chawan="env COLORTERM=truecolor chawan"
 alias clx="clx -n"
+alias cal="cmus-auto-lyrics -a -s "L3fR9dfGNk41wog1uHpHeF8-JCh1HTz48SLi4B0LpaCenhQbIiORQmUgFF01khwT""
 alias chafa="chafa --stretch none"
 alias fex "fex --time-type modified"
 alias mocp="mocp -C ~/.config/moc/config"

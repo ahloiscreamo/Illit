@@ -29,6 +29,70 @@ swayimg.set_appid("swayimg")
 swayimg.imagelist.enable_adjacent(true)
 
 ------------------------------------------------------------
+-- Theme mode: read the same mode file your waybar day/night/dawn
+-- toggle script writes to, so swayimg follows it automatically.
+-- The toggle script's "day" and "night" states both apply the dark
+-- Rosé Pine Moon palette (they only differ by wallpaper); only
+-- "dawn" applies the light Rosé Pine Dawn palette. We mirror that
+-- here. NOTE: this is read once at startup -- a swayimg window
+-- already open won't re-theme itself when you toggle; only windows
+-- opened after the toggle will pick up the new palette (same as
+-- how alacritty/vim behave in that script).
+------------------------------------------------------------
+
+local function read_mode()
+  local path = os.getenv("HOME") .. "/.config/waybar/.mode"
+  local f = io.open(path, "r")
+  if not f then return "day" end
+  local mode = f:read("*l")
+  f:close()
+  return mode or "day"
+end
+
+local function with_alpha(color, alpha)
+  -- Lua 5.3+ bitwise ops (<<, &) aren't available in swayimg's
+  -- embedded Lua, so do this with plain arithmetic instead.
+  return alpha * 0x1000000 + (color % 0x1000000)
+end
+
+local palettes = {
+  -- Rosé Pine Moon (dark)
+  moon = {
+    base    = 0xff232136,
+    surface = 0xff2a273f,
+    overlay = 0xff393552,
+    text    = 0xffe0def4,
+    love    = 0xffeb6f92,
+    gold    = 0xfff6c177,
+    iris    = 0xffc4a7e7,
+    hl_med  = 0xff44415a,
+  },
+  -- Rosé Pine Dawn (light)
+  dawn = {
+    base    = 0xfffaf4ed,
+    surface = 0xfffffaf3,
+    overlay = 0xfff2e9e1,
+    text    = 0xff575279,
+    love    = 0xffb4637a,
+    gold    = 0xffea9d34,
+    iris    = 0xff907aa9,
+    hl_med  = 0xffdfdad9,
+  },
+}
+
+local mode = read_mode()
+local palette = (mode == "dawn") and palettes.dawn or palettes.moon
+
+local rp_base    = palette.base
+local rp_surface = palette.surface
+local rp_overlay = palette.overlay
+local rp_text    = palette.text
+local rp_love    = palette.love
+local rp_gold    = palette.gold
+local rp_iris    = palette.iris
+local rp_hl_med  = palette.hl_med
+
+------------------------------------------------------------
 -- Text layer (the "bar" -- filename/index/status overlay)
 ------------------------------------------------------------
 
@@ -36,10 +100,9 @@ swayimg.text.set_font("Maple Mono NF CN")
 swayimg.text.set_size(14)
 swayimg.text.set_padding(12)
 
--- Rosé Pine Moon: text=#e0def4, surface=#2a273f, base=#232136
-swayimg.text.set_foreground(0xffe0def4)
-swayimg.text.set_background(0xcc2a273f) -- surface, semi-transparent
-swayimg.text.set_shadow(0x00000000)     -- shadow off, bg already gives contrast
+swayimg.text.set_foreground(with_alpha(rp_text, 0xff))
+swayimg.text.set_background(with_alpha(rp_surface, 0xcc)) -- surface, semi-transparent
+swayimg.text.set_shadow(0x00000000)                        -- shadow off, bg already gives contrast
 
 ------------------------------------------------------------
 -- Keep the text layer hidden until toggled with 't'
@@ -47,19 +110,6 @@ swayimg.text.set_shadow(0x00000000)     -- shadow off, bg already gives contrast
 swayimg.on_initialized(function()
   swayimg.text.hide()
 end)
-
-------------------------------------------------------------
--- Rosé Pine Moon palette, for reuse below
-------------------------------------------------------------
-
-local rp_base    = 0xff232136
-local rp_surface = 0xff2a273f
-local rp_overlay = 0xff393552
-local rp_text    = 0xffe0def4
-local rp_love    = 0xffeb6f92
-local rp_gold    = 0xfff6c177
-local rp_iris    = 0xffc4a7e7
-local rp_hl_med  = 0xff44415a
 
 ------------------------------------------------------------
 -- Viewer & slideshow: window/image colors
@@ -107,10 +157,10 @@ swayimg.gallery.set_mark_color(rp_gold)
 -- Restore picture height on start (viewer + slideshow)
 ------------------------------------------------------------
 swayimg.on_window_resize(function()
-  local mode = swayimg.get_mode()
-  if mode == "viewer" then
+  local m = swayimg.get_mode()
+  if m == "viewer" then
     swayimg.viewer.set_fix_scale("optimal")
-  elseif mode == "slideshow" then
+  elseif m == "slideshow" then
     swayimg.slideshow.set_fix_scale("optimal")
   end
 end)

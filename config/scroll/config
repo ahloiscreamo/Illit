@@ -110,15 +110,19 @@ default_decoration border_radius 12
 
 # Activate smart borders (always)
 smart_borders on
-
-bindsym $mod+Shift+d border none
-bindsym $mod+Shift+n border normal
+bindsym $mod+d border none
+bindsym $mod+n border normal
+bindsym $mod+p border pixel 4
+#bindsym $mod+Shift+d border none
+#bindsym $mod+Shift+n border normal
 
 # Activate smart gaps
 smart_gaps on
 
 # App specific
-for_window [app_id="alacritty"] border pixel 0
+for_window [app_id=".*"] border pixel 4
+for_window [app_id="Alacritty"] border normal 4
+for_window [app_id="kitty"] border normal 4
 for_window [app_id="firefox"] border none
 for_window [app_id="ueberzugpp"] border none
 for_window [app_id="mpv"] border none, floating enable, move container to workspace number 4, workspace number 4
@@ -127,6 +131,7 @@ for_window [app_id="thunar"] border none
 for_window [class="krita"] border none
 for_window [app_id="localsend"] border none
 for_window [app_id="imv"] border none
+for_window [app_id="swayimg"] border none
 for_window [app_id="org.gnome.gThumb"] border none
 for_window [app_id="org.gnome.FileRoller"] border none
 for_window [app_id="xdg-desktop-portal-gtk"] border none
