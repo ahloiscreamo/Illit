@@ -14,19 +14,19 @@
 -- currently focused terminal -- that's the "opens inside the
 -- terminal" behavior you don't want. Turn it off so it opens as a
 -- normal window that scroll tiles/scrolls like anything else.
-swayimg.enable_overlay(false)
+swayimg.overlay = false
 
 -- No client-side titlebar/border -- let scroll draw window
 -- decoration the same way it does for every other app.
-swayimg.enable_decoration(false)
+swayimg.decoration = false
 
 -- Explicit appid, useful if you ever want a for_window rule for it
 -- in your scroll/sway config (app_id="swayimg").
-swayimg.set_appid("swayimg")
+swayimg.appid = "swayimg"
 
 -- Always queue up every image in the same directory,
 -- whether swayimg was launched on one file or a whole folder.
-swayimg.imagelist.enable_adjacent(true)
+swayimg.imagelist.adjacent = true
 
 ------------------------------------------------------------
 -- Theme mode: read the same mode file your waybar day/night/dawn
@@ -96,19 +96,19 @@ local rp_hl_med  = palette.hl_med
 -- Text layer (the "bar" -- filename/index/status overlay)
 ------------------------------------------------------------
 
-swayimg.text.set_font("Maple Mono NF CN")
-swayimg.text.set_size(14)
-swayimg.text.set_padding(12)
+swayimg.text.font = "Maple Mono NF CN"
+swayimg.text.size = 14
+swayimg.text.padding = 12
 
-swayimg.text.set_foreground(with_alpha(rp_text, 0xff))
-swayimg.text.set_background(with_alpha(rp_surface, 0xcc)) -- surface, semi-transparent
-swayimg.text.set_shadow(0x00000000)                        -- shadow off, bg already gives contrast
+swayimg.text.color = with_alpha(rp_text, 0xff)
+swayimg.text.background = with_alpha(rp_surface, 0xcc) -- surface, semi-transparent
+swayimg.text.shadow = 0x00000000                        -- shadow off, bg already gives contrast
 
 ------------------------------------------------------------
 -- Keep the text layer hidden until toggled with 't'
 ------------------------------------------------------------
 swayimg.on_initialized(function()
-  swayimg.text.hide()
+  swayimg.text.visible = false
 end)
 
 ------------------------------------------------------------
@@ -117,28 +117,28 @@ end)
 
 swayimg.viewer.set_window_background(rp_base)
 swayimg.viewer.set_image_chessboard(16, rp_surface, rp_overlay) -- transparency checker, themed
-swayimg.viewer.set_mark_color(rp_gold)
+swayimg.viewer.mark_color = rp_gold
 
 swayimg.slideshow.set_window_background(rp_base)
 swayimg.slideshow.set_image_chessboard(16, rp_surface, rp_overlay)
-swayimg.slideshow.set_mark_color(rp_gold)
+swayimg.slideshow.mark_color = rp_gold
 
 ------------------------------------------------------------
 -- Adjustable slideshow delay ([ decreases, ] increases)
 ------------------------------------------------------------
 local slideshow_delay = 5 -- starting value, seconds
 
-swayimg.slideshow.set_timeout(slideshow_delay)
+swayimg.slideshow.timeout = slideshow_delay
 
 swayimg.slideshow.on_key("]", function()
   slideshow_delay = slideshow_delay + 1
-  swayimg.slideshow.set_timeout(slideshow_delay)
+  swayimg.slideshow.timeout = slideshow_delay
   swayimg.text.set_status("Slideshow delay: " .. slideshow_delay .. "s")
 end)
 
 swayimg.slideshow.on_key("[", function()
   slideshow_delay = math.max(1, slideshow_delay - 1)
-  swayimg.slideshow.set_timeout(slideshow_delay)
+  swayimg.slideshow.timeout = slideshow_delay
   swayimg.text.set_status("Slideshow delay: " .. slideshow_delay .. "s")
 end)
 
@@ -146,18 +146,18 @@ end)
 -- Gallery mode: window/thumbnail colors
 ------------------------------------------------------------
 
-swayimg.gallery.set_window_color(rp_base)
-swayimg.gallery.set_unselected_color(rp_surface)
-swayimg.gallery.set_selected_color(rp_hl_med)
-swayimg.gallery.set_border_color(rp_iris)
-swayimg.gallery.set_border_size(3)
-swayimg.gallery.set_mark_color(rp_gold)
+swayimg.gallery.window_color = rp_base
+swayimg.gallery.unselected_color = rp_surface
+swayimg.gallery.selected_color = rp_hl_med
+swayimg.gallery.border_color = rp_iris
+swayimg.gallery.border_size = 3
+swayimg.gallery.mark_color = rp_gold
 
 ------------------------------------------------------------
 -- Restore picture height on start (viewer + slideshow)
 ------------------------------------------------------------
 swayimg.on_window_resize(function()
-  local m = swayimg.get_mode()
+  local m = swayimg.mode
   if m == "viewer" then
     swayimg.viewer.set_fix_scale("optimal")
   elseif m == "slideshow" then
@@ -186,22 +186,25 @@ swayimg.viewer.on_key("k", function() pan_viewer(0, -PAN_STEP) end)
 swayimg.viewer.on_key("j", function() pan_viewer(0, PAN_STEP) end)
 
 -- g / G: first / last image (viewer + slideshow + gallery)
-swayimg.viewer.on_key("g", function() swayimg.viewer.switch_image("first") end)
-swayimg.viewer.on_key("Shift-g", function() swayimg.viewer.switch_image("last") end)
-swayimg.slideshow.on_key("g", function() swayimg.slideshow.switch_image("first") end)
-swayimg.slideshow.on_key("Shift-g", function() swayimg.slideshow.switch_image("last") end)
-swayimg.gallery.on_key("g", function() swayimg.gallery.switch_image("first") end)
-swayimg.gallery.on_key("Shift-g", function() swayimg.gallery.switch_image("last") end)
+-- NOTE: viewer.switch_image()/slideshow.switch_image() are deprecated
+-- in favor of .open(); gallery.switch_image() is deprecated in favor
+-- of .select() -- all just renamed calls, same string arguments.
+swayimg.viewer.on_key("g", function() swayimg.viewer.open("first") end)
+swayimg.viewer.on_key("Shift-g", function() swayimg.viewer.open("last") end)
+swayimg.slideshow.on_key("g", function() swayimg.slideshow.open("first") end)
+swayimg.slideshow.on_key("Shift-g", function() swayimg.slideshow.open("last") end)
+swayimg.gallery.on_key("g", function() swayimg.gallery.select("first") end)
+swayimg.gallery.on_key("Shift-g", function() swayimg.gallery.select("last") end)
 
 -- n / p: next / previous image (nsxiv-style alias for PgDown/PgUp)
-swayimg.viewer.on_key("n", function() swayimg.viewer.switch_image("next") end)
-swayimg.viewer.on_key("p", function() swayimg.viewer.switch_image("prev") end)
+swayimg.viewer.on_key("n", function() swayimg.viewer.open("next") end)
+swayimg.viewer.on_key("p", function() swayimg.viewer.open("prev") end)
 
 -- hjkl grid navigation in gallery (mirrors nsxiv thumbnail mode)
-swayimg.gallery.on_key("h", function() swayimg.gallery.switch_image("left") end)
-swayimg.gallery.on_key("l", function() swayimg.gallery.switch_image("right") end)
-swayimg.gallery.on_key("k", function() swayimg.gallery.switch_image("up") end)
-swayimg.gallery.on_key("j", function() swayimg.gallery.switch_image("down") end)
+swayimg.gallery.on_key("h", function() swayimg.gallery.select("left") end)
+swayimg.gallery.on_key("l", function() swayimg.gallery.select("right") end)
+swayimg.gallery.on_key("k", function() swayimg.gallery.select("up") end)
+swayimg.gallery.on_key("j", function() swayimg.gallery.select("down") end)
 
 -- q: quit everywhere (default is Esc only)
 swayimg.viewer.on_key("q", function() swayimg.exit() end)

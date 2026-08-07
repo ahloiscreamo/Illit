@@ -12,6 +12,7 @@ IMV_CONFIG="$HOME/.config/imv/config"
 ROFI_CONFIG="$HOME/.config/rofi/config.rasi"
 TMUX_CONF="/home/ahloi/.config/tmux/tmux.conf"
 DUNSTRC="$HOME/.config/dunst/dunstrc"
+KITTY_CONF="$HOME/.config/kitty/kitty.conf"
 
 current=$(cat "$MODE_FILE" 2>/dev/null || echo "day")
 
@@ -19,6 +20,7 @@ if [ "$current" = "day" ]; then
     cp "$NIGHT_CSS" "$ACTIVE_CSS"
     echo "night" > "$MODE_FILE"
     sed -i 's|import = \["~/.config/alacritty/.*\.toml"\]|import = ["~/.config/alacritty/rose-pine-moon.toml"]|' "$ALACRITTY_TOML"
+    sed -i 's|^include rose-pine-.*.conf|include rose-pine-moon.conf|' "$KITTY_CONF"
     sed -i 's|source ~/.config/fish/themes/fzf-.*.fish|source ~/.config/fish/themes/fzf-moon.fish|' "$FISH_CONFIG"
     sed -i 's/colorscheme rosepine.*/colorscheme rosepine_moon/' "$VIMRC"
     sed -i 's/set background=.*/set background=dark/' "$VIMRC"
@@ -54,7 +56,7 @@ if [ "$current" = "day" ]; then
     scrollmsg reload
     sleep 0.3
     wallpaper "$HOME/Pictures/thinkpad.png"
-    scrollmsg "client.focused #232136 #232136 #c8c8e5 #232136 #232136"
+    scrollmsg "client.focused #232136 #232136 #c8c8e5 #44415a #232136"
     scrollmsg "client.focused_inactive #232136 #232136 #6e6a86 #232136 #232136"
     scrollmsg "client.unfocused #232136 #232136 #6e6a86 #232136 #232136"
     scrollmsg "client.background #232136"
@@ -63,6 +65,7 @@ elif [ "$current" = "night" ]; then
     cp "$DAWN_CSS" "$ACTIVE_CSS"
     echo "dawn" > "$MODE_FILE"
     sed -i 's|import = \["~/.config/alacritty/.*\.toml"\]|import = ["~/.config/alacritty/rose-pine-dawn.toml"]|' "$ALACRITTY_TOML"
+    sed -i 's|^include rose-pine-.*.conf|include rose-pine-dawn.conf|' "$KITTY_CONF"
     sed -i 's|source ~/.config/fish/themes/fzf-.*.fish|source ~/.config/fish/themes/fzf-dawn.fish|' "$FISH_CONFIG"
     sed -i 's/colorscheme rosepine.*/colorscheme rosepine_dawn/' "$VIMRC"
     sed -i 's/set background=.*/set background=light/' "$VIMRC"
@@ -107,6 +110,7 @@ else
     cp "$DAY_CSS" "$ACTIVE_CSS"
     echo "day" > "$MODE_FILE"
     sed -i 's|import = \["~/.config/alacritty/.*\.toml"\]|import = ["~/.config/alacritty/rose-pine-moon.toml"]|' "$ALACRITTY_TOML"
+    sed -i 's|^include rose-pine-.*.conf|include rose-pine-moon.conf|' "$KITTY_CONF"
     sed -i 's|source ~/.config/fish/themes/fzf-.*.fish|source ~/.config/fish/themes/fzf-moon.fish|' "$FISH_CONFIG"
     sed -i 's/colorscheme rosepine.*/colorscheme rosepine_moon/' "$VIMRC"
     sed -i 's/set background=.*/set background=dark/' "$VIMRC"
@@ -142,7 +146,7 @@ else
     scrollmsg reload
     sleep 0.3
     wallpaper "$HOME/Pictures/Bicycle.jpg"
-    scrollmsg "client.focused #232136 #c4a7e7 #7550a5 #56526e #232136"
+    scrollmsg "client.focused #232136 #c4a7e7 #7550a5 #f6c177 #232136"
     scrollmsg "client.focused_inactive #232136 #ea9a97 #a05550 #232136 #232136"
     scrollmsg "client.unfocused #232136 #ea9a97 #a05550 #232136 #232136"
     scrollmsg "client.background #232136"

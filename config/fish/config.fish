@@ -17,7 +17,17 @@ end
 
 export NNN_FIFO="/tmp/nnn.fifo"
 export NNN_PREVIEW="/tmp/nnn-preview-tui-fifopid."
-export NNN_PREVIEWIMGPROG="viu -w 90"
+set -gx NNN_VIDEPREVIEW 1 #Disable line for static video preview
+
+# Smart Kitty Detection for NNN Previews
+if test "$TERM" = "xterm-kitty" -o -n "$KITTY_WINDOW_ID"
+    # Unset so nnn's preview-tui auto-detects Kitty and uses native icat rendering
+    set -e NNN_PREVIEWIMGPROG
+else
+    # Fallback to viu for other terminals
+    set -gx NNN_PREVIEWIMGPROG "viu -w 90"
+end
+
 #export NNN_OPENER="xdg-open"
 export NNN_OPENER="/home/ahloi/.config/nnn/plugins/nuke"
 export GUI=1
@@ -50,7 +60,7 @@ set -gx QT_QPA_PLATFORMTHEME "qt6ct"
 bind \super-f fex-widget
 
 # fzf
-source ~/.config/fish/themes/fzf-moon.fish
+source ~/.config/fish/themes/fzf-dawn.fish
 
 # Firefox
 set -gx MOZ_X11_EGL "1"
@@ -89,7 +99,6 @@ fish_add_path ~/.npm-global/bin
 fish_add_path ~/.local/bin
 fish_add_path $HOME/.cargo/bin
 
-
 # === Aliases and Functions ===
 
 alias bat="bat --italic-text always --force-colorization --style full"
@@ -99,10 +108,11 @@ alias cal="cmus-auto-lyrics -a -s "L3fR9dfGNk41wog1uHpHeF8-JCh1HTz48SLi4B0LpaCen
 alias chafa="chafa --stretch none"
 alias fex "fex --time-type modified"
 alias mocp="mocp -C ~/.config/moc/config"
-alias nnn="nnn -c -r -e -x"
+alias nnn="nnn -c -r -e -D"
 alias icat="kitty +kitten icat"
 alias record='wf-recorder -f ~/Videos/recording-(date +%Y%m%d-%H%M%S).mp4 -c libx264 -r 60 -x yuv420p --filter "scale=out_color_matrix=bt709:out_range=full" -p color_range=jpeg -p colorspace=bt709 -p color_trc=iec61966-2-1 -p color_primaries=bt709'
 alias record-window='wf-recorder -f ~/Videos/recording-$(date +%Y%m%d-%H%M%S).mp4 -c libx264 -r 60 -x yuv420p --filter "scale=out_color_matrix=bt709:out_range=full" -p color_range=jpeg -p colorspace=bt709 -p color_trc=iec61966-2-1 -p color_primaries=bt709 -g "$(slurp)"'
+alias kitty="kitty --single-instance"
 alias w3m="w3m -o inline_img_protocol=4"
 alias ls="eza --icons --group-directories-first -s=type"
 alias ncdu="ncdu --color dark"
@@ -163,4 +173,3 @@ if test "$XDG_SESSION_TYPE" = "wayland"
         source ~/.config/fish/wayland.fish
     end
 end
-
