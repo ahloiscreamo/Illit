@@ -1,6 +1,6 @@
 " Set compatibility to Vim only.
 set nocompatible
-filetype off                  " required
+filetype off                 " required
 
 " Set copy paste to browser.
 set clipboard=unnamedplus
@@ -8,8 +8,6 @@ set clipboard=unnamedplus
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
@@ -18,16 +16,12 @@ Plugin 'tpope/vim-sensible'
 call vundle#end()            " required
 filetype plugin indent on    " required
 
-" Map <leader>mp to open quickmd for the current file
-" (assuming your leader key is '\' - you can check with :echo mapleader)
-nnoremap <leader>mp :silent !quickmd % > /dev/null 2>&1 &<CR>
+" Map <leader>mp to open current Markdown file in Chawan in a vertical split on the right
+" Automatically closes the split when you press 'q' in Chawan
+nnoremap <leader>mp :vertical rightbelow terminal ++close cha %<CR>
 
 " Reload vimrc
 nnoremap <leader>r :source ~/.vimrc<CR>
-
-" Optional: A command to manually start quickmd for the current file
-" You can run this by typing :MarkdownQuickPreview in Vim
-command! MarkdownQuickPreview silent !quickmd % > /dev/null 2>&1 &
 
 " Enable True Color for hex codes
 if has('termguicolors')
@@ -44,10 +38,7 @@ endif
 " indentLine
 let g:indentLine_color_term = 1
 
-" Disable folding (vim-markdown)
-let g:vim_markdown_folding_disabled = 1
-
-"Always show current position
+" Always show current position
 set ruler
 
 " Turn on syntax highlighting.
@@ -56,8 +47,7 @@ syntax on
 " Turn off modelines
 set modelines=0
 
-" Uncomment below to set the max textwidth. Use a value corresponding to the width of your screen.
-" set textwidth=80
+" Formatting options
 set formatoptions=tcqrn1
 set tabstop=4
 set shiftwidth=4
@@ -87,12 +77,8 @@ set showmode
 set showcmd
 set cmdheight=1
 
-" Highlight matching pairs of brackets. Use the '%' character to jump between them.
+" Highlight matching pairs of brackets.
 set matchpairs+=<:>
-
-" Display different types of white spaces.
-"set list
-"set listchars=tab:›\ ,trail:•,extends:#,nbsp:.
 
 " Show line numbers
 set number
@@ -126,14 +112,7 @@ set hlsearch
 " Enable incremental search
 set incsearch
 
-" Include matching uppercase words with lowercase search term
-set ignorecase
-
-" Include only uppercase words with uppercase search term
-set smartcase
-
 " Store info from no more than 100 files at a time, 9999 lines of text
-" 100kb of data. Useful for copying large amounts of data between files.
 set viminfo='100,<9999,s100
 
 " Set Backup copy

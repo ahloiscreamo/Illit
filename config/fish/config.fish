@@ -32,7 +32,7 @@ end
 export NNN_OPENER="/home/ahloi/.config/nnn/plugins/nuke"
 export GUI=1
 export NNN_OPENER_DETACH=1
-export NNN_COLORS="5632"
+export NNN_COLORS="56324170"
 export NNN_FCOLORS="0B0405020006060009060B01"
 export NNN_BMS='m:/mnt;g:/mnt/Kingston/gallery-dl/instagram;d:~/Downloads;p:~/Pictures;t:~/Documents;f:~/Desktop'
 export NNN_PLUG='a:addtoplaylist;j:autojump;p:preview-tui;l:launch;r:renamer;o:fzopen;c:fzcd;x:xdgdefault'
@@ -60,7 +60,7 @@ set -gx QT_QPA_PLATFORMTHEME "qt6ct"
 bind \super-f fex-widget
 
 # fzf
-source ~/.config/fish/themes/fzf-dawn.fish
+source ~/.config/fish/themes/fzf-moon.fish
 
 # Firefox
 set -gx MOZ_X11_EGL "1"

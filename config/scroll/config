@@ -22,7 +22,8 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term alacritty msg create-window
+set $term kitty --single-instance
+#set $term alacritty msg create-window
 # Your preferred application launcher
 set $menu rofi -show drun
 
@@ -113,8 +114,6 @@ smart_borders on
 bindsym $mod+d border none
 bindsym $mod+n border normal
 bindsym $mod+p border pixel 4
-#bindsym $mod+Shift+d border none
-#bindsym $mod+Shift+n border normal
 
 # Activate smart gaps
 smart_gaps on
@@ -160,6 +159,14 @@ maximize_if_single true
 # focus_on_window_activation focus
 # xdg_activation_force false
 # scratchpad_minimize false
+# mouse_resize_tiling_limit true
+# snap_window_gap 0
+# snap_workspace_gap 0
+# snap_respect_gaps_inner false
+# snap_respect_gaps_outer false
+# snap_border_overlap false
+# center_horizontal_if_fits true
+# center_vertical_if_fits true
 
 # Animations
 animations {
@@ -168,12 +175,15 @@ animations {
     window_open yes 300 var 3 [ 0 0 1 1 ]
     window_move yes 300 var 3 [ 0.215 0.61 0.355 1 ] off 0.05 6 [0 0.6 0.4 0 1 0 0.4 -0.6 1 -0.6]
     window_size yes 300 var 3 [ -0.35 0 0 0.5 ]
+    workspace_switch yes 500 var simple [ 0.215 0.61 0.355 1 ]
+    window_fullscreen yes 500 var simple [ 0.3 0.5 0.4 1 ]
+    jump yes 500 var simple [ 0.215 0.61 0.355 1 ]
+    layer_shell yes 300 var 3 [ 0 0 1 1 ]
+    fade_in yes 300 var simple [ 0.32 0 0.67 0 ]
+    fade_out yes 300 var simple [ 0.33 1 0.68 1 ]
     # You can also define curves for the following events
     # window_move_float
-    # workspace_switch
-    # window_fullscreen
     # overview
-    # jump
 }
 
 ### Key bindings
@@ -209,8 +219,8 @@ animations {
     # Layout mode
     #bindsym $mod+bracketleft set_mode h
     #bindsym $mod+bracketright set_mode v
-    bindsym $mod+bracketleft set_mode h; exec sh -c 'echo "" > ~/.cache/scroll-mode.txt; pkill -RTMIN+8 waybar'
-    bindsym $mod+bracketright set_mode v; exec sh -c 'echo "" > ~/.cache/scroll-mode.txt; pkill -RTMIN+8 waybar' 
+    bindsym $mod+bracketright set_mode h; exec sh -c 'echo "" > ~/.cache/scroll-mode.txt; pkill -RTMIN+8 waybar'
+    bindsym $mod+bracketleft set_mode v; exec sh -c 'echo "" > ~/.cache/scroll-mode.txt; pkill -RTMIN+8 waybar' 
 #
 # Moving around:
 #
@@ -331,6 +341,7 @@ bindsym $mod+Shift+backslash mode "wssplit"
     # Overview
     # workspace_labels_color #A54242FF
     # workspace_labels_background #00000000
+    # workspace_labels_height 30
     bindsym --no-repeat $mod+tab scale_workspace overview
     bindsym --whole-window button8 scale_workspace overview
     bindsym --no-repeat $mod+Shift+tab scale_workspaces toggle
@@ -457,11 +468,38 @@ mode "modifiers" {
     bindsym Shift+v set_mode nocenter_vert; mode default 
     bindsym r set_mode reorder_auto; mode default 
     bindsym Shift+r set_mode noreorder_auto; mode default 
+    bindsym w set_mode fitfraction; mode default
+    bindsym Shift+w set_mode fitsplit; mode default
+    bindsym Ctrl+w set_mode nofit; mode default
 
     # Return to default mode
     bindsym Escape mode "default"
 }
 bindsym $mod+backslash mode "modifiers"
+
+#
+# Focus Ring
+#
+
+# focus_ring_length 0
+
+# mode "focus_ring" {
+#     bindsym bracketleft focus_ring prev
+#     bindsym bracketright focus_ring next
+#     bindsym Return focus_ring set
+#     bindsym Home focus_ring first
+#     bindsym End focus_ring last
+#
+#     bindsym Escape mode "default"
+# }
+# bindsym $mod+bracketleft mode "focus_ring"
+
+bindsym $mod+Shift+bracketleft focus_ring prev
+bindsym $mod+Shift+bracketright focus_ring next
+bindsym $mod+Shift+Return focus_ring set
+bindsym $mod+Shift+Delete focus_ring remove
+bindsym $mod+Shift+Home focus_ring first
+bindsym $mod+Shift+End focus_ring last
 
 #
 # Resizing containers:
@@ -751,6 +789,49 @@ bindsym $mod+Shift+q mode Mouse
 #
 bindsym Mod1+i exec fish -c 'hints -v'
 bindsym Mod1+o exec fish -c 'hints --mode scroll'
+
+#
+# Native Sway Mouse Submode (Separate from wl-kbptr)
+#
+mode "NativeMouse" {
+    # Fine movement (15px)
+    bindsym h seat seat0 cursor move -15 0
+    bindsym j seat seat0 cursor move 0 15
+    bindsym k seat seat0 cursor move 0 -15
+    bindsym l seat seat0 cursor move 15 0
+
+    # Fast movement (60px)
+    bindsym Shift+h seat seat0 cursor move -60 0
+    bindsym Shift+j seat seat0 cursor move 0 60
+    bindsym Shift+k seat seat0 cursor move 0 -60
+    bindsym Shift+l seat seat0 cursor move 60 0
+
+    # Precise movement (1px)
+    bindsym Ctrl+h seat seat0 cursor move -1 0
+    bindsym Ctrl+j seat seat0 cursor move 0 1
+    bindsym Ctrl+k seat seat0 cursor move 0 -1
+    bindsym Ctrl+l seat seat0 cursor move 1 0
+
+    # Clicks
+    bindsym s seat seat0 cursor press button1
+    bindsym --release s seat seat0 cursor release button1
+
+    bindsym d seat seat0 cursor press button2
+    bindsym --release d seat seat0 cursor release button2
+
+    bindsym f seat seat0 cursor press button3
+    bindsym --release f seat seat0 cursor release button3
+
+    # Center cursor on active window
+    bindsym c move cursor center
+
+    # Exit
+    bindsym Escape mode default
+    bindsym Return mode default
+}
+
+# Dedicated entrypoint for native cursor control
+bindsym $mod+m mode "NativeMouse"
 
 #
 # Utilities:

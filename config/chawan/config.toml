@@ -21,6 +21,11 @@ p, span, div, td, li {
     color: #c8c8e5 !important;
     background-color: transparent !important;
 }
+table, tr, th, td, td * {
+    background-color: #232136 !important;
+    color: #c8c8e5 !important;
+    border-color: #6e6a86 !important;
+}
 h1, h2, h3, h4, h5, h6 {
     color: #9ccfd8 !important;
 }
@@ -33,7 +38,8 @@ a:hover {
 strong, b {
     color: #f6c177 !important;
 }
-pre, code, blockquote {
+pre, code, kbd, tt, samp, blockquote {
+    text-decoration: none !important;
     background-color: #393552 !important;
     color: #c8c8e5 !important;
     border: 1px solid #6e6a86 !important;
@@ -52,7 +58,7 @@ img, video, svg {
 [display]
 color-mode = "auto"
 format-mode = "auto"
-image-mode = "kitty"
+#image-mode = "kitty"
 default-background-color = "#232136"
 default-foreground-color = "#c8c8e5"
 highlight-color = "#eb6f92"  # pink highlight
