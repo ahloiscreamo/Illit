@@ -1,0 +1,69 @@
+configuration {
+    font: "Sans 12";
+    line-margin: 10;
+    display-drun: "";
+}
+* {
+    background:     #232136;  /* base */
+    background-alt: #232136;  /* base, no alternation */
+    foreground:     #C8C8E5;  /* custom text override */
+    selected:       #c4a7e7;  /* iris */
+    active:         #9ccfd8;  /* foam */
+    urgent:         #eb6f92;  /* love */
+}
+window {
+    fullscreen: false;
+    background-color: #232136;  /* base, fully opaque */
+    border-radius: 50px;
+}
+mainbox {
+    padding: 50px 50px;
+    background-color: transparent;
+    children: [inputbar, listview];
+    spacing: 20px;
+}
+inputbar {
+    background-color: #2a273f;  /* surface */
+    padding: 8px;
+    border-radius: 8px;
+    children: [prompt, entry];
+}
+prompt {
+    enabled: true;
+    padding: 8px;
+    background-color: @selected;
+    text-color: #232136;  /* base, for contrast against iris */
+    border-radius: 4px;
+}
+entry {
+    padding: 8px;
+    background-color: transparent;
+    text-color: #e0def4;  /* text */
+    placeholder: "Search...";
+    placeholder-color: rgba(200, 200, 229, 0.5);
+    border-radius: 6px;
+}
+listview {
+    layout: vertical;
+    spacing: 8px;
+    lines: 9;
+    background-color: transparent;
+}
+element {
+    padding: 12px;
+    border-radius: 4px;
+    background-color: transparent;
+    text-color: @foreground;
+}
+element normal.normal {
+    background-color: transparent;
+}
+element selected.normal {
+    background-color: @selected;
+    text-color: #232136;  /* base, for contrast against iris */
+}
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+    vertical-align: 0.5;
+}

@@ -33,7 +33,7 @@ set $menu rofi -show drun
 #output * bg /home/ahloi/Pictures/Bicycle.jpg fill
 
 # Default cursor
-seat seat0 xcursor_theme BreezeX-RosePineDawn-Linux 24
+seat seat0 xcursor_theme BreezeX-RosePine-Linux 24
 
 # Custom scripts 
 bindsym $mod+Shift+p exec yt-mpv-wayland.sh
@@ -822,8 +822,11 @@ mode "NativeMouse" {
     bindsym f seat seat0 cursor press button3
     bindsym --release f seat seat0 cursor release button3
 
-    # Center cursor on active window
-    bindsym c move cursor center
+    # Center cursor 
+    bindsym m exec scrollmsg seat seat0 cursor set 960 540
+
+    # Shove cursor to the bottom right corner
+    bindsym b exec scrollmsg seat seat0 cursor set 1919 1079
 
     # Exit
     bindsym Escape mode default
@@ -855,9 +858,6 @@ bindsym $mod+m mode "NativeMouse"
 
     # Special key to take a screenshot with grim
     bindsym Print exec grim
-
-    # Shove cursor to the bottom right corner
-    bindsym $mod+Ctrl+m exec move_cursor_wayland.sh
 
 focus_wrapping no
 

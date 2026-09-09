@@ -13,6 +13,34 @@ ROFI_CONFIG="$HOME/.config/rofi/config.rasi"
 TMUX_CONF="/home/ahloi/.config/tmux/tmux.conf"
 DUNSTRC="$HOME/.config/dunst/dunstrc"
 KITTY_CONF="$HOME/.config/kitty/kitty.conf"
+YTM_CONFIG="$HOME/.config/ytm-player/config.toml"
+YTM_THEME="$HOME/.config/ytm-player/theme.toml"
+
+apply_ytm_theme() {
+    local mode="$1"
+    local ytm_theme_name playback_bar_bg selected_item progress_filled progress_empty \
+          lyrics_played lyrics_current lyrics_upcoming active_tab inactive_tab
+
+    if [ "$mode" = "dawn" ]; then
+        ytm_theme_name="rose-pine-dawn"
+        playback_bar_bg="#fffaf3"; selected_item="#f2e9e1"
+        progress_filled="#b4637a"; progress_empty="#f2e9e1"
+        lyrics_played="#9893a5"; lyrics_current="#907aa9"; lyrics_upcoming="#575279"
+        active_tab="#faf4ed"; inactive_tab="#f2e9e1"
+    else
+        ytm_theme_name="rose-pine-moon"
+        playback_bar_bg="#2a273f"; selected_item="#393552"
+        progress_filled="#eb6f92"; progress_empty="#393552"
+        lyrics_played="#6e6a86"; lyrics_current="#c4a7e7"; lyrics_upcoming="#c8c8e5"
+        active_tab="#232136"; inactive_tab="#393552"
+    fi
+
+    sed -i "s/^theme = \".*\"/theme = \"$ytm_theme_name\"/" "$YTM_CONFIG"
+    for key in playback_bar_bg selected_item progress_filled progress_empty \
+               lyrics_played lyrics_current lyrics_upcoming active_tab inactive_tab; do
+        sed -i "s/^\\(${key}[[:space:]]*=[[:space:]]*\\).*/\\1\"${!key}\"/" "$YTM_THEME"
+    done
+}
 
 current=$(cat "$MODE_FILE" 2>/dev/null || echo "day")
 
@@ -52,7 +80,8 @@ if [ "$current" = "day" ]; then
     sed -i '/^\[urgency_critical\]/,/^\[/ s/background = "#.*"/background = "#eb6f92"/' "$DUNSTRC"
     sed -i '/^\[urgency_critical\]/,/^\[/ s/foreground = "#.*"/foreground = "#c8c8e5"/' "$DUNSTRC"
     sed -i '/^\[urgency_critical\]/,/^\[/ s/frame_color = "#.*"/frame_color = "#232136"/' "$DUNSTRC"
-    killall dunst; dunst &disown
+    apply_ytm_theme moon
+    pkill -9 -x dunst; sleep 0.3; dunst &disown
     scrollmsg reload
     sleep 0.3
     wallpaper "$HOME/Pictures/thinkpad.png"
@@ -97,7 +126,8 @@ elif [ "$current" = "night" ]; then
     sed -i '/^\[urgency_critical\]/,/^\[/ s/background = "#.*"/background = "#b4637a"/' "$DUNSTRC"
     sed -i '/^\[urgency_critical\]/,/^\[/ s/foreground = "#.*"/foreground = "#faf4ed"/' "$DUNSTRC"
     sed -i '/^\[urgency_critical\]/,/^\[/ s/frame_color = "#.*"/frame_color = "#faf4ed"/' "$DUNSTRC"
-    killall dunst; dunst &disown
+    apply_ytm_theme dawn
+    pkill -9 -x dunst; sleep 0.3; dunst &disown
     scrollmsg reload
     sleep 0.3
     wallpaper "$HOME/Pictures/Bicycle.jpg"
@@ -142,7 +172,8 @@ else
     sed -i '/^\[urgency_critical\]/,/^\[/ s/background = "#.*"/background = "#eb6f92"/' "$DUNSTRC"
     sed -i '/^\[urgency_critical\]/,/^\[/ s/foreground = "#.*"/foreground = "#c8c8e5"/' "$DUNSTRC"
     sed -i '/^\[urgency_critical\]/,/^\[/ s/frame_color = "#.*"/frame_color = "#232136"/' "$DUNSTRC"
-    killall dunst; dunst &disown
+    apply_ytm_theme moon
+    pkill -9 -x dunst; sleep 0.3; dunst &disown
     scrollmsg reload
     sleep 0.3
     wallpaper "$HOME/Pictures/Bicycle.jpg"

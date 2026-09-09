@@ -1,0 +1,124 @@
+// Colours — Rosé Pine Moon
+* {
+    background-color:               transparent;
+    background:                     #232136;  /* base */
+    surface:                        #2a273f;  /* surface */
+    overlay:                        #393552;  /* overlay */
+    text-color:                     #C8C8E5;  /* your custom text override */
+    text-color-selected:            #e0def4;  /* text */
+    primary:                        #c4a7e7;  /* iris */
+    important:                      #ea9a97;  /* rose */
+}
+
+configuration {
+    font:                           "Roboto 14";
+    show-icons:                     true;
+}
+
+window {
+    fullscreen:                     true;
+    height:                         100%;
+    width:                          100%;
+    transparency:                   "none";
+    background-color:               @background;  /* fully opaque, no alpha */
+    border:                         2px;
+    border-color:                   @primary;
+}
+
+mainbox {
+    children:                       [prompt, inputbar-box, listview];
+    padding:                        0px;
+    background-color:               @background;
+}
+
+prompt {
+    width:                          100%;
+    margin:                         10px 0px 0px 30px;
+    text-color:                     @important;
+    font:                           "Roboto Bold 27";
+}
+
+listview {
+    layout:                         vertical;
+    padding:                        10px;
+    spacing:                        20px;
+    columns:                        8;
+    dynamic:                        true;
+    orientation:                    horizontal;
+    background-color:               @background;
+}
+
+inputbar-box {
+    children:                       [dummy, inputbar, dummy];
+    orientation:                    horizontal;
+    expand:                         false;
+}
+
+inputbar {
+    children:                       [textbox-prompt, entry];
+    margin:                         0px;
+    background-color:               @surface;
+    border:                         2px;
+    border-color:                   @primary;
+    border-radius:                  8px;
+}
+
+textbox-prompt {
+    text-color:                     @text-color;
+    horizontal-align:               0.5;
+    vertical-align:                 0.5;
+    expand:                         false;
+}
+
+entry {
+    expand:                         false;
+    padding:                        8px;
+    margin:                         -6px;
+    horizontal-align:               0;
+    width:                          300;
+    background-color:               @surface;
+    text-color:                     @text-color;
+    border:                         2px;
+    border-color:                   @primary;
+    border-radius:                  8px;
+    cursor:                         text;
+}
+
+element {
+    children:                       [dummy, element-box, dummy];
+    padding:                        5px;
+    orientation:                    vertical;
+    border:                         0px;
+    border-radius:                  16px;
+    background-color:               transparent;
+    width:                          100px;
+    height:                         50px;
+}
+
+element selected {
+    background-color:               @overlay;
+}
+
+element-box {
+    children:                       [element-icon, element-text];
+    orientation:                    vertical;
+    expand:                         false;
+    cursor:                         pointer;
+}
+
+element-icon {
+    padding:                        10px;
+    cursor:                         inherit;
+    size:                           33%;
+    margin:                         10px;
+}
+
+element-text {
+    horizontal-align:               0.5;
+    cursor:                         inherit;
+    text-color:                     @text-color;
+}
+
+element-text selected {
+    text-color:                     @text-color-selected;
+}

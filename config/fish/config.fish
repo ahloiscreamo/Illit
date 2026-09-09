@@ -17,7 +17,7 @@ end
 
 export NNN_FIFO="/tmp/nnn.fifo"
 export NNN_PREVIEW="/tmp/nnn-preview-tui-fifopid."
-set -gx NNN_VIDEPREVIEW 1 #Disable line for static video preview
+#set -gx NNN_VIDEPREVIEW 1 #Disable line for static video preview
 
 # Smart Kitty Detection for NNN Previews
 if test "$TERM" = "xterm-kitty" -o -n "$KITTY_WINDOW_ID"
@@ -35,7 +35,7 @@ export NNN_OPENER_DETACH=1
 export NNN_COLORS="56324170"
 export NNN_FCOLORS="0B0405020006060009060B01"
 export NNN_BMS='m:/mnt;g:/mnt/Kingston/gallery-dl/instagram;d:~/Downloads;p:~/Pictures;t:~/Documents;f:~/Desktop'
-export NNN_PLUG='a:addtoplaylist;j:autojump;p:preview-tui;l:launch;r:renamer;o:fzopen;c:fzcd;x:xdgdefault'
+export NNN_PLUG='a:addtoplaylist;j:autojump;p:preview-tui;l:launch;r:renamer;o:fzopen;c:fzcd;x:xdgdefault;m:mocq'
 
 # === Global Variables (using 'set -gx' for export) ===
 
@@ -107,8 +107,7 @@ alias clx="clx -n"
 alias cal="cmus-auto-lyrics -a -s "L3fR9dfGNk41wog1uHpHeF8-JCh1HTz48SLi4B0LpaCenhQbIiORQmUgFF01khwT""
 alias chafa="chafa --stretch none"
 alias fex "fex --time-type modified"
-alias mocp="mocp -C ~/.config/moc/config"
-alias nnn="nnn -c -r -e -D"
+alias nnn="nnn -c -r -e -x -D"
 alias icat="kitty +kitten icat"
 alias record='wf-recorder -f ~/Videos/recording-(date +%Y%m%d-%H%M%S).mp4 -c libx264 -r 60 -x yuv420p --filter "scale=out_color_matrix=bt709:out_range=full" -p color_range=jpeg -p colorspace=bt709 -p color_trc=iec61966-2-1 -p color_primaries=bt709'
 alias record-window='wf-recorder -f ~/Videos/recording-$(date +%Y%m%d-%H%M%S).mp4 -c libx264 -r 60 -x yuv420p --filter "scale=out_color_matrix=bt709:out_range=full" -p color_range=jpeg -p colorspace=bt709 -p color_trc=iec61966-2-1 -p color_primaries=bt709 -g "$(slurp)"'
