@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# FreeTube Rosé Pine Themes Installer (Moon & Dawn)
+set -e
+
+RESOURCE_DIR="/opt/FreeTube/resources"
+
+if [ ! -d "$RESOURCE_DIR" ]; then
+    echo "Error: $RESOURCE_DIR does not exist."
+    exit 1
+fi
+
+cd "$RESOURCE_DIR"
+
+echo "Extracting app.asar..."
+sudo asar extract app.asar app-extracted
+
+echo "Applying Rosé Pine Moon and Dawn patches..."
+sudo python3 -c '
+import glob
+import re
+
+# 1. Update CSS Variables (High Priority Overrides)
+css_files = glob.glob("app-extracted/dist/renderer.*.css")
+if css_files:
+    css_path = css_files[0]
+    with open(css_path, "r", encoding="utf-8") as f:
+        css = f.read()
+    
+    rose_moon_css = ".rosePineMoon,.rose-pine-moon,[data-theme=\"rosePineMoon\"]{--primary-text-color:#c8c8e5;--secondary-text-color:#908caa;--tertiary-text-color:#6e6a86;--title-color:#c4a7e7;--bg-color:#232136;--favorite-icon-color:#eb6f92;--card-bg-color:#2a273f;--secondary-card-bg-color:#232136;--scrollbar-color:#393552;--scrollbar-color-hover:#44415a;--side-nav-color:#232136;--side-nav-hover-color:#393552;--side-nav-active-color:#44415a;--search-bar-color:#393552;--logo-icon:url(imgs/iconDraculaLightSmall.svg);--logo-text:url(imgs/textDraculaLightSmall.svg)}"
+    
+    rose_dawn_css = ".rosePineDawn,.rose-pine-dawn,[data-theme=\"rosePineDawn\"]{--primary-text-color:#575279 !important;--secondary-text-color:#797593 !important;--tertiary-text-color:#9893a5 !important;--title-color:#907aa9 !important;--bg-color:#faf4ed !important;--favorite-icon-color:#b4637a !important;--card-bg-color:#fffaf3 !important;--secondary-card-bg-color:#f2e9e1 !important;--scrollbar-color:#cecad6 !important;--scrollbar-color-hover:#9893a5 !important;--side-nav-color:#f2e9e1 !important;--side-nav-hover-color:#e4dfd7 !important;--side-nav-active-color:#cecad6 !important;--search-bar-color:#f2e9e1 !important}"
+    
+    if ".rosePineDawn" not in css:
+        css = css.replace(".dracula{", rose_moon_css + rose_dawn_css + ".dracula{")
+        with open(css_path, "w", encoding="utf-8") as f:
+            f.write(css)
+
+# 2. Patch Electron Background Window
+with open("app-extracted/dist/main.js", "r", encoding="utf-8") as f:
+    main_js = f.read()
+
+if "rosePineDawn" not in main_js:
+    main_js = main_js.replace(
+        "case\"dracula\":return\"#282a36\";", 
+        "case\"dracula\":return\"#282a36\";case\"rosePineMoon\":return\"#232136\";case\"rosePineDawn\":return\"#faf4ed\";"
+    )
+    with open("app-extracted/dist/main.js", "w", encoding="utf-8") as f:
+        f.write(main_js)
+
+# 3. Synchronize Arrays i and n in renderer.js
+with open("app-extracted/dist/renderer.js", "r", encoding="utf-8") as f:
+    renderer_js = f.read()
+
+# Replace single rosePineMoon entry or default dracula with BOTH Moon and Dawn in key array i
+renderer_js = renderer_js.replace(
+    "\"dracula\",\"rosePineMoon\",\"everforestDarkHard\"",
+    "\"dracula\",\"rosePineMoon\",\"rosePineDawn\",\"everforestDarkHard\""
+)
+renderer_js = renderer_js.replace(
+    "\"dracula\",\"everforestDarkHard\"",
+    "\"dracula\",\"rosePineMoon\",\"rosePineDawn\",\"everforestDarkHard\""
+)
+
+# Normalize existing labels so reruns also repair duplicates from older patches.
+label_prefix = "Settings.Theme Settings.Base Theme."
+dracula_label = "t(\"" + label_prefix + "Dracula\")"
+moon_label = "t(\"" + label_prefix + "Rosé Pine Moon\")"
+dawn_label = "t(\"" + label_prefix + "Rosé Pine Dawn\")"
+renderer_js = re.sub(
+    re.escape(dracula_label)
+    + "(?:,(?:" + re.escape(moon_label) + "|" + re.escape(dawn_label) + "))*",
+    lambda match: ",".join((dracula_label, moon_label, dawn_label)),
+    renderer_js,
+)
+
+with open("app-extracted/dist/renderer.js", "w", encoding="utf-8") as f:
+    f.write(renderer_js)
+
+print("Both Rosé Pine Moon and Dawn successfully aligned in arrays!")
+'
+
+echo "Repacking app.asar..."
+sudo asar pack app-extracted app.asar
+sudo rm -rf app-extracted
+
+echo "Done! Rosé Pine Moon and Dawn patched successfully."

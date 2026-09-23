@@ -29,6 +29,7 @@ bindsym Mod1+Menu exec /home/ahloi/move_cursor.sh
 
 # start a terminal
 bindsym Mod1+Return exec alacritty msg create-window || exec alacritty
+
 # use hints
 exec for id in $(xinput list | grep "ydotool.*pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id 'libinput Accel Profile Enabled' 0, 1; done
 bindsym Mod1+i exec hints
@@ -138,11 +139,17 @@ exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 #exec xinput --disable "Wacom Intuos Pro S Finger"
 #exec xinput --disable "Wacom Intuos Pro S Pad"
 #exec xinput --disable "Wacom Intuos Pro S Pen Eraser (0x3780cc3a)"
-exec xinput set-prop 15 "Device Enabled" 0
-exec xinput set-prop 13 "Device Enabled" 0
+exec --no-startup-id warpd
+exec xinput set-prop 8 "Device Enabled" 0
+exec xinput set-prop 7 "Device Enabled" 0
 exec --no-startup-id feh --bg-fill ~/Pictures/Bicycle.jpg
 #exec --no-startup-id hsetroot -solid '#e0def4'
 #exec --no-startup-id unclutter
+
+# Start PipeWire audio stack after i3 session is live
+exec --no-startup-id pipewire
+exec --no-startup-id pipewire-pulse
+exec --no-startup-id wireplumber
 
 # xclip mpv
 bindsym Mod1+Shift+p exec /home/ahloi/youtube-watch.sh

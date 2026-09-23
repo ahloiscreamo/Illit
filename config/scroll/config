@@ -52,6 +52,8 @@ exec hintsd &
 exec_always sleep 3 && sudo modprobe -r wacom && sudo modprobe wacom
 exec alacritty --daemon
 exec_always ~/.local/bin/init-theme.sh
+exec udiskie --no-tray
+
 #
 # Example configuration:
 #
@@ -124,7 +126,7 @@ for_window [app_id="Alacritty"] border normal 4
 for_window [app_id="kitty"] border normal 4
 for_window [app_id="firefox"] border none
 for_window [app_id="ueberzugpp"] border none
-for_window [app_id="mpv"] border none, floating enable, move container to workspace number 4, workspace number 4
+for_window [app_id="mpv"] border none, floating enable, move container to workspace number 4
 for_window [app_id="org.telegram.desktop"] border none
 for_window [app_id="thunar"] border none
 for_window [class="krita"] border none
@@ -155,6 +157,7 @@ layout_heights [0.33333333 0.5 0.666666667 1.0]
 maximize_if_single true
 # workspace_next_on_output_create_empty true
 # xwayland_output_scale true
+focus_follows_mouse yes
 # focus_wrapping no
 # focus_on_window_activation focus
 # xdg_activation_force false
@@ -201,7 +204,7 @@ animations {
     # Start your launcher
     bindsym $mod+r exec $menu
     
-    bindsym $mod+e exec $filemanager
+    bindsym $mod+e exec thunar
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -789,6 +792,13 @@ bindsym $mod+Shift+q mode Mouse
 #
 bindsym Mod1+i exec fish -c 'hints -v'
 bindsym Mod1+o exec fish -c 'hints --mode scroll'
+
+#
+# Warpd
+#
+bindsym $mod+Mod1+x exec warpd --hint
+bindsym $mod+Mod1+c exec warpd --normal
+bindsym $mod+Mod1+g exec warpd --grid
 
 #
 # Native Sway Mouse Submode (Separate from wl-kbptr)

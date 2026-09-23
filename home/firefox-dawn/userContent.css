@@ -1,53 +1,88 @@
+/* Rosé Pine Dawn — universal user styles.
+   Broad SVG, border, input and table overrides are intentional.
+   Active Firefox userContent.css; original saved in userContent.css.bak. */
+@-moz-document regexp(".*") {
+  :root {
+    --rpd-user-base: #faf4ed !important;
+    --rpd-user-overlay: #f2e9e1 !important;
+    --rpd-user-text: #575279 !important;
+    --rpd-user-iris: #907aa9 !important;
+    --rpd-user-surface: #fffaf3 !important;
+    --rpd-user-border: #dfdad9 !important;
+    --rpd-user-pine: #286983 !important;
+    --rpd-user-gold: #ea9d34 !important;
+    --rpd-user-rose: #d7827e !important;
+    --rpd-user-foam: #56949f !important;
+    --rpd-user-muted: #9893a5 !important;
+    --rpd-user-subtle: #797593 !important;
+    --rpd-user-love: #b4637a !important;
+    --rpd-user-border-soft: rgba(87, 82, 121, 0.2) !important;
+    --rpd-user-focus: rgba(87, 82, 121, 0.4) !important;
+  }
+}
+
 /* === New Tab & Home === */
 @-moz-document url("about:newtab"),
                url("about:home") {
   :root[lwt-newtab-brighttext] {
-    --newtab-background-color: #faf4ed !important;
+    --newtab-background-color: var(--rpd-user-base) !important;
   }
 
   body {
-    --newtab-background-color-secondary: #f2e9e1 !important;
-    --newtab-text-primary-color: #575279 !important;
-    --newtab-primary-action-background-pocket: #907aa9 !important;
+    --newtab-background-color-secondary: var(--rpd-user-overlay) !important;
+    --newtab-text-primary-color: var(--rpd-user-text) !important;
+    --newtab-primary-action-background-pocket: var(--rpd-user-iris) !important;
   }
 }
 
 /* === DuckDuckGo background === */
 @-moz-document domain("duckduckgo.com") {
   html, body {
-    background-color: #faf4ed !important;
-    color: #575279 !important;
+    background-color: var(--rpd-user-base) !important;
+    color: var(--rpd-user-text) !important;
   }
 }
 
-/* === Force Nerd Font everywhere except icon elements === */
-@-moz-document regexp(".*") {
-  *:not([data-mat-icon-namespace]):not([class*="icon"]):not([class*="anthropic"]):not([class*="symbol"]):not([class*="material"]):not([class*="glyph"]):not([class*="fa"]):not([class*="feather"]):not([class*="lucide"]):not([class*="heroicon"]):not([class*="tabler"]):not([class*="phosphor"]):not([class*="remix"]):not([class*="codicon"]):not([class*="octicon"]):not([class*="icomoon"]):not([class*="ionicon"]):not([class*="anticon"]):not([class*="mdi"]):not([class*="svg-icon"]):not([class*="sprite"]):not([data-icon]):not([aria-label][role="img"]):not([role="img"]):not([style*="Anthropicons"]) {
-    font-family: "Maple Mono NF CN" !important;
+/* === Universal font, except Claude and likely icon elements === */
+/* Match the hostname rather than excluding URLs that merely mention Claude. */
+@-moz-document regexp("^(?![A-Za-z][A-Za-z0-9+.-]*://(?:[^/@]*@)?(?:[^/:?#]+\\.)*claude\\.ai(?::[0-9]+)?(?:[/?#]|$)).*$") {
+  /* Keep broad icon markers, but match Font Awesome class tokens precisely.
+     These exclusions apply to the element itself, not its descendants. */
+  *:not(
+    [data-mat-icon-namespace],
+    [data-icon],
+    [role="img"],
+    [class*="icon"],
+    [class*="anthropic"],
+    [class*="symbol"],
+    [class*="material"],
+    [class*="glyph"],
+    .fa, .fas, .far, .fal, .fat, .fad, .fab,
+    [class^="fa-"], [class*=" fa-"],
+    [class*="feather"],
+    [class*="lucide"],
+    [class*="tabler"],
+    [class*="phosphor"],
+    [class*="remix"],
+    [class*="mdi"],
+    [class*="sprite"],
+    [style*="Anthropicons"]
+  ) {
+    font-family: "Maple Mono NF CN", monospace !important;
   }
 }
 
-/* === Protect icon fonts from Nerd Font override === */
-@-moz-document regexp(".*") {
-  @font-face { font-family: "Font Awesome 5 Free";        src: local("Font Awesome 5 Free"); }
-  @font-face { font-family: "Font Awesome 5 Brands";      src: local("Font Awesome 5 Brands"); }
-  @font-face { font-family: "Font Awesome 6 Free";        src: local("Font Awesome 6 Free"); }
-  @font-face { font-family: "Font Awesome 6 Brands";      src: local("Font Awesome 6 Brands"); }
-  @font-face { font-family: "Material Icons";             src: local("Material Icons"); }
-  @font-face { font-family: "Material Symbols Outlined";  src: local("Material Symbols Outlined"); }
-  @font-face { font-family: "codicon";                    src: local("codicon"); }
-  @font-face { font-family: "icomoon";                    src: local("icomoon"); }
-}
-
-/* === Transparent images (checkerboard background) === */
-@-moz-document regexp(".*\\.(png|jpg|jpeg|gif|webp|svg)$") {
+/* === Image URLs: checkerboard for HTML image documents === */
+/* Query strings and uppercase extensions work; extensionless URLs are not detected.
+   Standalone SVG documents have no HTML body, so this rule does not style them. */
+@-moz-document regexp(".*\\.([pP][nN][gG]|[jJ][pP][eE]?[gG]|[gG][iI][fF]|[wW][eE][bB][pP]|[sS][vV][gG]|[aA][vV][iI][fF])([?#].*)?$") {
   body {
-    background-color: #faf4ed !important;
+    background-color: var(--rpd-user-base) !important;
     background-image:
-      linear-gradient(45deg, #f2e9e1 25%, transparent 25%),
-      linear-gradient(-45deg, #f2e9e1 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, #f2e9e1 75%),
-      linear-gradient(-45deg, transparent 75%, #f2e9e1 75%);
+      linear-gradient(45deg, var(--rpd-user-overlay) 25%, transparent 25%),
+      linear-gradient(-45deg, var(--rpd-user-overlay) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--rpd-user-overlay) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--rpd-user-overlay) 75%);
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
   }
@@ -56,44 +91,41 @@
 /* === Fix ugly border when using firefox default override color === */
 @-moz-document regexp(".*") {
   * {
-    border-color: rgba(87, 82, 121, 0.2) !important;
-    outline-color: rgba(87, 82, 121, 0.2) !important;
+    border-color: var(--rpd-user-border-soft) !important;
+    outline-color: var(--rpd-user-border-soft) !important;
   }
 
   *:focus-visible {
-    outline-color: rgba(87, 82, 121, 0.4) !important;
+    outline-color: var(--rpd-user-focus) !important;
   }
 
   svg {
-    color: #286983 !important;
-    fill: #286983 !important;
+    color: var(--rpd-user-pine) !important;
+    fill: var(--rpd-user-pine) !important;
   }
 
   /* === Input fields, search boxes === */
-  input, select,
+  input, select, textarea,
   [role="searchbox"],
-  [role="combobox"],
-  [type="search"],
-  [type="text"],
-  [type="email"],
-  [type="password"] {
-    background-color: #fffaf3 !important;
-    color: #575279 !important;
-    border-color: #dfdad9 !important;
+  [role="combobox"] {
+    background-color: var(--rpd-user-surface) !important;
+    color: var(--rpd-user-text) !important;
+    border-color: var(--rpd-user-border) !important;
   }
 
   /* === Tables, infoboxes === */
   table, tbody, thead, tr, td, th,
   .infobox, .wikitable,
   [class*="infobox"],
-  [class*="table"] {
-    background-color: #fffaf3 !important;
-    color: #575279 !important;
-    border-color: #dfdad9 !important;
+  .table, [class^="table-"], [class*=" table-"],
+  [class$="-table"], [class*="-table "] {
+    background-color: var(--rpd-user-surface) !important;
+    color: var(--rpd-user-text) !important;
+    border-color: var(--rpd-user-border) !important;
   }
 
   th {
-    background-color: #f2e9e1 !important;
+    background-color: var(--rpd-user-overlay) !important;
   }
 }
 
@@ -105,25 +137,23 @@
   /* --- Code block backgrounds --- */
   pre, code,
   .highlight, .blob-wrapper,
-  pre[class*="language-"],
-  code[class*="language-"],
   .hljs {
-    background-color: #faf4ed !important;
-    color: #575279 !important;
+    background-color: var(--rpd-user-base) !important;
+    color: var(--rpd-user-text) !important;
   }
   /* === GitHub (pl-*) === */
-  .pl-k                { color: #286983 !important; }  /* keyword - pine */
-  .pl-s, .pl-s1, .pl-pds { color: #ea9d34 !important; } /* string - gold */
-  .pl-en               { color: #d7827e !important; }  /* function - rose */
-  .pl-c1               { color: #ea9d34 !important; }  /* constant - gold */
-  .pl-smi              { color: #56949f !important; }  /* variable - foam */
-  .pl-c                { color: #9893a5 !important; font-style: italic; } /* comment - muted */
-  .pl-ent              { color: #56949f !important; }  /* tag - foam */
-  .pl-v                { color: #d7827e !important; }  /* variable - rose */
-  .pl-kos, .pl-c2      { color: #797593 !important; }  /* operator - subtle */
-  .pl-e                { color: #907aa9 !important; }  /* attribute - iris */
-  .pl-stj              { color: #56949f !important; }  /* type - foam */
-  .blob-num            { color: #9893a5 !important; }  /* line number - muted */
+  .pl-k                { color: var(--rpd-user-pine) !important; }  /* keyword - pine */
+  .pl-s, .pl-s1, .pl-pds { color: var(--rpd-user-gold) !important; } /* string - gold */
+  .pl-en               { color: var(--rpd-user-rose) !important; }  /* function - rose */
+  .pl-c1               { color: var(--rpd-user-gold) !important; }  /* constant - gold */
+  .pl-smi              { color: var(--rpd-user-foam) !important; }  /* variable - foam */
+  .pl-c                { color: var(--rpd-user-muted) !important; font-style: italic; } /* comment - muted */
+  .pl-ent              { color: var(--rpd-user-foam) !important; }  /* tag - foam */
+  .pl-v                { color: var(--rpd-user-rose) !important; }  /* variable - rose */
+  .pl-kos, .pl-c2      { color: var(--rpd-user-subtle) !important; }  /* operator - subtle */
+  .pl-e                { color: var(--rpd-user-iris) !important; }  /* attribute - iris */
+  .pl-stj              { color: var(--rpd-user-foam) !important; }  /* type - foam */
+  .blob-num            { color: var(--rpd-user-muted) !important; }  /* line number - muted */
   /* === GitHub UI text === */
   .Link--primary,
   .Link--secondary,
@@ -132,68 +162,68 @@
   .js-navigation-open,
   [class*="color-fg-accent"],
   [class*="fgColor-accent"] {
-    color: #286983 !important; /* pine */
+    color: var(--rpd-user-pine) !important; /* pine */
   }
   /* === highlight.js (hljs) === */
   .hljs-keyword,
   .hljs-selector-tag,
   .hljs-built_in,
-  .hljs-tag .hljs-name  { color: #286983 !important; }  /* pine */
+  .hljs-tag .hljs-name  { color: var(--rpd-user-pine) !important; }  /* pine */
   .hljs-string,
   .hljs-template-string,
   .hljs-template-variable,
-  .hljs-attr            { color: #ea9d34 !important; }  /* gold */
-  .hljs-title,
-  .hljs-title.function_ { color: #d7827e !important; }  /* rose */
+  .hljs-attr            { color: var(--rpd-user-gold) !important; }  /* gold */
+  .hljs-title { color: var(--rpd-user-rose) !important; }  /* rose */
   .hljs-number,
-  .hljs-literal         { color: #ea9d34 !important; }  /* gold */
+  .hljs-literal         { color: var(--rpd-user-gold) !important; }  /* gold */
   .hljs-type,
   .hljs-class,
-  .hljs-title.class_    { color: #56949f !important; }  /* foam */
+  .hljs-title.class_    { color: var(--rpd-user-foam) !important; }  /* foam */
   .hljs-comment,
-  .hljs-quote           { color: #9893a5 !important; font-style: italic; } /* muted */
+  .hljs-quote           { color: var(--rpd-user-muted) !important; font-style: italic; } /* muted */
   .hljs-variable,
-  .hljs-params          { color: #d7827e !important; }  /* rose */
+  .hljs-params          { color: var(--rpd-user-rose) !important; }  /* rose */
   .hljs-operator,
-  .hljs-punctuation     { color: #797593 !important; }  /* subtle */
+  .hljs-punctuation     { color: var(--rpd-user-subtle) !important; }  /* subtle */
   .hljs-decorator,
   .hljs-meta,
-  .hljs-doctag          { color: #907aa9 !important; }  /* iris */
+  .hljs-doctag          { color: var(--rpd-user-iris) !important; }  /* iris */
   .hljs-property,
   .hljs-selector-class,
-  .hljs-selector-id     { color: #56949f !important; }  /* foam */
-  .hljs-regexp          { color: #b4637a !important; }  /* love */
+  .hljs-selector-id     { color: var(--rpd-user-foam) !important; }  /* foam */
+  .hljs-regexp          { color: var(--rpd-user-love) !important; }  /* love */
   .hljs-symbol,
-  .hljs-bullet          { color: #d7827e !important; }  /* rose */
+  .hljs-bullet          { color: var(--rpd-user-rose) !important; }  /* rose */
   /* === Prism.js (token) === */
-  .token.keyword        { color: #286983 !important; }  /* pine */
+  .token.keyword        { color: var(--rpd-user-pine) !important; }  /* pine */
   .token.string,
-  .token.char           { color: #ea9d34 !important; }  /* gold */
-  .token.function       { color: #d7827e !important; }  /* rose */
+  .token.char           { color: var(--rpd-user-gold) !important; }  /* gold */
+  .token.function       { color: var(--rpd-user-rose) !important; }  /* rose */
   .token.number,
-  .token.boolean        { color: #ea9d34 !important; }  /* gold */
+  .token.boolean        { color: var(--rpd-user-gold) !important; }  /* gold */
   .token.class-name,
-  .token.builtin        { color: #56949f !important; }  /* foam */
+  .token.builtin        { color: var(--rpd-user-foam) !important; }  /* foam */
   .token.comment,
   .token.prolog,
-  .token.doctype        { color: #9893a5 !important; font-style: italic; } /* muted */
-  .token.variable       { color: #d7827e !important; }  /* rose */
+  .token.doctype        { color: var(--rpd-user-muted) !important; font-style: italic; } /* muted */
+  .token.variable       { color: var(--rpd-user-rose) !important; }  /* rose */
   .token.operator,
-  .token.punctuation    { color: #797593 !important; }  /* subtle */
+  .token.punctuation    { color: var(--rpd-user-subtle) !important; }  /* subtle */
   .token.decorator,
   .token.annotation,
-  .token.attr-name      { color: #907aa9 !important; }  /* iris */
-  .token.tag            { color: #56949f !important; }  /* foam */
-  .token.regex          { color: #b4637a !important; }  /* love */
-  .token.symbol         { color: #d7827e !important; }  /* rose */
-  .token.namespace      { color: #56949f !important; }  /* foam */
-  .token.selector       { color: #907aa9 !important; }  /* iris */
-  .token.property       { color: #56949f !important; }  /* foam */
-  .token.important      { color: #b4637a !important; }  /* love */
+  .token.attr-name      { color: var(--rpd-user-iris) !important; }  /* iris */
+  .token.tag            { color: var(--rpd-user-foam) !important; }  /* foam */
+  .token.regex          { color: var(--rpd-user-love) !important; }  /* love */
+  .token.symbol         { color: var(--rpd-user-rose) !important; }  /* rose */
+  .token.namespace      { color: var(--rpd-user-foam) !important; }  /* foam */
+  .token.selector       { color: var(--rpd-user-iris) !important; }  /* iris */
+  .token.property       { color: var(--rpd-user-foam) !important; }  /* foam */
+  .token.important      { color: var(--rpd-user-love) !important; }  /* love */
 }
 
 @-moz-document domain("github.com") {
-  a { color: #ea9d34 !important; }
-  a:visited { color: #907aa9 !important; }
-  a:hover { color: #56949f !important; }
+  /* :any-link matches the specificity of .markdown-body a; this later rule wins. */
+  a:any-link { color: var(--rpd-user-gold) !important; }
+  a:any-link:visited { color: var(--rpd-user-iris) !important; }
+  a:any-link:hover { color: var(--rpd-user-foam) !important; }
 }
