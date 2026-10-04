@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Scroll (dbus)
+Comment=Scroll under a single D-Bus session
+Exec=dbus-run-session scroll
+Type=Application
+DesktopNames=scroll;wlroots

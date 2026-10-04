@@ -1,3 +1,5 @@
+@namespace xul url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
 /* === Font === */
 * {
   font-family: "Maple Mono NF CN" !important;
@@ -71,19 +73,28 @@
 
 /* === Tabs === */
 .tabbrowser-tab[selected] .tab-background {
-  background-color: #f2e9e1 !important;
+  background-color: #faf4ed !important;
 }
 
 .tabbrowser-tab:not([selected]) .tab-background {
-  background-color: #faf4ed !important;
+  background-color: #f2e9e1 !important;
 }
 
 .tab-label {
   color: #575279 !important;
 }
 
-:root[lwtheme] {
-  --tab-selected-outline-color: transparent !important;
+:root {
+  --tab-selected-outline-color: #dfdad9 !important;
+}
+
+/* === Selected vertical tab outline === */
+#tabbrowser-tabs[orient="vertical"]
+.tabbrowser-tab[selected] .tab-background {
+  outline: 1px solid #dfdad9 !important;
+  outline-offset: -1px !important;
+  border-color: #dfdad9 !important;
+  box-shadow: none !important;
 }
 
 /* === Library window === */
@@ -129,7 +140,6 @@ richlistitem[selected="true"] {
 }
 
 /* === Page load background === */
-@namespace xul url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 browser,
 #tabbrowser-tabpanels,
 .browserStack,
@@ -167,4 +177,16 @@ menu:not([disabled]):hover {
 
 menuseparator {
   --panel-separator-color: #dfdad9 !important;
+}
+
+/* === Keep vertical tab outlines consistent during switching === */
+#tabbrowser-tabs[orient="vertical"] {
+  --tab-selected-outline-color: #dfdad9 !important;
+  --tab-hover-outline-color: #dfdad9 !important;
+  --focus-outline-color: #dfdad9 !important;
+}
+
+#tabbrowser-tabs[orient="vertical"] .tab-background {
+  outline-color: #dfdad9 !important;
+  border-color: #dfdad9 !important;
 }

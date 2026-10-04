@@ -1,3 +1,13 @@
+/* === Fix page load background (replace default #2b2a33) === */
+@namespace xul url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+browser,
+#tabbrowser-tabpanels,
+.browserStack,
+.browserContainer {
+  background-color: #232136 !important;  /* Rose Pine Moon */
+}
+
 /* === Font === */
 * {
    font-family: "Maple Mono NF CN" !important;
@@ -28,18 +38,28 @@
 }
 
 /* === Tab styling === */
-:root[lwtheme] {
-  --tab-selected-outline-color: transparent !important;
+:root {
+  --tab-selected-outline-color: #393552 !important;
 }
 
-/* === Fix page load background (replace default #2b2a33) === */
-@namespace xul url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+#tabbrowser-tabs[orient="vertical"]
+.tabbrowser-tab[selected] .tab-background {
+  outline: 1px solid #393552 !important;
+  outline-offset: -1px !important;
+  border-color: #393552 !important;
+  box-shadow: none !important;
+}
 
-browser,
-#tabbrowser-tabpanels,
-.browserStack,
-.browserContainer {
-  background-color: #232136 !important;  /* Rose Pine Moon */
+/* Keep vertical tab outlines consistent during switching */
+#tabbrowser-tabs[orient="vertical"] {
+  --tab-selected-outline-color: #393552 !important;
+  --tab-hover-outline-color: #393552 !important;
+  --focus-outline-color: #393552 !important;
+}
+
+#tabbrowser-tabs[orient="vertical"] .tab-background {
+  outline-color: #393552 !important;
+  border-color: #393552 !important;
 }
 
 /* === Kill Firefox’s extra vertical tab splitter border === */
