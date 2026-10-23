@@ -1,0 +1,3 @@
+#fievel permission
+sudo groupadd --system --force fievel
+sudo usermod -aG input,fievel (id -un)

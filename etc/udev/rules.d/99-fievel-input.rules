@@ -1,0 +1,1 @@
+KERNEL=="uinput", GROUP="fievel", MODE:="0660"

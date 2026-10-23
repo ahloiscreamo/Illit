@@ -37,7 +37,7 @@ seat seat0 xcursor_theme BreezeX-RosePine-Linux 24
 
 # Custom scripts 
 bindsym $mod+Shift+p exec yt-mpv-wayland.sh
-bindsym $mod+space exec killall -SIGUSR1 waybar
+bindsym $mod+v exec killall -SIGUSR1 waybar
 
 # Startup
 exec dbus-update-activation-environment --all
@@ -53,6 +53,7 @@ exec_always sleep 3 && sudo modprobe -r wacom && sudo modprobe wacom
 exec alacritty --daemon
 exec_always ~/.local/bin/init-theme.sh
 exec udiskie --no-tray
+exec ~/.local/bin/fievel
 
 #
 # Example configuration:
@@ -761,6 +762,8 @@ mode Mouse {
     bindsym a mode default, exec 'wl-kbptr-scroll-active-win; scrollmsg mode Mouse'
     # Shift+a: Search full screen, then return to Mouse submap
     bindsym Shift+a mode default, exec 'wl-kbptr; scrollmsg mode Mouse'
+    # g: Floating mode (Vimium-style detected targets) in active window, then return to Mouse submap
+    bindsym g mode default, exec 'wl-kbptr-scroll-active-win -o modes=floating,click -o mode_floating.source=detect; scrollmsg mode Mouse'
 
     # Mouse movement controls
     bindsym h seat seat0 cursor move -15 0
@@ -786,6 +789,8 @@ mode Mouse {
 bindsym $mod+q exec wl-kbptr-scroll-active-win
 # Press $mod+Shift+q to enter the interactive Mouse submode
 bindsym $mod+Shift+q mode Mouse
+# Press $mod+Shift+g for Vimium-style floating mode in the active window
+bindsym $mod+Shift+g exec wl-kbptr-scroll-active-win -o modes=floating','click -o mode_floating.source=detect
 
 #
 # Hints
@@ -823,14 +828,19 @@ mode "NativeMouse" {
     bindsym Ctrl+l seat seat0 cursor move 1 0
 
     # Clicks
-    bindsym s seat seat0 cursor press button1
-    bindsym --release s seat seat0 cursor release button1
+    bindsym s exec wlrctl pointer click left
+    bindsym d exec wlrctl pointer click middle
+    bindsym f exec wlrctl pointer click right
 
-    bindsym d seat seat0 cursor press button2
-    bindsym --release d seat seat0 cursor release button2
+    # Click and hold (for dragging)
+    bindsym Shift+s seat seat0 cursor press button1
+    bindsym --release Shift+s seat seat0 cursor release button1
 
-    bindsym f seat seat0 cursor press button3
-    bindsym --release f seat seat0 cursor release button3
+    bindsym Shift+d seat seat0 cursor press button2
+    bindsym --release Shift+d seat seat0 cursor release button2
+
+    bindsym Shift+f seat seat0 cursor press button3
+    bindsym --release Shift+f seat seat0 cursor release button3
 
     # Center cursor 
     bindsym m exec scrollmsg seat seat0 cursor set 960 540

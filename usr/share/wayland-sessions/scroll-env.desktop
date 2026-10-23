@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Scroll (env)
+Comment=Scroll with Wayland env preloaded
+Exec=/home/ahloi/.local/bin/scroll-session
+Type=Application
+DesktopNames=scroll;wlroots
