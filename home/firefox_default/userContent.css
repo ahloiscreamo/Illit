@@ -227,3 +227,20 @@
   .token.property       { color: var(--rpm-user-foam) !important; }  /* foam */
   .token.important      { color: var(--rpm-user-love) !important; }  /* love */
 }
+
+/* ================================================
+   Tridactyl hint labels
+   13px, Moon base text, gold background
+   ================================================ */
+@-moz-document regexp(".*") {
+  span.TridactylHint {
+    forced-color-adjust: none !important;
+    font-size: 13px !important;
+    color: #232136 !important;
+    background: #f6c177 !important;
+  }
+
+  span.TridactylHintCharPressed {
+    color: #232136 !important;
+  }
+}

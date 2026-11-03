@@ -54,6 +54,7 @@ exec alacritty --daemon
 exec_always ~/.local/bin/init-theme.sh
 exec udiskie --no-tray
 exec ~/.local/bin/fievel
+exec ~/.local/bin/pip-autoresize.py
 
 #
 # Example configuration:
@@ -137,6 +138,7 @@ for_window [app_id="swayimg"] border none
 for_window [app_id="org.gnome.gThumb"] border none
 for_window [app_id="org.gnome.FileRoller"] border none
 for_window [app_id="xdg-desktop-portal-gtk"] border none
+for_window [title="Picture in picture"] floating enable
 
 # Idle inhibit for fullscreen windows
 for_window [all] inhibit_idle fullscreen
@@ -233,6 +235,10 @@ animations {
     bindsym $mod+$down focus down
     bindsym $mod+$up focus up
     bindsym $mod+$right focus right
+    bindsym $mod+Left focus left
+    bindsym $mod+Down focus down
+    bindsym $mod+Up focus up
+    bindsym $mod+Right focus right
     bindsym $mod+home focus beginning
     bindsym $mod+end focus end
     # Move the focused window with the same, but add Ctrl
@@ -487,16 +493,16 @@ bindsym $mod+backslash mode "modifiers"
 
 # focus_ring_length 0
 
-# mode "focus_ring" {
-#     bindsym bracketleft focus_ring prev
-#     bindsym bracketright focus_ring next
-#     bindsym Return focus_ring set
-#     bindsym Home focus_ring first
-#     bindsym End focus_ring last
-#
-#     bindsym Escape mode "default"
-# }
-# bindsym $mod+bracketleft mode "focus_ring"
+mode "focus_ring" {
+    bindsym bracketleft focus_ring prev
+    bindsym bracketright focus_ring next
+    bindsym Return focus_ring set
+    bindsym Home focus_ring first
+    bindsym End focus_ring last
+
+    bindsym Escape mode "default"
+}
+bindsym $mod+grave mode "focus_ring"
 
 bindsym $mod+Shift+bracketleft focus_ring prev
 bindsym $mod+Shift+bracketright focus_ring next

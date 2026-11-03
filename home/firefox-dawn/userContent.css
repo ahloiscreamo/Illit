@@ -227,3 +227,20 @@
   a:any-link:visited { color: var(--rpd-user-iris) !important; }
   a:any-link:hover { color: var(--rpd-user-foam) !important; }
 }
+
+/* ================================================
+   Tridactyl hint labels — Rosé Pine Dawn
+   13px, Dawn base text, pine background
+   ================================================ */
+@-moz-document regexp(".*") {
+  span.TridactylHint {
+    forced-color-adjust: none !important;
+    font-size: 13px !important;
+    color: #faf4ed !important;
+    background: #286983 !important;
+  }
+
+  span.TridactylHintCharPressed {
+    color: #faf4ed !important;
+  }
+}
