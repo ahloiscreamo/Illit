@@ -33,7 +33,7 @@ set $menu rofi -show drun
 #output * bg /home/ahloi/Pictures/Bicycle.jpg fill
 
 # Default cursor
-seat seat0 xcursor_theme BreezeX-RosePine-Linux 24
+seat seat0 xcursor_theme BreezeX-RosePineDawn-Linux 24
 
 # Custom scripts 
 bindsym $mod+Shift+p exec yt-mpv-wayland.sh
@@ -158,6 +158,7 @@ layout_heights [0.33333333 0.5 0.666666667 1.0]
 # fullscreen_movefocus true nofollow
 # fullscreen_on_request default
 maximize_if_single true
+workspace_switch_wrapping yes
 # workspace_next_on_output_create_empty true
 # xwayland_output_scale true
 focus_follows_mouse yes
@@ -481,6 +482,8 @@ mode "modifiers" {
     bindsym w set_mode fitfraction; mode default
     bindsym Shift+w set_mode fitsplit; mode default
     bindsym Ctrl+w set_mode nofit; mode default
+    bindsym f set_mode floating; mode default
+    bindsym Shift+f set_mode nofloating; mode default
 
     # Return to default mode
     bindsym Escape mode "default"
@@ -492,6 +495,7 @@ bindsym $mod+backslash mode "modifiers"
 #
 
 # focus_ring_length 0
+focus_ring_wrap true
 
 mode "focus_ring" {
     bindsym bracketleft focus_ring prev

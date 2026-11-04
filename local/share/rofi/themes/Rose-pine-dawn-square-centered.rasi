@@ -29,6 +29,7 @@ configuration {
   }
 }
 * {
+
   border: 0;
   margin: 0;
   padding: 0;
@@ -37,7 +38,7 @@ configuration {
   fg: #575279;
   blue: #d7827e;
   purple: #ea9d34;
-  green: #d7827e;
+  green: #3e8fb0;
   background-color: @bg;
   text-color: @fg;
 }
@@ -57,7 +58,7 @@ mainbox {
   children: [inputbar, listview];
 }
 inputbar {
-  background-color: @blue;
+  background-color: @green;
   border-radius: 6px 6px 0 0;
   children: [prompt, entry];
 }
@@ -104,5 +105,6 @@ element-text {
   background-color: inherit;
 }
 element-text selected {
-  text-color: @purple;
+  text-color: #3e8fb0;
+  background-color: inherit;
 }

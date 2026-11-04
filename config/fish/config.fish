@@ -17,7 +17,7 @@ end
 
 export NNN_FIFO="/tmp/nnn.fifo"
 export NNN_PREVIEW="/tmp/nnn-preview-tui-fifopid."
-#set -gx NNN_VIDEPREVIEW 1 #Disable line for static video preview
+set -gx NNN_VIDEPREVIEW 1 #Disable line for static video preview
 
 # Smart Kitty Detection for NNN Previews
 if test "$TERM" = "xterm-kitty" -o -n "$KITTY_WINDOW_ID"
@@ -43,7 +43,7 @@ export NNN_PLUG='a:addtoplaylist;j:autojump;p:preview-tui;l:launch;r:renamer;o:f
 set -gx CLIFM_PROMPT_P_MAX_PATH "40"
 
 # Github-Cli
-set -gx GLAMOUR_STYLE ".config/glamour/rose-pine.json"
+set -gx GLAMOUR_STYLE "$HOME/.config/glamour/rose-pine.json"
 
 # Editor (Kept your original export as well for maximum compatibility, but using set -gx for the others)
 set -gx EDITOR "vim"
@@ -108,7 +108,7 @@ alias cal="cmus-auto-lyrics -a -s "L3fR9dfGNk41wog1uHpHeF8-JCh1HTz48SLi4B0LpaCen
 alias chafa="chafa --stretch none"
 alias fex "fex --time-type modified"
 alias nnn="nnn -c -r -e -x -D"
-alias icat="kitty +kitten icat"
+#alias icat="kitty +kitten icat"
 alias record='wf-recorder -f ~/Videos/recording-(date +%Y%m%d-%H%M%S).mp4 -c libx264 -r 60 -x yuv420p --filter "scale=out_color_matrix=bt709:out_range=full" -p color_range=jpeg -p colorspace=bt709 -p color_trc=iec61966-2-1 -p color_primaries=bt709'
 alias record-window='wf-recorder -f ~/Videos/recording-$(date +%Y%m%d-%H%M%S).mp4 -c libx264 -r 60 -x yuv420p --filter "scale=out_color_matrix=bt709:out_range=full" -p color_range=jpeg -p colorspace=bt709 -p color_trc=iec61966-2-1 -p color_primaries=bt709 -g "$(slurp)"'
 alias kitty="kitty --single-instance"
