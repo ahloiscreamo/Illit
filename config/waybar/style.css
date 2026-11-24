@@ -6,113 +6,147 @@
     border-radius: 0;
     min-height: 0;
 }
+
 window#waybar {
-    background-color: alpha(#faf4ed, 0.99);
-    color: #575279;
+    background-color: alpha(#232136, 0.99);
+    color: #c8c8e5;
 }
+
 #workspaces {
-    background-color: #907aa9;
+    background-color: #393552;
     border-radius: 12px;
     margin: 4px 10px 4px 10px;
     padding: 0 6px;
 }
+
 #workspaces button {
-    color: #dfdad9;
+    color: #908caa;
     padding: 0 4px;
     background: transparent;
     border-radius: 12px;
 }
+
 #workspaces button.focused,
 #workspaces button.active {
-    color: #faf4ed;
-    background-color: #907aa9;
+    color: #c8c8e5;
+    background-color: #393552;
     font-weight: bold;
 }
+
 #workspaces button:hover {
     background: rgba(0,0,0,0.1);
 }
+
 #window {
-    background-color: #f2e9e1;
-    color: #575279;
+    background-color: #44415a;
+    color: #c8c8e5;
     border-radius: 12px;
     margin: 6px 4px;
     padding: 0 10px;
 }
+
 #mode {
-    background-color: #f2e9e1;
-    color: #b4637a;
+    background-color: #44415a;
+    color: #eb6f92;
     border-radius: 12px;
     margin: 6px 4px;
     padding: 0 10px;
 }
+
 #custom-cmus {
-    background-color: #f2e9e1;
-    color: #575279;
+    background-color: #44415a;
+    color: #c8c8e5;
     border-radius: 12px;
     margin: 6px 4px;
     padding: 0 10px;
 }
+
 #custom-mpd-prev,
 #custom-mpd-toggle,
 #custom-mpd-next {
-    background-color: #f2e9e1;
-    color: #b4637a;
+    background-color: #44415a;
+    color: #eb6f92;
     border-radius: 12px;
     margin: 6px 2px;
     padding: 0 10px;
 }
 #custom-mpd-title {
-    background-color: #f2e9e1;
-    color: #575279;
+    background-color: #44415a;
+    color: #c8c8e5;
     border-radius: 12px;
     margin: 6px 2px;
     padding: 0 10px;
 }
+
 #pulseaudio {
-    background-color: #f2e9e1;
-    color: #575279;
+    background-color: #44415a;
+    color: #c8c8e5;
     border-radius: 12px;
     margin: 6px 2px;
     padding: 0 10px;
 }
+
 #pulseaudio.muted {
-    color: #b4637a;
+    color: #eb6f92;
 }
+
 #temperature {
-    background-color: #f2e9e1;
-    color: #575279;
+    background-color: #44415a;
+    color: #c8c8e5;
     border-radius: 12px;
     margin: 6px 2px;
     padding: 0 10px;
 }
+
 #temperature.critical {
-    color: #b4637a;
+    color: #eb6f92;
 }
+
 #cpu {
-    background-color: #f2e9e1;
-    color: #575279;
+    background-color: #44415a;
+    color: #c8c8e5;
     border-radius: 12px;
     margin: 6px 2px;
     padding: 0 10px;
 }
+
 #memory {
-    background-color: #f2e9e1;
-    color: #575279;
+    background-color: #44415a;
+    color: #c8c8e5;
     border-radius: 12px;
     margin: 6px 2px;
     padding: 0 10px;
 }
+
 #clock {
-    background-color: #f2e9e1;
-    color: #575279;
+    background-color: #44415a;
+    color: #c8c8e5;
     border-radius: 12px;
     margin: 6px 2px;
     padding: 0 10px;
 }
+
 #custom-powermenu {
-    background-color: #f2e9e1;
-    color: #b4637a;
+    background-color: #44415a;
+    color: #eb6f92;
     border-radius: 12px;
     margin: 6px 10px 6px 10px;
     padding: 0 10px;
+}
+
+/* NIGHT MODE OVERRIDES */
+#window,
+#mode,
+#custom-cmus,
+#custom-mpd-prev,
+#custom-mpd-toggle,
+#custom-mpd-next,
+#custom-mpd-title,
+#pulseaudio,
+#temperature,
+#cpu,
+#memory,
+#clock,
+#custom-powermenu {
+    background-color: #232136;
 }

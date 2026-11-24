@@ -33,7 +33,7 @@ set $menu rofi -show drun
 #output * bg /home/ahloi/Pictures/Bicycle.jpg fill
 
 # Default cursor
-seat seat0 xcursor_theme BreezeX-RosePineDawn-Linux 24
+seat seat0 xcursor_theme BreezeX-RosePine-Linux 24
 
 # Custom scripts 
 bindsym $mod+Shift+p exec yt-mpv-wayland.sh
@@ -140,6 +140,11 @@ for_window [app_id="org.gnome.FileRoller"] border none
 for_window [app_id="xdg-desktop-portal-gtk"] border none
 for_window [title="Picture in picture"] floating enable
 
+# Force GTK 4 apps to bypass server decoration radius clipping and borders
+for_window [app_id="org.gnome.gThumb"] border none, decoration no
+for_window [app_id="app.eyedropper.Eyedropper"] border none, decoration no
+for_window [app_id="org.gnome.*"] border none, decoration no
+
 # Idle inhibit for fullscreen windows
 for_window [all] inhibit_idle fullscreen
 
@@ -174,20 +179,24 @@ focus_follows_mouse yes
 # snap_border_overlap false
 # center_horizontal_if_fits true
 # center_vertical_if_fits true
+gesture_scroll_friction 0
 
 # Animations
 animations {
     enabled yes 
+    crossfade yes
     default yes 300 var 3 [ 0.215 0.61 0.355 1 ]
     window_open yes 300 var 3 [ 0 0 1 1 ]
     window_move yes 300 var 3 [ 0.215 0.61 0.355 1 ] off 0.05 6 [0 0.6 0.4 0 1 0 0.4 -0.6 1 -0.6]
-    window_size yes 300 var 3 [ -0.35 0 0 0.5 ]
+    window_size yes spring 500 1
+    # window_size yes 300 var 3 [ -0.35 0 0 0.5 ]
     workspace_switch yes 500 var simple [ 0.215 0.61 0.355 1 ]
     window_fullscreen yes 500 var simple [ 0.3 0.5 0.4 1 ]
     jump yes 500 var simple [ 0.215 0.61 0.355 1 ]
     layer_shell yes 300 var 3 [ 0 0 1 1 ]
     fade_in yes 300 var simple [ 0.32 0 0.67 0 ]
     fade_out yes 300 var simple [ 0.33 1 0.68 1 ]
+    gesture yes decay 8
     # You can also define curves for the following events
     # window_move_float
     # overview
@@ -322,24 +331,25 @@ animations {
     bindsym $mod+Page_Up workspace prev_on_output
     bindsym $mod+Page_Down workspace next_on_output
 
-    # Split a workspace in two
-mode "wssplit" {
-    bindsym 1 workspace split v 0.25 10; mode default
-    bindsym Shift+1 workspace split h 0.25 10; mode default
-    bindsym 2 workspace split v 0.333333333 10; mode default
-    bindsym Shift+2 workspace split h 0.333333333 10; mode default
-    bindsym 3 workspace split v 0.5 10; mode default
-    bindsym Shift+3 workspace split h 0.5 10; mode default
-    bindsym 4 workspace split v 0.66666667 10; mode default
-    bindsym Shift+4 workspace split h 0.6666667 10; mode default
-    bindsym 5 workspace split v 0.75 10; mode default
-    bindsym Shift+5 workspace split h 0.75 10; mode default
-    bindsym r workspace split reset; mode default;
+    # Split a virtual output in two
+mode "vosplit" {
+    bindsym 1 virtual_output split v 0.25 10; mode default
+    bindsym Shift+1 virtual_output split h 0.25 10; mode default
+    bindsym 2 virtual_output split v 0.333333333 10; mode default
+    bindsym Shift+2 virtual_output split h 0.333333333 10; mode default
+    bindsym 3 virtual_output split v 0.5 10; mode default
+    bindsym Shift+3 virtual_output split h 0.5 10; mode default
+    bindsym 4 virtual_output split v 0.66666667 10; mode default
+    bindsym Shift+4 virtual_output split h 0.6666667 10; mode default
+    bindsym 5 virtual_output split v 0.75 10; mode default
+    bindsym Shift+5 virtual_output split h 0.75 10; mode default
+    bindsym r virtual_output split reset; mode default;
+    bindsym t virtual_output toggle; mode default;
 
     # Return to default mode
     bindsym Escape mode "default"
 }
-bindsym $mod+Shift+backslash mode "wssplit"
+bindsym $mod+Shift+backslash mode "vosplit"
 
 # Scaling
     # Workspace

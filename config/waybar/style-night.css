@@ -13,14 +13,14 @@ window#waybar {
 }
 
 #workspaces {
-    background-color: #c4a7e7;
+    background-color: #393552;
     border-radius: 12px;
     margin: 4px 10px 4px 10px;
     padding: 0 6px;
 }
 
 #workspaces button {
-    color: #44415a;
+    color: #908caa;
     padding: 0 4px;
     background: transparent;
     border-radius: 12px;
@@ -28,8 +28,8 @@ window#waybar {
 
 #workspaces button.focused,
 #workspaces button.active {
-    color: #232136;
-    background-color: #c4a7e7;
+    color: #c8c8e5;
+    background-color: #393552;
     font-weight: bold;
 }
 

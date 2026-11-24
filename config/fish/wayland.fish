@@ -23,9 +23,6 @@ set -gx QT_SCALE_FACTOR_ROUNDING_POLICY RoundPreferFloor
 # Ueberzug
 set -gx UEBERZUG_LAYER_BACKEND wayland
 
-# Gtk theme
-set -gx GTK_THEME "Rosepine-Red-Dark-Moon"
-
 # Ueberzugpp Wayland config
 echo '{
   "layer": {
