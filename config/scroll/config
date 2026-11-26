@@ -26,6 +26,7 @@ set $term kitty --single-instance
 #set $term alacritty msg create-window
 # Your preferred application launcher
 set $menu rofi -show drun
+set $dmenu bemenu-run
 
 ### Output configuration
 #
@@ -216,6 +217,7 @@ animations {
 
     # Start your launcher
     bindsym $mod+r exec $menu
+    bindsym $mod+Shift+d exec $dmenu
     
     bindsym $mod+e exec thunar
 
