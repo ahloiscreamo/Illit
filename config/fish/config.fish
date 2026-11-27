@@ -89,9 +89,6 @@ set -gx FFF_COL3 3
 set -gx FFF_COL4 1
 set -gx FFF_COL5 0
 
-# Gemini API
-set -gx GEMINI_API_KEY "AIzaSyBdgtnEh_SI_9Dnkre3zLaPAuq162-Dal0"
-
 # === PATH Modifications (use fish_add_path) ===
 
 # Npm, Pipx, and Cargo are now added safely and idempotently, removing colon-separated PATH commands
