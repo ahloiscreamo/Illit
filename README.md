@@ -1,46 +1,97 @@
-# 🌸 Illit Dotfiles 
-### i3wm | Rosé Pine
+# Ahloi Dotfiles
 
-My personal dotfiles for **Artix Linux**, configured with **i3wm** and featuring the comfortable **Rosé Pine** color scheme across all applications since December 2022. 
----
+My personal dotfiles for Artix Linux with runit, ScrollWM on Wayland, and i3wm on X11.
 
-## 💻 Screenshots
+## Boot and desktop
 
-### Desktop View (nnn & Music)
+```text
+Limine (bootloader)
+└── Artix Linux (runit)
+    └── Ly (login)
+        ├── ScrollWM / Wayland (default)
+        └── i3wm / X11
+```
 
-<img width="1920" height="1080" alt="Screenshot from 2025-10-27 21-50-31" src="https://github.com/user-attachments/assets/37206c1c-8b7c-4f50-a0d7-133dfae3a418" />
+| Desktop component | Wayland | X11 |
+| --- | --- | --- |
+| Status bar | Waybar | Polybar |
+| Image viewer | Swayimg, imv | nsxiv, feh |
+| GTK appearance | nwg-look | LXAppearance |
+| Input automation | ydotool | xdotool |
 
-* **Color Scheme:** Rosé Pine
-* **File Manager:** [nnn](https://github.com/jarun/nnn) (Terminal File Manager)
-* **Music Player:** [ncmpcpp](https://github.com/ncmpcpp/ncmpcpp)
-* **Visualizers:** [kunst](https://github.com/sdushantha/kunst) & [cava](https://github.com/karlstav/cava)
+## Daily programs
 
----
+| Role | First choice | Alternatives |
+| --- | --- | --- |
+| Launcher | Rofi | bemenu, fsel |
+| Terminal | kitty + `kitty_grab` | Alacritty + tmux |
+| File manager | nnn + `nuke` + `preview-tui` | Yazi, CliFM, Thunar |
+| Web browser | Firefox + Tridactyl | Chawan, w3m |
+| Local music | FMPC | cmus, MPD + ncmpcpp, nnn + MOC |
+| Online video | `keroro-search` | Ytsurf, FreeTube |
+| Anime | ani-cli | Curd, GoAnime |
+| Music streaming | Spotify + Spicetify | Cliamp, YTM |
+| Podcasts | Podliner + `pod-search` | — |
 
-### Terminal File Manager (yazi & cmus)
+## Media and reading
 
-<img width="1920" height="1080" alt="Screenshot from 2025-10-27 22-23-35" src="https://github.com/user-attachments/assets/753f4880-0821-444e-b333-e0584d7a9959" />
+| Role | Tools |
+| --- | --- |
+| Video playback | mpv, ffplay |
+| Media processing | FFmpeg |
+| Photo browsing | gThumb |
+| Audio mixing | alsamixer, Wiremix, pwvucontrol |
+| Audio tagging | Kid3 |
+| Screenshots | grim |
+| Screen recording | wf-recorder |
+| Screen region selection | slurp |
+| E-books | Lue, epy |
+| PDFs and comics | Zathura + `zathura-cb` |
+| Digital art | Krita, Inkscape |
 
-* **File Manager:** [yazi](https://yazi-rs.github.io/) (Blazing fast terminal file manager written in Rust)
-* **Music Player:** [cmus](https://cmus.github.io/) (C* Music Player)
-* **Cover Art:** [cmusCoversSDL](https://github.com/ideal-fire/cmusCoversSDL)
+## Editing and online tools
 
----
+| Role | Tools |
+| --- | --- |
+| Text editing | Vim, vi, gVim |
+| Coding agents | Codex CLI, Antigravity (`agy`) |
+| Note-taking | Notes |
+| Typing practice | TypeRacer |
+| Messaging | Telegram |
+| Internet Archive search | `ia-search` |
+| Hacker News | Clx |
+| Gemini browsing | Amfora, Chawan |
+| Downloads and peer-to-peer | yt-dlp, gallery-dl, qBittorrent, Nicotine+ |
+| File transfer | LocalSend, ADB |
+| Android screen mirroring and control | scrcpy |
 
-### Terminal YouTube Client (magic-tape)
+## Input, appearance, and maintenance
 
-<img width="1920" height="1080" alt="Screenshot from 2025-10-27 22-30-56" src="https://github.com/user-attachments/assets/921a5446-15b9-4029-80e1-8135093362de" />
+| Role | Tools and settings |
+| --- | --- |
+| Keyboard-driven pointer control | Fievel, warpd, Hints, wl-kbptr, built-in ScrollWM/Sway controls |
+| Key remapping | keyd |
+| Default font | Maple Mono |
+| Font browsing and previews | Gucharmap, Fontpreview |
+| Qt appearance | qt4ct, qt5ct, qt6ct |
+| Color scheme | Rosé Pine Moon with a softer `#c8c8e5` foreground in parts of the setup, plus Rosé Pine Dawn for daylight |
+| System monitoring | htop, top |
+| Cleanup | BleachBit CLI |
+| Compressed swap | Zramen |
+| SSD discard | fstrim |
 
-* **YouTube Client:** [magic-tape](https://gitlab.com/christosangel/magic-tape) (Image supporting fuzzy finder YouTube client)
+The [theme-switching script](local/bin/scroll-night.fish) applies the Rosé Pine variants across the desktop and apps.
 
----
+## Enabled runit services
 
-### Terminal Reddit Client (reddix)
+| Role | Services |
+| --- | --- |
+| Login and sessions | `agetty-tty1`, `agetty-tty3` through `agetty-tty6`, `ly`, `logind` |
+| System and devices | `dbus`, `udevd`, `wacom-reload`, `ydotoold` |
+| Networking and time | `dhcpcd`, `ntpd` |
+| Scheduling | `cronie` |
+| Memory and swap | `earlyoom`, `zramen` |
 
-<img width="1920" height="1080" alt="Screenshot from 2025-10-31 13-54-23" src="https://github.com/user-attachments/assets/4de2f4ad-d88d-4a12-ac7a-63100863b7cb" />
+## Screenshots
 
-* **Reddit Client:** [reddix](https://github.com/ck-zhang/reddix) (Reddit, refined for the terminal)
-
----
-
-<img width="1920" height="1080" alt="Screenshot from 2025-10-27 22-56-44" src="https://github.com/user-attachments/assets/df4571ee-c2e1-4059-a82e-20babf2de193" />
+![ScrollWM desktop on Wayland with a dark theme](screenshots/scroll_dark.webp)
