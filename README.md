@@ -95,3 +95,5 @@ The [theme-switching script](local/bin/scroll-night.fish) applies the Rosé Pine
 ## Screenshots
 
 ![ScrollWM desktop on Wayland with a dark theme](screenshots/scroll_dark.webp)
+
+![ScrollWM desktop on Wayland with the Rosé Pine Dawn theme](screenshots/scroll_dawn.webp)
