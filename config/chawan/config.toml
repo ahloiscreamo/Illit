@@ -9,49 +9,46 @@ autofocus = true
 cookie = true
 user-style = '''
 html, body {
-    background-color: #232136 !important;
-    color: #c8c8e5 !important;
+    background-color: #faf4ed !important;
+    color: #575279 !important;
 }
 input, textarea, button, select {
-    background-color: #393552 !important;
-    color: #c8c8e5 !important;
-    border: 1px solid #6e6a86 !important;
+    background-color: #f2e9e1 !important;
+    color: #575279 !important;
+    border: 1px solid #9893a5 !important;
 }
 p, span, div, td, li {
-    color: #c8c8e5 !important;
+    color: #575279 !important;
     background-color: transparent !important;
 }
 table, tr, th, td, td * {
-    background-color: #232136 !important;
-    color: #c8c8e5 !important;
-    border-color: #6e6a86 !important;
+    background-color: #faf4ed !important;
+    color: #575279 !important;
+    border-color: #9893a5 !important;
 }
 h1, h2, h3, h4, h5, h6 {
-    color: #9ccfd8 !important;
+    color: #286983 !important;
 }
 a {
-    color: #c4a7e7 !important;
+    color: #907aa9 !important;
 }
 a:hover {
-    color: #eb6f92 !important;
+    color: #b4637a !important;
 }
 strong, b {
-    color: #f6c177 !important;
+    color: #286983 !important;
 }
 pre, code, kbd, tt, samp, blockquote {
     text-decoration: none !important;
-    background-color: #393552 !important;
-    color: #c8c8e5 !important;
-    border: 1px solid #6e6a86 !important;
+    background-color: #f2e9e1 !important;
+    color: #575279 !important;
+    border: 1px solid #9893a5 !important;
     border-radius: 5px !important;
     padding: 10px !important;
 }
 ::selection {
-    background-color: #44415a !important;
-    color: #c8c8e5 !important;
-}
-img, video, svg {
-    filter: brightness(0.85) contrast(0.95);
+    background-color: #dfdad9 !important;
+    color: #575279 !important;
 }
 '''
 
@@ -59,9 +56,9 @@ img, video, svg {
 color-mode = "auto"
 format-mode = "auto"
 #image-mode = "kitty"
-default-background-color = "#232136"
-default-foreground-color = "#c8c8e5"
-highlight-color = "#eb6f92"  # pink highlight
+default-background-color = "#faf4ed"
+default-foreground-color = "#575279"
+highlight-color = "#b4637a"  # pink highlight
 highlight-marks = true
 double-width-ambiguous = false
 set-title = true
@@ -83,72 +80,71 @@ url = '^https?://[a-z]+\.wikipedia\.org/wiki/'
 rewrite-url = 'x => x.searchParams.set("useskin", "vector")'
 user-style = '''
 html, body {
-    background-color: #232136 !important;
-    color: #c8c8e5 !important;
+    background-color: #faf4ed !important;
+    color: #575279 !important;
 }
 input, textarea, button, select {
-    background-color: #393552 !important;
-    color: #c8c8e5 !important;
-    border: 1px solid #6e6a86 !important;
+    background-color: #f2e9e1 !important;
+    color: #575279 !important;
+    border: 1px solid #9893a5 !important;
 }
 p, span, div, td, li {
-    color: #c8c8e5 !important;
+    color: #575279 !important;
     background-color: transparent !important;
 }
 
 /* Fix table headers and cells - the main culprit */
 table, th, td, tr {
-    background-color: #2a2740 !important;
-    color: #c8c8e5 !important;
-    border-color: #44415a !important;
+    background-color: #fffaf3 !important;
+    color: #575279 !important;
+    border-color: #dfdad9 !important;
 }
 th {
-    background-color: #393552 !important;
-    color: #e0def4 !important;
+    background-color: #f2e9e1 !important;
+    color: #575279 !important;
 }
 /* Alternating rows */
 tr:nth-child(even) td {
-    background-color: #2d2b45 !important;
+    background-color: #f2e9e1 !important;
 }
 tr:nth-child(odd) td {
-    background-color: #2a2740 !important;
+    background-color: #fffaf3 !important;
 }
 
 /* Wikipedia-specific table classes */
 .wikitable, .wikitable > * > tr > th, .wikitable > * > tr > td {
-    background-color: #2a2740 !important;
-    color: #c8c8e5 !important;
-    border-color: #44415a !important;
+    background-color: #fffaf3 !important;
+    color: #575279 !important;
+    border-color: #dfdad9 !important;
 }
 .wikitable > * > tr > th {
-    background-color: #393552 !important;
+    background-color: #f2e9e1 !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: #9ccfd8 !important;
+    color: #286983 !important;
 }
 a {
-    color: #c4a7e7 !important;
+    color: #907aa9 !important;
 }
 a:hover {
-    color: #eb6f92 !important;
+    color: #b4637a !important;
 }
 strong, b {
-    color: #f6c177 !important;
+    color: #286983 !important;
 }
 pre, code, blockquote {
-    background-color: #393552 !important;
-    color: #c8c8e5 !important;
-    border: 1px solid #6e6a86 !important;
+    background-color: #f2e9e1 !important;
+    color: #575279 !important;
+    border: 1px solid #9893a5 !important;
     border-radius: 5px !important;
     padding: 10px !important;
 }
 ::selection {
-    background-color: #44415a !important;
-    color: #c8c8e5 !important;
+    background-color: #dfdad9 !important;
+    color: #575279 !important;
 }
 img, video, svg {
-    filter: brightness(0.85) contrast(0.95);
     background-color: transparent !important;
 }
 '''

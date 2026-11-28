@@ -13,8 +13,13 @@ set ROFI_CONFIG $HOME/.config/rofi/config.rasi
 set TMUX_CONF /home/ahloi/.config/tmux/tmux.conf
 set DUNSTRC $HOME/.config/dunst/dunstrc
 set KITTY_CONF $HOME/.config/kitty/kitty.conf
+set CHAWAN_DIR $HOME/.config/chawan
 set YTM_CONFIG $HOME/.config/ytm-player/config.toml
 set YTM_THEME $HOME/.config/ytm-player/theme.toml
+
+function apply_chawan_theme --argument-names theme
+    ln -sfnT "config-$theme.toml" "$CHAWAN_DIR/config.toml"
+end
 
 function apply_ytm_theme
     set mode $argv[1]
@@ -93,6 +98,7 @@ function apply_night
     sed -i '/^\[urgency_critical\]/,/^\[/ s/background = "#.*"/background = "#eb6f92"/' $DUNSTRC
     sed -i '/^\[urgency_critical\]/,/^\[/ s/foreground = "#.*"/foreground = "#c8c8e5"/' $DUNSTRC
     sed -i '/^\[urgency_critical\]/,/^\[/ s/frame_color = "#.*"/frame_color = "#232136"/' $DUNSTRC
+    apply_chawan_theme moon
     apply_ytm_theme moon
     pkill -9 -x dunst; sleep 0.3; dunst &disown
     scrollmsg reload
@@ -142,6 +148,7 @@ function apply_dawn
     sed -i '/^\[urgency_critical\]/,/^\[/ s/background = "#.*"/background = "#b4637a"/' $DUNSTRC
     sed -i '/^\[urgency_critical\]/,/^\[/ s/foreground = "#.*"/foreground = "#faf4ed"/' $DUNSTRC
     sed -i '/^\[urgency_critical\]/,/^\[/ s/frame_color = "#.*"/frame_color = "#faf4ed"/' $DUNSTRC
+    apply_chawan_theme dawn
     apply_ytm_theme dawn
     pkill -9 -x dunst; sleep 0.3; dunst &disown
     scrollmsg reload
@@ -191,6 +198,7 @@ function apply_day
     sed -i '/^\[urgency_critical\]/,/^\[/ s/background = "#.*"/background = "#eb6f92"/' $DUNSTRC
     sed -i '/^\[urgency_critical\]/,/^\[/ s/foreground = "#.*"/foreground = "#c8c8e5"/' $DUNSTRC
     sed -i '/^\[urgency_critical\]/,/^\[/ s/frame_color = "#.*"/frame_color = "#232136"/' $DUNSTRC
+    apply_chawan_theme moon
     apply_ytm_theme moon
     pkill -9 -x dunst; sleep 0.3; dunst &disown
     scrollmsg reload
